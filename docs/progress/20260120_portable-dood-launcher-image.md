@@ -71,6 +71,21 @@ Links:
 - Pin `zsh-kit` and `codex-kit` refs at build time to make the launcher image reproducible and reduce runtime network dependency.
 - Default `CODEX_WORKSPACE_LAUNCHER` to `/opt/codex-kit/docker/codex-env/bin/codex-workspace` and prefer env-based auth (`GH_TOKEN`) inside the launcher container.
 
+### Open Decisions (Step 0)
+
+- Ref pinning (`ZSH_KIT_REF`, `CODEX_KIT_REF`):
+  - a) **Default**: Dockerfile defaults to `main`; CI pins to commit SHAs for published images.
+  - b) Always pin Dockerfile defaults to fixed SHAs/tags (manual bump when upstream changes).
+  - c) Vendor scripts into this repo/image (no git clone at build; higher maintenance).
+- Default runtime image (`CODEX_ENV_IMAGE`):
+  - a) **Default**: rely on upstream default `graysurf/codex-env:linuxbrew` (document; overridable via env).
+  - b) Set `ENV CODEX_ENV_IMAGE=graysurf/codex-env:linuxbrew` in Dockerfile for clarity (still overridable).
+  - c) Change default to a different image/tag (specify).
+- Publish registry + tags:
+  - a) **Default**: Docker Hub only (`graysurf/codex-workspace-launcher`); on push to `main` publish `latest` + `sha-<short>`.
+  - b) Docker Hub + GHCR (`ghcr.io/graysurf/codex-workspace-launcher`) with the same tags.
+  - c) Publish only on release tags `v*` (optionally also `latest`).
+
 ### Risks / Uncertainties
 
 - Security: mounting `docker.sock` is root-equivalent on the host; mitigation is explicit documentation and safe defaults.
@@ -83,19 +98,19 @@ Links:
 Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested `- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
 Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include `Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
 
-- [ ] Step 0: Alignment / prerequisites
+- [ ] Step 0: Alignment / prerequisites (Reason: needs decisions in “Open Decisions (Step 0)”)
   - Work Items:
-    - [ ] Confirm external CLI contract matches `workspace-launcher.zsh` help output and `docs/DESIGN.md`.
-    - [ ] Decide ref pinning strategy (`ZSH_KIT_REF`, `CODEX_KIT_REF`) and default runtime image (`CODEX_ENV_IMAGE`).
-    - [ ] Decide publish target(s) and tag strategy (`latest`, `sha-<short>`, optional semver).
+    - [x] Confirm external CLI contract matches `workspace-launcher.zsh` help output and `docs/DESIGN.md`.
+    - [ ] Decide ref pinning strategy (`ZSH_KIT_REF`, `CODEX_KIT_REF`) and default runtime image (`CODEX_ENV_IMAGE`). (Reason: awaiting maintainer decision; see “Open Decisions (Step 0)”)
+    - [ ] Decide publish target(s) and tag strategy (`latest`, `sha-<short>`, optional semver). (Reason: awaiting maintainer decision; see “Open Decisions (Step 0)”)
   - Artifacts:
     - `docs/progress/20260120_portable-dood-launcher-image.md` (this file)
     - `docs/DESIGN.md` (external contract + smoke commands)
   - Exit Criteria:
-    - [ ] Requirements, scope, and acceptance criteria are aligned: `docs/progress/20260120_portable-dood-launcher-image.md`.
-    - [ ] Data flow and I/O contract are defined (DooD + host mounts + env): `docs/DESIGN.md`.
-    - [ ] Risks and rollback plan are defined (no DB migrations): rollback = revert published tag / pin refs; risks in this file.
-    - [ ] Minimal reproducible verification commands are defined:
+    - [x] Requirements, scope, and acceptance criteria are aligned: `docs/progress/20260120_portable-dood-launcher-image.md`.
+    - [x] Data flow and I/O contract are defined (DooD + host mounts + env): `docs/DESIGN.md`.
+    - [x] Risks and rollback plan are defined (no DB migrations): rollback = revert published tag / pin refs; risks in this file.
+    - [x] Minimal reproducible verification commands are defined:
       - `docker run --rm -it graysurf/codex-workspace-launcher:latest --help`
       - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest ls`
       - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest create graysurf/codex-kit`
