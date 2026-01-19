@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+emulate -L zsh
+setopt errexit nounset pipe_fail
+
+export ZSH_SCRIPT_DIR="/opt/zsh-kit/scripts"
+
+feature_init="${ZSH_SCRIPT_DIR}/_features/codex-workspace/init.zsh"
+if [[ ! -f "$feature_init" ]]; then
+  print -u2 -r -- "error: missing codex-workspace feature init: $feature_init"
+  exit 1
+fi
+
+source "$feature_init"
+
+if ! (( $+functions[codex-workspace] )); then
+  print -u2 -r -- "error: codex-workspace function not found after sourcing: $feature_init"
+  exit 1
+fi
+
+codex-workspace "$@"

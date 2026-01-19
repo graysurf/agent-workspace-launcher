@@ -15,6 +15,25 @@ docker run --rm -it \
   create OWNER/REPO
 ```
 
+Local build:
+
+```sh
+docker build -t codex-workspace-launcher:dev \
+  --build-arg ZSH_KIT_REF=main \
+  --build-arg CODEX_KIT_REF=main \
+  .
+```
+
+Private repo:
+
+```sh
+docker run --rm -it \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -e GH_TOKEN="$GH_TOKEN" \
+  graysurf/codex-workspace-launcher:latest \
+  create OWNER/PRIVATE_REPO
+```
+
 Docs:
 
 - `docs/DESIGN.md`
