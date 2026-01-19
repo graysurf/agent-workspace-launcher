@@ -6,7 +6,8 @@
 
 Links:
 
-- PR: [#1](https://github.com/graysurf/codex-workspace-launcher/pull/1)
+- Planning PR: [#1](https://github.com/graysurf/codex-workspace-launcher/pull/1)
+- Implementation PR: [#2](https://github.com/graysurf/codex-workspace-launcher/pull/2)
 - Docs: `docs/DESIGN.md`
 - Glossary: `docs/templates/PROGRESS_GLOSSARY.md`
 
@@ -114,22 +115,22 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
       - `docker run --rm -it graysurf/codex-workspace-launcher:latest --help`
       - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest ls`
       - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest create graysurf/codex-kit`
-- [ ] Step 1: Minimum viable output (MVP)
+- [x] Step 1: Minimum viable output (MVP)
   - Work Items:
-    - [ ] Implement `Dockerfile` with required tooling and clone/pin `zsh-kit` + `codex-kit` into `/opt/...`.
-    - [ ] Add `bin/codex-workspace` wrapper that sources `workspace-launcher.zsh` and runs `codex-workspace "$@"`.
-    - [ ] Add minimal `README.md` quickstart and common commands (`--help`, `ls`, `create`).
+    - [x] Implement `Dockerfile` with required tooling and clone/pin `zsh-kit` + `codex-kit` into `/opt/...`.
+    - [x] Add `bin/codex-workspace` wrapper that sources `workspace-launcher.zsh` and runs `codex-workspace "$@"`.
+    - [x] Add minimal `README.md` quickstart and common commands (`--help`, `ls`, `create`).
   - Artifacts:
     - `Dockerfile`
     - `bin/codex-workspace`
     - `README.md`
   - Exit Criteria:
-    - [ ] At least one happy path runs end-to-end:
+    - [x] At least one happy path runs end-to-end (evidence: `$CODEX_HOME/out/codex-workspace-launcher-step1-smoke-20260120.md`):
       - `docker build -t codex-workspace-launcher:dev .`
       - `docker run --rm -it codex-workspace-launcher:dev --help`
       - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock codex-workspace-launcher:dev create graysurf/codex-kit`
-    - [ ] Primary outputs are verifiable (workspace containers/volumes exist): `docker ps -a` and `docker volume ls`.
-    - [ ] Usage docs skeleton exists (TL;DR + common commands + DooD rules): `README.md`.
+    - [x] Primary outputs are verifiable (workspace containers/volumes exist): `docker ps -a` and `docker volume ls`.
+    - [x] Usage docs skeleton exists (TL;DR + common commands + DooD rules): `README.md`.
 - [ ] Step 2: Expansion / integration
   - Work Items:
     - [ ] Document and support optional host mounts (secrets/config snapshot) with same-path binds and `HOME` passthrough.
