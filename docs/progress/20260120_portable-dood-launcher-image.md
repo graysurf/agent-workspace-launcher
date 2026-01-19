@@ -2,14 +2,15 @@
 
 | Status | Created | Updated |
 | --- | --- | --- |
-| DRAFT | 2026-01-20 | 2026-01-20 |
+| DONE | 2026-01-20 | 2026-01-20 |
 
 Links:
 
+- PR: https://github.com/graysurf/codex-workspace-launcher/pull/2
 - Planning PR: [#1](https://github.com/graysurf/codex-workspace-launcher/pull/1)
 - Implementation PR: [#2](https://github.com/graysurf/codex-workspace-launcher/pull/2)
-- Docs: `docs/DESIGN.md`
-- Glossary: `docs/templates/PROGRESS_GLOSSARY.md`
+- Docs: [docs/DESIGN.md](../../DESIGN.md)
+- Glossary: [docs/templates/PROGRESS_GLOSSARY.md](../../templates/PROGRESS_GLOSSARY.md)
 
 ## Addendum
 
