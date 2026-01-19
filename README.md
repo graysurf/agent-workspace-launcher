@@ -1,37 +1,125 @@
 # codex-workspace-launcher
 
-Portable Docker launcher for `zsh-kit`'s `codex-workspace`.
+Run `codex-workspace` (`create/ls/rm/exec/reset/tunnel`) from a Docker image — no local `zsh-kit` / `codex-kit`
+checkout required.
 
-This project packages the full `codex-workspace` CLI (`create/ls/rm/exec/reset/tunnel`) into an image so you can
-use it without checking out `zsh-kit` or `codex-kit` locally. It operates in Docker-outside-of-Docker mode by
-connecting to the host Docker daemon via `/var/run/docker.sock`.
+This is **Docker-outside-of-Docker (DooD)**: the launcher container talks to your host Docker daemon via
+`/var/run/docker.sock` and creates **workspace containers** on the host (default runtime image:
+`graysurf/codex-env:linuxbrew`).
 
-Quickstart:
+## Requirements
+
+- Docker Desktop / OrbStack (macOS). Linux may work but is not fully smoke-tested yet.
+- You can mount the Docker socket: `-v /var/run/docker.sock:/var/run/docker.sock`
+
+## Quickstart
+
+Use the provided `cws` wrapper (recommended):
+
+- zsh: `source ./scripts/cws.zsh` (completion registers if `compinit` is enabled)
+- bash: `source ./scripts/cws.bash`
+- executable: put `./scripts/cws` on your `PATH` (example: `cp ./scripts/cws ~/.local/bin/cws`)
+
+Without cloning:
 
 ```sh
-docker run --rm -it \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
-  create OWNER/REPO
+mkdir -p "$HOME/.config/codex-workspace-launcher"
+# zsh:
+curl -fsSL https://raw.githubusercontent.com/graysurf/codex-workspace-launcher/main/scripts/cws.zsh \
+  -o "$HOME/.config/codex-workspace-launcher/cws.zsh"
+source "$HOME/.config/codex-workspace-launcher/cws.zsh"
+
+# bash:
+curl -fsSL https://raw.githubusercontent.com/graysurf/codex-workspace-launcher/main/scripts/cws.bash \
+  -o "$HOME/.config/codex-workspace-launcher/cws.bash"
+source "$HOME/.config/codex-workspace-launcher/cws.bash"
 ```
 
-Common commands:
+Customize defaults (optional):
 
 ```sh
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest --help
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest ls
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest exec <name|container>
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest rm <name|container> --yes
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest rm --all --yes
+# Extra docker-run args (zsh/bash array form; preserves quoting)
+CWS_DOCKER_ARGS=(
+  -e HOME="$HOME"
+  -v "$HOME/.config:$HOME/.config:ro"
+)
+
+# Override the image tag
+CWS_IMAGE="graysurf/codex-workspace-launcher:latest"
 ```
 
-Docker-outside-of-Docker (DooD) rules:
+Create a workspace (public repo):
+
+```sh
+cws create OWNER/REPO
+```
+
+The `create` output prints:
+
+- `workspace: <container>`
+- `path: /work/<owner>/<repo>`
+
+Common operations:
+
+```sh
+cws --help
+cws ls
+cws exec <name|container>
+cws rm <name|container> --yes
+cws rm --all --yes
+```
+
+Note: you can also define your own small wrapper instead of sourcing scripts, e.g.
+`cws(){ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -e GH_TOKEN -e GITHUB_TOKEN graysurf/codex-workspace-launcher:latest "$@"; }`
+
+## Working in the workspace
+
+- The repo lives in Docker named volumes (not a host bind mount).
+- Use `exec` to enter the container, or attach with VS Code Dev Containers.
+
+Run a command in the workspace:
+
+```sh
+cws exec <name|container> git status
+```
+
+Interactive shell:
+
+```sh
+cws exec <name|container>
+```
+
+VS Code Dev Containers:
+
+- `Cmd/Ctrl+Shift+P` → “Dev Containers: Attach to Running Container…” → select the workspace container.
+
+Exec gotcha:
+
+- `codex-workspace exec <name> -- <cmd>` is currently **not supported** (it will try to run `--`).
+- Use `codex-workspace exec <name> <cmd...>` instead.
+
+## Private repos (GitHub)
+
+Pass a token into the launcher container:
+
+```sh
+export GH_TOKEN=...
+cws create OWNER/PRIVATE_REPO
+```
+
+Security note: `create` persists `GH_TOKEN`/`GITHUB_TOKEN` into the workspace container environment to make `git`
+auth work inside the workspace. Treat the workspace container as sensitive and remove it when done.
+
+## Docker-outside-of-Docker (DooD) rules
 
 - The launcher container talks to the host Docker daemon via `-v /var/run/docker.sock:/var/run/docker.sock`.
 - Any `-v <src>:<dst>` executed by the launcher resolves `<src>` on the host.
 - When `codex-workspace` needs to read host files, the launcher container must also be able to `test -d` those
   paths (so bind-mount them into the launcher using the same absolute path).
-- Prefer same-path binds + `HOME` passthrough:
+
+Recommended pattern: same-path binds + `HOME` passthrough.
+
+Example: enable host `~/.config` snapshot (copied into the workspace; not a bind mount):
 
 ```sh
 docker run --rm -it \
@@ -42,9 +130,9 @@ docker run --rm -it \
   create OWNER/REPO
 ```
 
-Optional host mounts:
+## Optional host mounts
 
-- Secrets dir (recommended; enables `codex-use` syncing inside the workspace):
+Secrets dir (recommended if you already have it; enables `codex-use` syncing inside the workspace):
 
 ```sh
 docker run --rm -it \
@@ -55,7 +143,7 @@ docker run --rm -it \
   create OWNER/REPO
 ```
 
-Configuration (env vars):
+## Configuration (env vars)
 
 `codex-workspace` (zsh layer; user-facing CLI):
 
@@ -87,11 +175,19 @@ Low-level launcher (`codex-kit` script; invoked by the zsh layer):
 | `CODEX_CONFIG_DIR_HOST` | (empty) | Bind-mount host config into the workspace (`/home/codex/.config:ro`) |
 | `CODEX_ZSH_PRIVATE_DIR_HOST` | (empty) | Bind-mount host zsh private into the workspace (`/opt/zsh-kit/.private:ro`) |
 
-Security notes:
+## Troubleshooting
+
+- Docker daemon not running: start Docker Desktop/OrbStack; verify `docker info`.
+- Linux `permission denied` on `/var/run/docker.sock`: try `--user 0:0` or add the docker socket group GID via
+  `--group-add ...`.
+- `exec` tries to run `--`: don’t put `--` after the container name.
+
+## Security notes
 
 - Mounting `docker.sock` is root-equivalent host access.
-- Passing `GH_TOKEN` into the launcher can make it visible via `docker inspect` on workspace containers when token
-  persistence is enabled.
+- Persisted `GH_TOKEN`/`GITHUB_TOKEN` values are visible via `docker inspect` on the workspace containers.
+
+## Development
 
 Local build:
 
@@ -112,16 +208,6 @@ Publishing (CI):
 - Ref pinning: the workflow resolves `graysurf/zsh-kit@main` and `graysurf/codex-kit@main` to commit SHAs and
   builds with those SHAs (reproducible published images).
 
-Private repo:
-
-```sh
-docker run --rm -it \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -e GH_TOKEN="$GH_TOKEN" \
-  graysurf/codex-workspace-launcher:latest \
-  create OWNER/PRIVATE_REPO
-```
-
-Docs:
+## Docs
 
 - `docs/DESIGN.md`

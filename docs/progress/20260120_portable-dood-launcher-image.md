@@ -87,6 +87,28 @@ Links:
   - b) Docker Hub + GHCR (`ghcr.io/graysurf/codex-workspace-launcher`) with the same tags.
   - c) Publish only on release tags `v*` (optionally also `latest`).
 
+### Proposed Enhancements (Host Wrapper + Shell Completion)
+
+Context: the README “Quickstart” `cws()` wrapper is a much nicer UX than repeating `docker run ...` manually. We
+can ship a host-side wrapper (zsh first, then bash) plus completion scripts so users can adopt it with minimal
+copy/paste.
+
+Decisions (confirmed):
+
+- Wrapper form + naming:
+  - c) **Selected**: provide both a `cws` shell function (sourceable) and an executable `cws` script; completion targets `cws`.
+- Distribution / install UX:
+  - a) **Selected**: add files under `scripts/` (e.g. `scripts/cws.zsh`, `scripts/cws.bash`) and document “source this in your shell rc”.
+  - b) Add an `install` helper script (copies/symlinks into a conventional completion dir).
+- Completion packaging:
+  - a) **Selected**: completion is defined inside the sourced wrapper file(s) and registers to `cws`.
+- Completion behavior:
+  - a) **Selected**: static completion for subcommands/flags + dynamic workspace-name completion by querying host `docker ps` (fast; no image call).
+  - b) Static-only completion (simpler, less magic).
+- Defaults carried by the wrapper:
+  - a) **Selected**: always mount `docker.sock` and forward `GH_TOKEN`/`GITHUB_TOKEN` when set; allow extra docker args via `CWS_DOCKER_ARGS` and image override via `CWS_IMAGE`.
+  - b) Keep wrapper minimal (only docker.sock) and document manual token/env forwarding.
+
 ### Risks / Uncertainties
 
 - Security: mounting `docker.sock` is root-equivalent on the host; mitigation is explicit documentation and safe defaults.
@@ -167,6 +189,7 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
   - Work Items:
     - [x] Add `.github/workflows/publish.yml` to buildx multi-arch and push tags on main.
     - [x] Document tag semantics (`latest`, `sha-<short>`, optional semver) and release workflow notes (see `README.md`).
+    - [x] Provide host wrapper scripts + completion (`cws` for zsh, then bash) and document install/customization.
     - [ ] Close out progress file when implementation merges (set to DONE and archive). (Reason: pending merge of implementation PRs)
   - Artifacts:
     - `.github/workflows/publish.yml`

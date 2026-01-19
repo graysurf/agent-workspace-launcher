@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+image="${CWS_IMAGE:-graysurf/codex-workspace-launcher:latest}"
+
+run_args=(run --rm)
+if [[ -t 0 && -t 1 ]]; then
+  run_args+=(-it)
+elif [[ -t 0 ]]; then
+  run_args+=(-i)
+fi
+
+run_args+=(
+  -v /var/run/docker.sock:/var/run/docker.sock
+  -e GH_TOKEN
+  -e GITHUB_TOKEN
+)
+
+if [[ -n "${CWS_DOCKER_ARGS:-}" ]]; then
+  extra_args=()
+  read -r -a extra_args <<<"${CWS_DOCKER_ARGS}"
+  if (( ${#extra_args[@]} > 0 )); then
+    run_args+=("${extra_args[@]}")
+  fi
+fi
+
+exec docker "${run_args[@]}" "$image" "$@"
+
