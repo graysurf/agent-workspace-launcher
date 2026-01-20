@@ -144,5 +144,22 @@ _cws() {
 
 if (( $+functions[compdef] )); then
   compdef _cws cws
-fi
+else
+  if [[ -o interactive && -t 0 ]]; then
+    _cws_register_completion() {
+      emulate -L zsh
+      setopt pipe_fail
 
+      if (( $+functions[compdef] )); then
+        compdef _cws cws
+
+        autoload -Uz add-zsh-hook 2>/dev/null || true
+        add-zsh-hook -d precmd _cws_register_completion 2>/dev/null || true
+        unfunction _cws_register_completion 2>/dev/null || true
+      fi
+    }
+
+    autoload -Uz add-zsh-hook 2>/dev/null || true
+    add-zsh-hook precmd _cws_register_completion 2>/dev/null || true
+  fi
+fi

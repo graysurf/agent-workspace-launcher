@@ -23,7 +23,7 @@ This is **Docker-outside-of-Docker (DooD)**: the launcher container talks to you
 
 Use the provided `cws` wrapper (recommended):
 
-- zsh: `source ./scripts/cws.zsh` (completion registers if `compinit` is enabled)
+- zsh: `source ./scripts/cws.zsh` (completion registers once `compinit` is available)
 - bash: `source ./scripts/cws.bash`
 - executable: put `./scripts/cws` on your `PATH` (example: `cp ./scripts/cws ~/.local/bin/cws`)
 
