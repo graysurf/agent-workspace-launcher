@@ -7,10 +7,56 @@ This checklist is for validating the end-to-end experience after merging to `mai
 
 ## What to verify
 
+- [ ] macOS quickstart smoke (zsh wrapper via `cws`; no local build)
+- [ ] macOS quickstart smoke (bash wrapper via `cws`; no local build)
 - [ ] Linux exploratory smoke run (captures logs)
 - [ ] CI publish run URL recorded (on `main`)
 - [ ] Published Docker Hub tags exist (`latest`, `sha-<short>`)
 - [ ] Published image is multi-arch (`linux/amd64`, `linux/arm64`)
+
+## macOS quickstart smoke (published images; no local build)
+
+This validates the end-user “Quickstart” path:
+
+- Pull + run `graysurf/codex-workspace-launcher`
+- During `create`, the workspace runtime image `graysurf/codex-env:linuxbrew` also gets pulled (so you implicitly
+  validate it exists and is runnable on your platform).
+
+Pre-flight:
+
+```sh
+docker info >/dev/null
+```
+
+zsh wrapper:
+
+```sh
+source ./scripts/cws.zsh
+
+# Pulls the launcher image and prints help.
+cws --help
+
+# Verifies the launcher container can talk to the host daemon.
+cws ls
+
+# End-to-end create (public repo).
+cws create graysurf/codex-kit
+
+# Copy the printed workspace name, then:
+cws exec <name|container> git -C /work/graysurf/codex-kit status
+cws rm <name|container> --yes
+```
+
+bash wrapper (run in a separate bash shell to avoid mixing wrappers):
+
+```sh
+source ./scripts/cws.bash
+cws --help
+```
+
+Capture evidence:
+
+- Save the full terminal output to a log file and attach it to the integration testing PR (or paste it in a PR comment).
 
 ## Linux exploratory smoke (do not claim support yet)
 
@@ -59,4 +105,3 @@ docker buildx imagetools inspect graysurf/codex-workspace-launcher:latest
 ```
 
 Expected platforms include `linux/amd64` and `linux/arm64`.
-
