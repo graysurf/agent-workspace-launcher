@@ -86,6 +86,7 @@ def base_cases() -> list[CwsE2ECase]:
             cws_args=["--help"],
             purpose="Show top-level help and usage.",
         ),
+        CwsE2ECase(case_id="help_auth", cws_args=["auth", "--help"], purpose="Show help for auth."),
         CwsE2ECase(case_id="help_create", cws_args=["create", "--help"], purpose="Show help for create."),
         CwsE2ECase(case_id="help_ls", cws_args=["ls", "--help"], purpose="Show help for ls."),
         CwsE2ECase(case_id="help_exec", cws_args=["exec", "--help"], purpose="Show help for exec."),
@@ -174,6 +175,31 @@ def base_cases() -> list[CwsE2ECase]:
             cws_args=["exec", "--user", "codex", "ws-e2e", "id", "-u"],
             purpose="Exec as a specific user and verify expected uid.",
             requires="Existing workspace container ws-e2e.",
+        ),
+        # auth
+        CwsE2ECase(
+            case_id="auth_github",
+            cws_args=["auth", "github", "ws-e2e"],
+            purpose="Update GitHub auth inside the workspace.",
+            requires="Existing workspace container ws-e2e; valid GitHub token or `gh` login.",
+        ),
+        CwsE2ECase(
+            case_id="auth_github_host",
+            cws_args=["auth", "github", "--host", "github.com", "ws-e2e"],
+            purpose="Update GitHub auth with an explicit host override.",
+            requires="Existing workspace container ws-e2e; valid GitHub token or `gh` login.",
+        ),
+        CwsE2ECase(
+            case_id="auth_codex_profile",
+            cws_args=["auth", "codex", "--profile", "work", "ws-e2e"],
+            purpose="Apply Codex auth (profile-based) inside the workspace.",
+            requires="Existing workspace container ws-e2e; host Codex secrets must be accessible to the launcher container.",
+        ),
+        CwsE2ECase(
+            case_id="auth_gpg_key",
+            cws_args=["auth", "gpg", "--key", "DEADBEEF", "ws-e2e"],
+            purpose="Import a GPG signing key into the workspace.",
+            requires="Existing workspace container ws-e2e; host GPG keyring accessible; keyid DEADBEEF exists.",
         ),
         # reset
         CwsE2ECase(
