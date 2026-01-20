@@ -35,10 +35,11 @@ Override with `CWS_IMAGE=...`.
 - Remove workspaces: [docs/guides/cws/05-rm.md](05-rm.md)
 - Reset repos inside a workspace: [docs/guides/cws/06-reset.md](06-reset.md)
 - VS Code tunnel: [docs/guides/cws/07-tunnel.md](07-tunnel.md)
+- Update auth inside a workspace: [docs/guides/cws/08-auth.md](08-auth.md)
 
 ## Concepts and reference
 
-- DooD rules + host mounts: [docs/guides/cws/08-dood-rules.md](08-dood-rules.md)
-- Troubleshooting: [docs/guides/cws/09-troubleshooting.md](09-troubleshooting.md)
-- Reference (commands + env): [docs/guides/cws/10-reference.md](10-reference.md)
-- Without `cws` (direct `docker run`): [docs/guides/cws/11-codex-workspace.md](11-codex-workspace.md)
+- DooD rules + host mounts: [docs/guides/cws/09-dood-rules.md](09-dood-rules.md)
+- Troubleshooting: [docs/guides/cws/10-troubleshooting.md](10-troubleshooting.md)
+- Reference (commands + env): [docs/guides/cws/11-reference.md](11-reference.md)
+- Without `cws` (direct `docker run`): [docs/guides/cws/12-codex-workspace.md](12-codex-workspace.md)

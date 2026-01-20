@@ -1,6 +1,6 @@
 # Design: codex-workspace-launcher
 
-Goal: package `zsh-kit`'s `codex-workspace` (`create/ls/rm/exec/reset/tunnel`) into a Docker image so a macOS
+Goal: package `zsh-kit`'s `codex-workspace` (`auth/create/ls/rm/exec/reset/tunnel`) into a Docker image so a macOS
 machine without `zsh-kit` + `codex-kit` checked out can still use it with Docker only:
 
 ```sh
@@ -126,6 +126,7 @@ Source (local): `/Users/terry/.config/zsh/scripts/_features/codex-workspace/work
 | `CODEX_WORKSPACE_LAUNCHER_URL` | GitHub raw | Launcher download URL (only when auto-download is enabled and the script is missing) |
 | `CODEX_WORKSPACE_LAUNCHER_AUTO_PATH` | `$XDG_CACHE_HOME/...` | Auto-download install path |
 | `CODEX_WORKSPACE_AUTH` | `auto` | `auto\|gh\|env\|none`: token source selection (inside the launcher container, `env` is usually the most practical) |
+| `CODEX_WORKSPACE_GPG_KEY` | (empty) | Default signing key for `auth gpg` (keyid or fingerprint) |
 | `CODEX_WORKSPACE_TUNNEL_NAME` | (empty) | Tunnel name for the `tunnel` subcommand (<= 20 chars) |
 | `CODEX_WORKSPACE_OPEN_VSCODE_ENABLED` | (empty/false) | Auto-run `code --new-window` if host has `code` CLI (typically not effective inside the launcher container) |
 | `CODEX_WORKSPACE_OPEN_VSCODE` | deprecated | Deprecated flag (document as deprecated) |
@@ -155,7 +156,7 @@ Source (local): `/Users/terry/.config/codex-kit/docker/codex-env/bin/codex-works
 
 ### Step 0: define the external contract (DoD)
 
-- `docker run ... <image> --help` shows `create/ls/rm/exec/reset/tunnel` (aligned with `workspace-launcher.zsh` usage).
+  - `docker run ... <image> --help` shows `auth/create/ls/rm/exec/reset/tunnel` (aligned with `workspace-launcher.zsh` usage).
 - `create OWNER/REPO` works on a clean macOS machine (Docker only) and creates a workspace container (named volumes).
 - No host mounts required by default (secrets/config/private are optional).
 - When `GH_TOKEN` is present, cloning private repos works.

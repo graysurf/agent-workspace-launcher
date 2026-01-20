@@ -93,6 +93,37 @@ _cws_detect_gh_target_for_create() {
   return 0
 }
 
+_cws_detect_gh_host_for_auth_github() {
+  local gh_host="${GITHUB_HOST:-github.com}"
+
+  local i=0
+  while (( i < $# )); do
+    local arg="${@:i+1:1}"
+    case "$arg" in
+      -h|--help)
+        return 1
+        ;;
+      --host)
+        gh_host="${@:i+2:1}"
+        break
+        ;;
+      --host=*)
+        gh_host="${arg#*=}"
+        break
+        ;;
+      --)
+        break
+        ;;
+    esac
+    (( i += 1 ))
+  done
+
+  gh_host="${gh_host//[[:space:]]/}"
+  [[ -n "$gh_host" ]] || gh_host="${GITHUB_HOST:-github.com}"
+  printf '%s\n' "$gh_host"
+  return 0
+}
+
 _cws_gh_keyring_token_for_repo() {
   local gh_host="${1:-github.com}"
   local gh_owner_repo="${2:-}"
@@ -129,15 +160,17 @@ cws() {
     -v /var/run/docker.sock:/var/run/docker.sock
     -e GH_TOKEN
     -e GITHUB_TOKEN
+    -e CODEX_WORKSPACE_GPG_KEY
   )
 
   local injected_token=""
   local auth_mode="${CWS_AUTH:-auto}"
   local env_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
   local subcmd="${1:-}"
+  local provider="${2:-}"
 
   if [[ "$auth_mode" != "none" && "$auth_mode" != "env" ]]; then
-    if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" ) ]]; then
+    if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" || ( "$subcmd" == "auth" && "$provider" == "github" ) ) ]]; then
       local want_help=0
       local a=""
       for a in "$@"; do
@@ -148,10 +181,12 @@ cws() {
       done
 
       if (( want_help == 0 )); then
-        local gh_host="github.com"
+        local gh_host="${GITHUB_HOST:-github.com}"
         local gh_owner_repo=""
         if [[ "$subcmd" == "create" ]]; then
           read -r gh_host gh_owner_repo < <(_cws_detect_gh_target_for_create "${@:2}" 2>/dev/null || printf '%s %s\n' "$gh_host" "")
+        elif [[ "$subcmd" == "auth" && "$provider" == "github" ]]; then
+          gh_host="$(_cws_detect_gh_host_for_auth_github "${@:3}" 2>/dev/null || printf '%s\n' "$gh_host")"
         fi
 
         injected_token="$(_cws_gh_keyring_token_for_repo "$gh_host" "$gh_owner_repo" 2>/dev/null || true)"
@@ -194,11 +229,75 @@ _cws_complete() {
   subcmd="${COMP_WORDS[1]:-}"
 
   if [[ $COMP_CWORD -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "create ls exec rm reset tunnel -h --help" -- "$cur"))
+    COMPREPLY=($(compgen -W "auth create ls exec rm reset tunnel -h --help" -- "$cur"))
     return 0
   fi
 
   case "$subcmd" in
+    auth)
+      local provider="${COMP_WORDS[2]:-}"
+
+      if [[ $COMP_CWORD -eq 2 ]]; then
+        COMPREPLY=($(compgen -W "codex github gpg -h --help" -- "$cur"))
+        return 0
+      fi
+
+      if [[ "$prev" == "--container" || "$prev" == "--name" ]]; then
+        COMPREPLY=($(compgen -W "$(_cws_workspaces)" -- "$cur"))
+        return 0
+      fi
+
+      if [[ "$provider" == "github" && "$prev" == "--host" ]]; then
+        COMPREPLY=()
+        return 0
+      fi
+
+      if [[ "$provider" == "codex" && "$prev" == "--profile" ]]; then
+        COMPREPLY=()
+        return 0
+      fi
+
+      if [[ "$provider" == "gpg" && "$prev" == "--key" ]]; then
+        COMPREPLY=()
+        return 0
+      fi
+
+      local opts="-h --help"
+      if [[ "$provider" == "github" ]]; then
+        opts="--host --container --name -h --help"
+      elif [[ "$provider" == "codex" ]]; then
+        opts="--profile --container --name -h --help"
+      elif [[ "$provider" == "gpg" ]]; then
+        opts="--key --container --name -h --help"
+      fi
+
+      if [[ "$cur" == -* ]]; then
+        COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+        return 0
+      fi
+
+      local i2=3
+      local container2=""
+      while [[ $i2 -lt $COMP_CWORD ]]; do
+        local w2="${COMP_WORDS[i2]}"
+        case "$w2" in
+          -h|--help) ;;
+          --container|--name|--host|--profile|--key) ((i2++)) ;;
+          --container=*|--name=*) container2="${w2#*=}" ;;
+          --host=*|--profile=*|--key=*) ;;
+          -*) ;;
+          *) container2="$w2"; break ;;
+        esac
+        ((i2++))
+      done
+
+      if [[ -z "$container2" ]]; then
+        COMPREPLY=($(compgen -W "$(_cws_workspaces)" -- "$cur"))
+      else
+        COMPREPLY=()
+      fi
+      return 0
+      ;;
     create)
       if [[ "$prev" == "--private-repo" || "$prev" == "--name" ]]; then
         COMPREPLY=()

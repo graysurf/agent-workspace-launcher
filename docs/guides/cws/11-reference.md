@@ -5,6 +5,7 @@
 | Command | Purpose |
 | --- | --- |
 | `cws --help` | Show help |
+| `cws auth ...` | Update auth inside a workspace |
 | `cws ls` | List workspaces |
 | `cws create ...` | Create a workspace |
 | `cws exec ...` | Exec into a workspace |
@@ -18,7 +19,7 @@
 | --- | --- | --- |
 | `CWS_IMAGE` | `graysurf/codex-workspace-launcher:latest` | Launcher image to run |
 | `CWS_DOCKER_ARGS` | (empty) | Extra `docker run` args for the launcher container |
-| `CWS_AUTH` | `auto` | `auto\|env\|none`: when `auto`, reuse host `gh` keyring token for `create/reset` if no `GH_TOKEN`/`GITHUB_TOKEN` |
+| `CWS_AUTH` | `auto` | `auto\|env\|none`: when `auto`, reuse host `gh` keyring token for `create/reset/auth github` if no `GH_TOKEN`/`GITHUB_TOKEN` |
 
 ## Launcher environment variables
 

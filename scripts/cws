@@ -96,6 +96,37 @@ _cws_detect_gh_target_for_create() {
   return 0
 }
 
+_cws_detect_gh_host_for_auth_github() {
+  local gh_host="${GITHUB_HOST:-github.com}"
+
+  local i=0
+  while (( i < $# )); do
+    local arg="${@:i+1:1}"
+    case "$arg" in
+      -h|--help)
+        return 1
+        ;;
+      --host)
+        gh_host="${@:i+2:1}"
+        break
+        ;;
+      --host=*)
+        gh_host="${arg#*=}"
+        break
+        ;;
+      --)
+        break
+        ;;
+    esac
+    (( i += 1 ))
+  done
+
+  gh_host="${gh_host//[[:space:]]/}"
+  [[ -n "$gh_host" ]] || gh_host="${GITHUB_HOST:-github.com}"
+  printf '%s\n' "$gh_host"
+  return 0
+}
+
 _cws_gh_keyring_token_for_repo() {
   local gh_host="${1:-github.com}"
   local gh_owner_repo="${2:-}"
@@ -128,15 +159,17 @@ run_args+=(
   -v /var/run/docker.sock:/var/run/docker.sock
   -e GH_TOKEN
   -e GITHUB_TOKEN
+  -e CODEX_WORKSPACE_GPG_KEY
 )
 
 injected_token=""
 auth_mode="${CWS_AUTH:-auto}"
 env_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
 subcmd="${1:-}"
+provider="${2:-}"
 
 if [[ "$auth_mode" != "none" && "$auth_mode" != "env" ]]; then
-  if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" ) ]]; then
+  if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" || ( "$subcmd" == "auth" && "$provider" == "github" ) ) ]]; then
     want_help=0
     for a in "$@"; do
       if [[ "$a" == "-h" || "$a" == "--help" ]]; then
@@ -146,10 +179,12 @@ if [[ "$auth_mode" != "none" && "$auth_mode" != "env" ]]; then
     done
 
     if (( want_help == 0 )); then
-      gh_host="github.com"
+      gh_host="${GITHUB_HOST:-github.com}"
       gh_owner_repo=""
       if [[ "$subcmd" == "create" ]]; then
         read -r gh_host gh_owner_repo < <(_cws_detect_gh_target_for_create "${@:2}" 2>/dev/null || printf '%s %s\n' "$gh_host" "")
+      elif [[ "$subcmd" == "auth" && "$provider" == "github" ]]; then
+        gh_host="$(_cws_detect_gh_host_for_auth_github "${@:3}" 2>/dev/null || printf '%s\n' "$gh_host")"
       fi
 
       injected_token="$(_cws_gh_keyring_token_for_repo "$gh_host" "$gh_owner_repo" 2>/dev/null || true)"

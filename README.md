@@ -7,7 +7,7 @@ Launch a `Codex-ready` workspace for any repo — `prompts`, `skills`, and commo
 - Optional `cws` wrapper (zsh + bash, with completion) so you don’t repeat `docker run ...`
 - Under the hood: powered by [zsh-kit](https://github.com/graysurf/zsh-kit) and [codex-kit](https://github.com/graysurf/codex-kit) (vendored into the image; published images pin SHAs)
 
-This project packages the `codex-workspace` CLI (`create/ls/rm/exec/reset/tunnel`) as a Docker image — no local
+This project packages the `codex-workspace` CLI (`auth/create/ls/rm/exec/reset/tunnel`) as a Docker image — no local
 setup required.
 
 This is **Docker-outside-of-Docker (DooD)**: the launcher container talks to your host Docker daemon via
@@ -76,6 +76,7 @@ Common operations:
 ```sh
 cws --help
 cws ls
+cws auth github <name|container>
 cws exec <name|container>
 cws rm <name|container> --yes
 cws rm --all --yes
@@ -112,8 +113,8 @@ Exec gotcha:
 
 ## Private repos (GitHub)
 
-If you have `gh` logged in on the host, `cws create/reset` will automatically reuse that token (keyring) when
-`GH_TOKEN`/`GITHUB_TOKEN` are not set.
+If you have `gh` logged in on the host, `cws create/reset/auth github` will automatically reuse that token
+(keyring) when `GH_TOKEN`/`GITHUB_TOKEN` are not set.
 
 Or pass a token into the launcher container:
 
@@ -169,6 +170,7 @@ docker run --rm -it \
 | `CODEX_WORKSPACE_LAUNCHER` | (in image) | Low-level launcher path (this image sets it to `/opt/codex-kit/docker/codex-env/bin/codex-workspace`) |
 | `CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD` | `true` | Auto-download low-level launcher when missing (not used when `CODEX_WORKSPACE_LAUNCHER` is set) |
 | `CODEX_WORKSPACE_AUTH` | `auto` | `auto\|gh\|env\|none`: token source selection (`env` is most practical in the launcher container) |
+| `CODEX_WORKSPACE_GPG_KEY` | (empty) | Default signing key for `auth gpg` (keyid or fingerprint) |
 | `CODEX_WORKSPACE_TUNNEL_NAME` | (empty) | Tunnel name for the `tunnel` subcommand (<= 20 chars) |
 | `CODEX_WORKSPACE_OPEN_VSCODE_ENABLED` | (empty/false) | Auto-run `code --new-window` (typically not effective inside the launcher container) |
 | `CODEX_WORKSPACE_OPEN_VSCODE` | deprecated | Deprecated flag (use `CODEX_WORKSPACE_OPEN_VSCODE_ENABLED`) |

@@ -36,8 +36,14 @@ autoload -Uz compinit && compinit
 
 ## Auth issues (private repos)
 
-If you have `gh` logged in on the host, `cws create/reset` will automatically reuse that token (keyring) when
-`GH_TOKEN`/`GITHUB_TOKEN` are not set.
+If you have `gh` logged in on the host, `cws create/reset/auth github` will automatically reuse that token
+(keyring) when `GH_TOKEN`/`GITHUB_TOKEN` are not set.
+
+To re-apply GitHub auth to an existing workspace without recreating it:
+
+```sh
+cws auth github <name|container>
+```
 
 Or pass `GH_TOKEN`/`GITHUB_TOKEN` on the host:
 
@@ -51,3 +57,18 @@ If org SSO blocks access, refresh your GitHub CLI auth (host-side):
 ```sh
 gh auth refresh -h github.com -s repo -s read:org
 ```
+
+## GPG signing issues (`git commit -S`)
+
+If `cws auth gpg` fails:
+
+- Ensure you have a signing key on the host: `gpg --list-secret-keys --keyid-format LONG`
+- Pass an explicit key: `cws auth gpg --key <keyid|fingerprint> <name|container>`
+- If running via DooD, mount your keyring into the launcher container (same-path bind):
+
+  ```sh
+  CWS_DOCKER_ARGS=(
+    -e HOME="$HOME"
+    -v "$HOME/.gnupg:$HOME/.gnupg:ro"
+  )
+  ```

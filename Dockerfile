@@ -14,6 +14,7 @@ RUN apt-get update \
     curl \
     docker.io \
     git \
+    gnupg \
     openssl \
     python3 \
     rsync \

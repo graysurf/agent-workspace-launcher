@@ -104,6 +104,43 @@ _cws_detect_gh_target_for_create() {
   return 0
 }
 
+_cws_detect_gh_host_for_auth_github() {
+  emulate -L zsh
+  setopt pipe_fail
+
+  local -a argv=("$@")
+
+  local gh_host="${GITHUB_HOST:-github.com}"
+
+  local -i i=1
+  while (( i <= ${#argv[@]} )); do
+    local arg="${argv[i]-}"
+    case "$arg" in
+      -h|--help)
+        return 1
+        ;;
+      --host)
+        gh_host="${argv[i+1]-$gh_host}"
+        break
+        ;;
+      --host=*)
+        gh_host="${arg#*=}"
+        break
+        ;;
+      --)
+        break
+        ;;
+    esac
+    (( i += 1 ))
+  done
+
+  gh_host="${gh_host//[[:space:]]/}"
+  [[ -n "$gh_host" ]] || gh_host="${GITHUB_HOST:-github.com}"
+
+  reply=("$gh_host")
+  return 0
+}
+
 _cws_gh_keyring_token_for_repo() {
   emulate -L zsh
   setopt pipe_fail
@@ -147,6 +184,7 @@ cws() {
     -v /var/run/docker.sock:/var/run/docker.sock
     -e GH_TOKEN
     -e GITHUB_TOKEN
+    -e CODEX_WORKSPACE_GPG_KEY
   )
 
   local injected_token=''
@@ -155,7 +193,8 @@ cws() {
   local subcmd="${1:-}"
 
   if [[ "$auth_mode" != "none" && "$auth_mode" != "env" ]]; then
-    if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" ) ]]; then
+    local provider="${2:-}"
+    if [[ -z "$env_token" && ( "$subcmd" == "create" || "$subcmd" == "reset" || ( "$subcmd" == "auth" && "$provider" == "github" ) ) ]]; then
       local -i want_help=0
       local a=''
       for a in "$@"; do
@@ -166,12 +205,15 @@ cws() {
       done
 
       if (( want_help == 0 )); then
-        local gh_host="github.com"
+        local gh_host="${GITHUB_HOST:-github.com}"
         local gh_owner_repo=''
         if [[ "$subcmd" == "create" ]]; then
           _cws_detect_gh_target_for_create "${@:2}" || true
           gh_host="${reply[1]-$gh_host}"
           gh_owner_repo="${reply[2]-}"
+        elif [[ "$subcmd" == "auth" && "$provider" == "github" ]]; then
+          _cws_detect_gh_host_for_auth_github "${@:3}" || true
+          gh_host="${reply[1]-$gh_host}"
         fi
 
         injected_token="$(_cws_gh_keyring_token_for_repo "$gh_host" "$gh_owner_repo" 2>/dev/null || true)"
@@ -219,6 +261,7 @@ _cws() {
 
   local -a commands=()
   commands=(
+    'auth:Update auth for a workspace'
     'create:Create a workspace container'
     'ls:List workspaces'
     'exec:Exec into a workspace'
@@ -231,13 +274,58 @@ _cws() {
     _arguments -C \
       '-h[Show help]' \
       '--help[Show help]' \
-      '1:command:(create ls exec rm reset tunnel)' \
+      '1:command:(auth create ls exec rm reset tunnel)' \
       && return
     return
   fi
 
   local cmd="${words[2]-}"
   case "$cmd" in
+    auth)
+      local provider="${words[3]-}"
+      case "$provider" in
+        codex)
+          _arguments -C \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:provider:(codex github gpg)' \
+            '--profile[Codex profile name]:profile:' \
+            '--container[Workspace name/container]:workspace:_cws_workspaces' \
+            '--name[Workspace name/container]:workspace:_cws_workspaces' \
+            '2:workspace:_cws_workspaces' \
+            && return
+          ;;
+        github)
+          _arguments -C \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:provider:(codex github gpg)' \
+            '--host[GitHub hostname]:host:' \
+            '--container[Workspace name/container]:workspace:_cws_workspaces' \
+            '--name[Workspace name/container]:workspace:_cws_workspaces' \
+            '2:workspace:_cws_workspaces' \
+            && return
+          ;;
+        gpg)
+          _arguments -C \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:provider:(codex github gpg)' \
+            '--key[GPG keyid or fingerprint]:key:' \
+            '--container[Workspace name/container]:workspace:_cws_workspaces' \
+            '--name[Workspace name/container]:workspace:_cws_workspaces' \
+            '2:workspace:_cws_workspaces' \
+            && return
+          ;;
+        *)
+          _arguments -C \
+            '-h[Show help]' \
+            '--help[Show help]' \
+            '1:provider:(codex github gpg)' \
+            && return
+          ;;
+      esac
+      ;;
     create)
       _arguments \
         '-h[Show help]' \

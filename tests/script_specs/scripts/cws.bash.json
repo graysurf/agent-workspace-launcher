@@ -53,6 +53,15 @@
         "exit_codes": [0],
         "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\btunnel\\b.*\\bws-smoke\\b.*--detach"
       }
+    },
+    {
+      "name": "auth-gpg",
+      "command": ["bash", "-c", "source scripts/cws.bash; cws auth gpg --key DEADBEEF ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*-e\\nCODEX_WORKSPACE_GPG_KEY.*graysurf/codex-workspace-launcher:latest.*\\bauth\\b.*\\bgpg\\b.*--key.*DEADBEEF.*\\bws-smoke\\b"
+      }
     }
   ]
 }

@@ -6,7 +6,8 @@ The exact reset behavior is implemented by upstream scripts (`zsh-kit` + `codex-
 interface is stable.
 
 If your workspace contains private repos, `cws reset` may need GitHub auth. When `GH_TOKEN`/`GITHUB_TOKEN` are not
-set, the wrapper will automatically reuse your host `gh` login token (keyring) when available.
+set, the wrapper will automatically reuse your host `gh` login token (keyring) when available (also used by
+`cws auth github`).
 
 ## Reset a specific repo directory
 

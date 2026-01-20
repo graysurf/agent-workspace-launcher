@@ -42,8 +42,8 @@ cws create --no-work-repos --name ws-foo
 
 ## Private repos
 
-If you have `gh` logged in on the host, `cws create` will automatically reuse that token (keyring) when
-`GH_TOKEN`/`GITHUB_TOKEN` are not set:
+If you have `gh` logged in on the host, `cws create/reset/auth github` will automatically reuse that token
+(keyring) when `GH_TOKEN`/`GITHUB_TOKEN` are not set:
 
 ```sh
 gh auth login

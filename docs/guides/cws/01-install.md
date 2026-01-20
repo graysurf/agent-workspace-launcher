@@ -86,8 +86,8 @@ export CWS_DOCKER_ARGS="-e HOME=$HOME -v $HOME/.config:$HOME/.config:ro"
 
 ## Private repos
 
-If you have `gh` logged in on the host, `cws create/reset` will automatically reuse that token (keyring) when
-`GH_TOKEN`/`GITHUB_TOKEN` are not set.
+If you have `gh` logged in on the host, `cws create/reset/auth github` will automatically reuse that token
+(keyring) when `GH_TOKEN`/`GITHUB_TOKEN` are not set.
 
 Or set `GH_TOKEN` (or `GITHUB_TOKEN`) on your host — `cws` forwards it into the launcher container:
 
