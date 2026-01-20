@@ -1,0 +1,13 @@
+{
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "standard",
+  "venvPath": ".",
+  "venv": ".venv",
+  "include": ["tests", "scripts", "bin"],
+  "exclude": ["out", ".venv", "**/__pycache__"],
+  "reportUnknownArgumentType": "error",
+  "reportUnknownLambdaType": "error",
+  "reportUnknownMemberType": "error",
+  "reportUnknownParameterType": "error",
+  "reportUnknownVariableType": "error"
+}

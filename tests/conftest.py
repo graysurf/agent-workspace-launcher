@@ -28,12 +28,20 @@ SCRIPT_SMOKE_RUN_RESULTS: list[ScriptRunResult] = []
 
 
 def repo_root() -> Path:
+    try:
+        root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
+        p = Path(root)
+        if p.is_dir():
+            return p.resolve()
+    except Exception:
+        pass
+
     if code_home := os.environ.get("CODEX_HOME"):
         p = Path(code_home)
         if p.is_dir():
             return p.resolve()
-    root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
-    return Path(root).resolve()
+
+    return Path.cwd().resolve()
 
 
 def out_dir() -> Path:
@@ -169,7 +177,7 @@ def write_summary_json(results: list[ScriptRunResult], out_base: Path | None = N
     out_base.mkdir(parents=True, exist_ok=True)
     summary_path = out_base / "summary.json"
 
-    payload = {
+    payload: dict[str, object] = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "repo_root": str(repo_root()),
         "python": sys.version.splitlines()[0],
@@ -193,7 +201,7 @@ def write_summary_json(results: list[ScriptRunResult], out_base: Path | None = N
     return summary_path
 
 
-def pytest_sessionfinish(session, exitstatus):  # type: ignore[no-untyped-def]
+def pytest_sessionfinish(session: Any, exitstatus: int) -> None:
     summary_path = write_summary_json(SCRIPT_RUN_RESULTS, out_dir())
     smoke_summary_path = write_summary_json(SCRIPT_SMOKE_RUN_RESULTS, out_dir_smoke())
 
@@ -285,7 +293,7 @@ def write_script_coverage_reports(
             }
         )
 
-    payload = {
+    payload: dict[str, object] = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "repo_root": str(repo.resolve()),
         "python": sys.version.splitlines()[0],
