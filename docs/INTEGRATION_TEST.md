@@ -13,8 +13,8 @@ This checklist is for validating the end-to-end experience after merging to `mai
 - [x] CI publish run URL recorded (on `main`)
 - [x] Docker Hub tags exist (`latest`, `sha-<short>`)
 - [x] Docker Hub image is multi-arch (`linux/amd64`, `linux/arm64`)
-- [ ] GHCR tags exist (`latest`, `sha-<short>`)
-- [ ] GHCR image is multi-arch (`linux/amd64`, `linux/arm64`)
+- [x] GHCR tags exist (`latest`, `sha-<short>`)
+- [x] GHCR image is multi-arch (`linux/amd64`, `linux/arm64`)
 
 ## macOS quickstart smoke (published images; no local build)
 
@@ -122,5 +122,6 @@ Evidence (2026-01-20):
 - Docker Hub verification (before GHCR publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21154177325
 - Docker Hub inspect log: `$CODEX_HOME/out/ci-publish-verification-20260120-081548.log`
 - PR build (no publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21155245507
-- GHCR verification: (pending; requires merge to `main`)
-- GHCR not found (expected before merge): `$CODEX_HOME/out/ghcr-verification-20260120-083359.log`
+- GHCR verification (push to `main`): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21155498181
+- GHCR inspect log: `$CODEX_HOME/out/ghcr-verification-20260120-084948.log`
+- GHCR not found (pre-merge check): `$CODEX_HOME/out/ghcr-verification-20260120-083359.log`
