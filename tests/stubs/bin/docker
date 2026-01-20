@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log_dir="${CODEX_STUB_LOG_DIR:-}"
+if [[ -n "$log_dir" ]]; then
+  mkdir -p "$log_dir"
+  printf "%s\n" "docker $*" >>"${log_dir%/}/docker.calls.txt"
+fi
+
+printf '%s\n' "docker"
+for arg in "$@"; do
+  printf '%s\n' "$arg"
+done

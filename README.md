@@ -23,9 +23,9 @@ This is **Docker-outside-of-Docker (DooD)**: the launcher container talks to you
 
 Use the provided `cws` wrapper (recommended):
 
-- zsh: `source ./scripts/cws.zsh` (completion registers once `compinit` is available)
-- bash: `source ./scripts/cws.bash`
-- executable: put `./scripts/cws` on your `PATH` (example: `cp ./scripts/cws ~/.local/bin/cws`)
+- zsh: `source ./scripts/cws.zsh` (completion registers once `compinit` is available; see [`scripts/cws.zsh`](scripts/cws.zsh))
+- bash: `source ./scripts/cws.bash` (see [`scripts/cws.bash`](scripts/cws.bash))
+- executable: put `./scripts/cws` on your `PATH` (example: `cp ./scripts/cws ~/.local/bin/cws`; see [`scripts/cws`](scripts/cws))
 
 Without cloning (zsh):
 
@@ -58,7 +58,7 @@ CWS_DOCKER_ARGS=(
 CWS_IMAGE="graysurf/codex-workspace-launcher:latest"
 ```
 
-Want to build locally and use a custom image tag? See `docs/BUILD.md`.
+Want to build locally and use a custom image tag? See [`docs/BUILD.md`](docs/BUILD.md).
 
 Create a workspace (public repo):
 
@@ -204,11 +204,11 @@ Low-level launcher (`codex-kit` script; invoked by the zsh layer):
 
 ## Development
 
-Local builds (custom tags): `docs/BUILD.md`
+Local builds (custom tags): [`docs/BUILD.md`](docs/BUILD.md)
 
 Publishing (CI):
 
-- Workflow: `.github/workflows/publish.yml`
+- Workflow: [`.github/workflows/publish.yml`](.github/workflows/publish.yml)
 - Triggers: PRs build only; pushes to `main` publish images
 - Registries:
   - Docker Hub: `graysurf/codex-workspace-launcher` (publish requires secrets)

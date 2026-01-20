@@ -1,0 +1,58 @@
+{
+  "smoke": [
+    {
+      "name": "ls",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bls\\b"
+      }
+    },
+    {
+      "name": "create",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws create octo/demo"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bcreate\\b.*octo/demo"
+      }
+    },
+    {
+      "name": "exec",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws exec ws-smoke ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bexec\\b.*\\bws-smoke\\b.*\\bls\\b"
+      }
+    },
+    {
+      "name": "rm",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws rm ws-smoke --yes"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\brm\\b.*\\bws-smoke\\b.*--yes"
+      }
+    },
+    {
+      "name": "reset",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws reset repo ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\breset\\b.*\\brepo\\b.*\\bws-smoke\\b"
+      }
+    },
+    {
+      "name": "tunnel",
+      "command": ["zsh", "-f", "-c", "source scripts/cws.zsh; cws tunnel ws-smoke --detach"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\btunnel\\b.*\\bws-smoke\\b.*--detach"
+      }
+    }
+  ]
+}
