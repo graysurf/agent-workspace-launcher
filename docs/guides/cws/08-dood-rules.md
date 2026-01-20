@@ -34,5 +34,5 @@ safer than bind-mounting your host config into a long-lived container.
 
 For more details, see:
 
-- `README.md`
-- `docs/DESIGN.md`
+- [README.md](../../../README.md)
+- [docs/DESIGN.md](../../DESIGN.md)

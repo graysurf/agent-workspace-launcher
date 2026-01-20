@@ -23,4 +23,5 @@ cws tunnel <name|container> --name <tunnel_name>
 Notes:
 
 - Tunnel setup may require interactive authentication depending on your environment.
-- If you only want VS Code UI without tunnels, you can attach with Dev Containers instead (see `README.md`).
+- If you only want VS Code UI without tunnels, you can attach with Dev Containers instead (see
+  [README.md](../../../README.md)).

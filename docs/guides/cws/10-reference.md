@@ -21,4 +21,4 @@
 
 ## Launcher environment variables
 
-See the full table in `README.md` under “Configuration (env vars)”.
+See the full table in [README.md](../../../README.md) under “Configuration (env vars)”.

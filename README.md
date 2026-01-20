@@ -1,7 +1,14 @@
 # codex-workspace-launcher
 
-Run `codex-workspace` (`create/ls/rm/exec/reset/tunnel`) from a Docker image — no local `zsh-kit` / `codex-kit`
-checkout required.
+Launch a `Codex-ready` workspace for any repo — `prompts`, `skills`, and common CLI tools included.
+
+- Workspace includes `rg`, `gh`, `jq`, `git` (and more) so you can start collaborating with Codex immediately
+- VS Code friendly: Dev Containers attach + optional VS Code tunnel
+- Optional `cws` wrapper (zsh + bash, with completion) so you don’t repeat `docker run ...`
+- Under the hood: powered by [zsh-kit](https://github.com/graysurf/zsh-kit) and [codex-kit](https://github.com/graysurf/codex-kit) (vendored into the image; published images pin SHAs)
+
+This project packages the `codex-workspace` CLI (`create/ls/rm/exec/reset/tunnel`) as a Docker image — no local
+setup required.
 
 This is **Docker-outside-of-Docker (DooD)**: the launcher container talks to your host Docker daemon via
 `/var/run/docker.sock` and creates **workspace containers** on the host (default runtime image:

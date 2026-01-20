@@ -25,20 +25,20 @@ Override with `CWS_IMAGE=...`.
 
 ## Start here
 
-1. Install `cws`: `docs/guides/cws/01-install.md`
-2. Quickstart flow: `docs/guides/cws/02-quickstart.md`
+1. Install `cws`: [docs/guides/cws/01-install.md](01-install.md)
+2. Quickstart flow: [docs/guides/cws/02-quickstart.md](02-quickstart.md)
 
 ## Command guides
 
-- Create workspaces: `docs/guides/cws/03-create.md`
-- Exec into workspaces: `docs/guides/cws/04-exec.md`
-- Remove workspaces: `docs/guides/cws/05-rm.md`
-- Reset repos inside a workspace: `docs/guides/cws/06-reset.md`
-- VS Code tunnel: `docs/guides/cws/07-tunnel.md`
+- Create workspaces: [docs/guides/cws/03-create.md](03-create.md)
+- Exec into workspaces: [docs/guides/cws/04-exec.md](04-exec.md)
+- Remove workspaces: [docs/guides/cws/05-rm.md](05-rm.md)
+- Reset repos inside a workspace: [docs/guides/cws/06-reset.md](06-reset.md)
+- VS Code tunnel: [docs/guides/cws/07-tunnel.md](07-tunnel.md)
 
 ## Concepts and reference
 
-- DooD rules + host mounts: `docs/guides/cws/08-dood-rules.md`
-- Troubleshooting: `docs/guides/cws/09-troubleshooting.md`
-- Reference (commands + env): `docs/guides/cws/10-reference.md`
-- Without `cws` (direct `docker run`): `docs/guides/cws/11-codex-workspace.md`
+- DooD rules + host mounts: [docs/guides/cws/08-dood-rules.md](08-dood-rules.md)
+- Troubleshooting: [docs/guides/cws/09-troubleshooting.md](09-troubleshooting.md)
+- Reference (commands + env): [docs/guides/cws/10-reference.md](10-reference.md)
+- Without `cws` (direct `docker run`): [docs/guides/cws/11-codex-workspace.md](11-codex-workspace.md)
