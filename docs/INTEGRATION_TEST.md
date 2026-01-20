@@ -121,4 +121,6 @@ Evidence (2026-01-20):
 
 - Docker Hub verification (before GHCR publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21154177325
 - Docker Hub inspect log: `$CODEX_HOME/out/ci-publish-verification-20260120-081548.log`
-- GHCR verification: (pending; record after merging GHCR publish support)
+- PR build (no publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21155245507
+- GHCR verification: (pending; requires merge to `main`)
+- GHCR not found (expected before merge): `$CODEX_HOME/out/ghcr-verification-20260120-083359.log`
