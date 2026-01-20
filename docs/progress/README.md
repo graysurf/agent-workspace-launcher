@@ -6,6 +6,7 @@ Purpose: Track feature work with consistent, verifiable progress files under `do
 
 | Date | Feature | PR |
 | --- | --- | --- |
+| 2026-01-20 | [CLI E2E 40-case matrix](20260120_e2e-cli-40case.md) | [#4](https://github.com/graysurf/codex-workspace-launcher/pull/4) |
 
 ## Archived
 
