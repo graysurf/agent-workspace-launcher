@@ -29,7 +29,9 @@ SCRIPT_SMOKE_RUN_RESULTS: list[ScriptRunResult] = []
 
 def repo_root() -> Path:
     try:
-        root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
+        root = subprocess.check_output(
+            ["git", "rev-parse", "--show-toplevel"], text=True
+        ).strip()
         p = Path(root)
         if p.is_dir():
             return p.resolve()
@@ -172,7 +174,9 @@ def discover_scripts() -> list[str]:
     return sorted(scripts)
 
 
-def write_summary_json(results: list[ScriptRunResult], out_base: Path | None = None) -> Path:
+def write_summary_json(
+    results: list[ScriptRunResult], out_base: Path | None = None
+) -> Path:
     out_base = out_base or out_dir()
     out_base.mkdir(parents=True, exist_ok=True)
     summary_path = out_base / "summary.json"
@@ -197,7 +201,9 @@ def write_summary_json(results: list[ScriptRunResult], out_base: Path | None = N
         ],
     }
 
-    summary_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", "utf-8")
+    summary_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", "utf-8"
+    )
     return summary_path
 
 
@@ -252,7 +258,9 @@ def write_script_coverage_reports(
     missing_regression = sorted(discovered_set - regression_ran)
     missing_smoke = sorted(discovered_set - smoke_ran)
 
-    regression_failed = sorted({r.script for r in regression_results if r.status != "pass"})
+    regression_failed = sorted(
+        {r.script for r in regression_results if r.status != "pass"}
+    )
     smoke_failed = sorted({r.script for r in smoke_results if r.status != "pass"})
 
     specs = load_script_specs(repo / "tests" / "script_specs")
@@ -264,10 +272,16 @@ def write_script_coverage_reports(
     missing_smoke_spec = sorted(discovered_set - smoke_defined_in_repo)
     missing_smoke_spec_set = set(missing_smoke_spec)
     missing_smoke_set = set(missing_smoke)
-    missing_smoke_spec_without_smoke_runs = sorted(missing_smoke_spec_set & missing_smoke_set)
-    missing_smoke_spec_with_smoke_runs = sorted(missing_smoke_spec_set - set(missing_smoke_spec_without_smoke_runs))
+    missing_smoke_spec_without_smoke_runs = sorted(
+        missing_smoke_spec_set & missing_smoke_set
+    )
+    missing_smoke_spec_with_smoke_runs = sorted(
+        missing_smoke_spec_set - set(missing_smoke_spec_without_smoke_runs)
+    )
 
-    discovered_skills = {s for s in discovered_set if s.startswith("skills/") and "/scripts/" in s}
+    discovered_skills = {
+        s for s in discovered_set if s.startswith("skills/") and "/scripts/" in s
+    }
     discovered_repo_scripts = {s for s in discovered_set if s.startswith("scripts/")}
 
     out_base = script_coverage_out_dir()
@@ -289,7 +303,9 @@ def write_script_coverage_reports(
                 "regression_ran": _count_intersection(scripts_set, regression_ran),
                 "smoke_ran": _count_intersection(scripts_set, smoke_ran),
                 "any_ran": _count_intersection(scripts_set, any_ran),
-                "smoke_defined": _count_intersection(scripts_set, smoke_defined_in_repo),
+                "smoke_defined": _count_intersection(
+                    scripts_set, smoke_defined_in_repo
+                ),
             }
         )
 
@@ -324,13 +340,17 @@ def write_script_coverage_reports(
         "breakdown": {
             "skills": {
                 "scripts_total": len(discovered_skills),
-                "smoke_specs": _count_intersection(discovered_skills, smoke_defined_in_repo),
+                "smoke_specs": _count_intersection(
+                    discovered_skills, smoke_defined_in_repo
+                ),
                 "smoke_ran": _count_intersection(discovered_skills, smoke_ran),
                 "any_ran": _count_intersection(discovered_skills, any_ran),
             },
             "repo_scripts": {
                 "scripts_total": len(discovered_repo_scripts),
-                "smoke_specs": _count_intersection(discovered_repo_scripts, smoke_defined_in_repo),
+                "smoke_specs": _count_intersection(
+                    discovered_repo_scripts, smoke_defined_in_repo
+                ),
                 "smoke_ran": _count_intersection(discovered_repo_scripts, smoke_ran),
                 "any_ran": _count_intersection(discovered_repo_scripts, any_ran),
             },
@@ -350,10 +370,18 @@ def write_script_coverage_reports(
     lines.append("")
     lines.append(f"- Generated: `{payload['generated_at']}`")
     lines.append(f"- Discovered scripts: `{len(discovered)}`")
-    lines.append(f"- Ran (any): `{len(any_ran)}` ({pct(len(any_ran), len(discovered))})")
-    lines.append(f"  - Regression ran: `{len(regression_ran)}` ({pct(len(regression_ran), len(discovered))})")
-    lines.append(f"  - Smoke ran: `{len(smoke_ran)}` ({pct(len(smoke_ran), len(discovered))})")
-    lines.append(f"- Smoke specs (in repo): `{len(smoke_defined_in_repo)}` ({pct(len(smoke_defined_in_repo), len(discovered))})")
+    lines.append(
+        f"- Ran (any): `{len(any_ran)}` ({pct(len(any_ran), len(discovered))})"
+    )
+    lines.append(
+        f"  - Regression ran: `{len(regression_ran)}` ({pct(len(regression_ran), len(discovered))})"
+    )
+    lines.append(
+        f"  - Smoke ran: `{len(smoke_ran)}` ({pct(len(smoke_ran), len(discovered))})"
+    )
+    lines.append(
+        f"- Smoke specs (in repo): `{len(smoke_defined_in_repo)}` ({pct(len(smoke_defined_in_repo), len(discovered))})"
+    )
     if smoke_defined_orphan:
         lines.append(f"- Orphan smoke specs: `{len(smoke_defined_orphan)}`")
     lines.append("")
@@ -370,7 +398,9 @@ def write_script_coverage_reports(
     lines.append("")
     lines.append("## Groups")
     lines.append("")
-    lines.append("| Group | Scripts | Smoke spec | Smoke ran | Regression ran | Any ran |")
+    lines.append(
+        "| Group | Scripts | Smoke spec | Smoke ran | Regression ran | Any ran |"
+    )
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     for row in group_rows:
         lines.append(
@@ -382,11 +412,15 @@ def write_script_coverage_reports(
         lines.append("")
         lines.append("## Missing smoke runs")
         lines.append("")
-        lines.append(f"_Scripts not executed via smoke tests in this pytest run (count: {len(missing_smoke)})._")
+        lines.append(
+            f"_Scripts not executed via smoke tests in this pytest run (count: {len(missing_smoke)})._"
+        )
         for script in missing_smoke[:limit]:
             lines.append(f"- `{script}`")
         if len(missing_smoke) > limit:
-            lines.append(f"- _... and {len(missing_smoke) - limit} more (see `summary.json`)._")
+            lines.append(
+                f"- _... and {len(missing_smoke) - limit} more (see `summary.json`)._"
+            )
 
     if missing_any:
         limit = 50
@@ -396,7 +430,9 @@ def write_script_coverage_reports(
         for script in missing_any[:limit]:
             lines.append(f"- `{script}`")
         if len(missing_any) > limit:
-            lines.append(f"- _... and {len(missing_any) - limit} more (see `summary.json`)._")
+            lines.append(
+                f"- _... and {len(missing_any) - limit} more (see `summary.json`)._"
+            )
 
     if regression_failed or smoke_failed:
         lines.append("")

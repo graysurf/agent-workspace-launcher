@@ -9,7 +9,14 @@ from typing import Any, cast
 
 import pytest
 
-from .conftest import SCRIPT_SMOKE_RUN_RESULTS, ScriptRunResult, default_smoke_env, load_script_specs, out_dir_smoke, repo_root
+from .conftest import (
+    SCRIPT_SMOKE_RUN_RESULTS,
+    ScriptRunResult,
+    default_smoke_env,
+    load_script_specs,
+    out_dir_smoke,
+    repo_root,
+)
 
 
 def parse_shebang(script_path: Path) -> list[str]:
@@ -76,15 +83,21 @@ def run_smoke_script(
     command: list[str] | None = None
     if command_raw is not None:
         if not isinstance(command_raw, list) or not command_raw:
-            raise TypeError(f"spec.command must be a non-empty list of strings: {script} ({case})")
+            raise TypeError(
+                f"spec.command must be a non-empty list of strings: {script} ({case})"
+            )
         command_items = cast(list[object], command_raw)
         command = []
         for item in command_items:
             if not isinstance(item, str):
-                raise TypeError(f"spec.command must be a non-empty list of strings: {script} ({case})")
+                raise TypeError(
+                    f"spec.command must be a non-empty list of strings: {script} ({case})"
+                )
             command.append(item)
         if args:
-            raise TypeError(f"spec.args must be empty when spec.command is set: {script} ({case})")
+            raise TypeError(
+                f"spec.args must be empty when spec.command is set: {script} ({case})"
+            )
 
     timeout_sec = spec.get("timeout_sec", 10)
     if not isinstance(timeout_sec, (int, float)):
@@ -126,7 +139,9 @@ def run_smoke_script(
     exit_codes: list[int] = []
     for item in exit_code_items:
         if not isinstance(item, int):
-            raise TypeError(f"expect.exit_codes must be a list of ints: {script} ({case})")
+            raise TypeError(
+                f"expect.exit_codes must be a list of ints: {script} ({case})"
+            )
         exit_codes.append(item)
 
     stdout_pat_raw = expect.get("stdout_regex")
@@ -220,19 +235,25 @@ def discover_smoke_cases() -> list[tuple[str, str, dict[str, Any]]]:
             smoke_dict = cast(dict[object, object], smoke_raw)
             cases_raw = smoke_dict.get("cases")
             if not isinstance(cases_raw, list):
-                raise TypeError(f"spec.smoke must be a list (or {{cases:[...]}}): {script}")
+                raise TypeError(
+                    f"spec.smoke must be a list (or {{cases:[...]}}): {script}"
+                )
             smoke_cases = cast(list[object], cases_raw)
         else:
             raise TypeError(f"spec.smoke must be a list (or {{cases:[...]}}): {script}")
 
         for idx, case_obj in enumerate(smoke_cases, start=1):
             if not isinstance(case_obj, dict):
-                raise TypeError(f"smoke case must be a JSON object: {script} (case {idx})")
+                raise TypeError(
+                    f"smoke case must be a JSON object: {script} (case {idx})"
+                )
             case_dict = cast(dict[str, Any], case_obj)
 
             name_raw = case_dict.get("name", f"case-{idx}")
             if not isinstance(name_raw, str) or not name_raw.strip():
-                raise TypeError(f"smoke case name must be a non-empty string: {script} (case {idx})")
+                raise TypeError(
+                    f"smoke case name must be a non-empty string: {script} (case {idx})"
+                )
             discovered.append((script, name_raw.strip(), case_dict))
 
     return sorted(discovered, key=lambda x: (x[0], x[1]))
@@ -245,4 +266,3 @@ def test_script_smoke_spec(script: str, case: str, spec: dict[str, Any]):
 
     result = run_smoke_script(script, case, spec, repo)
     SCRIPT_SMOKE_RUN_RESULTS.append(result)
-

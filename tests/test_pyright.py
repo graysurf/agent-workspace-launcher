@@ -17,5 +17,6 @@ def test_pyright() -> None:
     )
 
     combined = "\n".join([completed.stdout.strip(), completed.stderr.strip()]).strip()
-    assert completed.returncode == 0, f"pyright failed (exit={completed.returncode})\n{combined}".strip()
-
+    assert completed.returncode == 0, (
+        f"pyright failed (exit={completed.returncode})\n{combined}".strip()
+    )

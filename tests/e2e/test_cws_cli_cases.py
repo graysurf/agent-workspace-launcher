@@ -23,7 +23,12 @@ def _selected_case_ids() -> set[str]:
 
 def _selected_plan_cases() -> list[CwsE2EPlanCase]:
     full = os.environ.get("CWS_E2E_FULL", "").lower() in {"1", "true", "yes", "on"}
-    allow_rm_all = os.environ.get("CWS_E2E_ALLOW_RM_ALL", "").lower() in {"1", "true", "yes", "on"}
+    allow_rm_all = os.environ.get("CWS_E2E_ALLOW_RM_ALL", "").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
     selected = _selected_case_ids()
     if not full and not selected:
         return []
@@ -35,11 +40,15 @@ def _selected_plan_cases() -> list[CwsE2EPlanCase]:
         return cases
     filtered = [c for c in cases if c.case.case_id in selected]
     if not filtered:
-        raise ValueError(f"CWS_E2E_CASE did not match any cli plan cases: {sorted(selected)}")
+        raise ValueError(
+            f"CWS_E2E_CASE did not match any cli plan cases: {sorted(selected)}"
+        )
     return filtered
 
 
 @pytest.mark.e2e
-@pytest.mark.parametrize("plan_case", _selected_plan_cases(), ids=lambda c: c.case.case_id)
+@pytest.mark.parametrize(
+    "plan_case", _selected_plan_cases(), ids=lambda c: c.case.case_id
+)
 def test_cws_cli_e2e_case(plan_case: CwsE2EPlanCase) -> None:
     run_cws_e2e(plan_case)

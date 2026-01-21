@@ -7,7 +7,15 @@
 - Create the virtual environment: `python3 -m venv .venv`
 - Install dev deps: `.venv/bin/python -m pip install -r requirements-dev.txt`
 
-### Run all tests
+### Pre-submit checks (required)
+
+Before submitting work, these must pass:
+
+- Format (check): `.venv/bin/python -m ruff format --check .` (fix with `.venv/bin/python -m ruff format .`)
+- Lint: `.venv/bin/python -m ruff check .`
+- Smoke tests (no real Docker): `.venv/bin/python -m pytest -m script_smoke`
+
+### Run full test suite (optional)
 
 - `.venv/bin/python -m pytest`
 
@@ -23,6 +31,7 @@ Pre-flight:
 - Docker must be running: `docker info >/dev/null`
 - E2E is opt-in: set `CWS_E2E=1`
 - E2E runs serialize via a lock under `out/tests/e2e/` to avoid concurrent Docker runs.
+  - E2E is not required before submitting work; run it only when you need real Docker coverage.
 
 #### Run a single CLI case (one example)
 

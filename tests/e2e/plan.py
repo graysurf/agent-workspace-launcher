@@ -57,7 +57,9 @@ def _build_cli(case: CwsE2ECase) -> CwsE2EPlanCase:
     script = repo_root() / "scripts" / "cws"
     argv = [str(script), *case.cws_args]
     display = f"{_env_prefix(case.env)}{_repo_rel(script)} {_shell_join(case.cws_args)}".rstrip()
-    return CwsE2EPlanCase(wrapper="cli", case=case, command_argv=argv, command_display=display)
+    return CwsE2EPlanCase(
+        wrapper="cli", case=case, command_argv=argv, command_display=display
+    )
 
 
 def _build_bash(case: CwsE2ECase) -> CwsE2EPlanCase:
@@ -73,7 +75,9 @@ def _build_bash(case: CwsE2ECase) -> CwsE2EPlanCase:
 
     argv = ["bash", "-lc", command]
     display = f"{_env_prefix(case.env)}bash -lc {shlex.quote(command.strip())}"
-    return CwsE2EPlanCase(wrapper="bash", case=case, command_argv=argv, command_display=display)
+    return CwsE2EPlanCase(
+        wrapper="bash", case=case, command_argv=argv, command_display=display
+    )
 
 
 def _build_zsh(case: CwsE2ECase) -> CwsE2EPlanCase:
@@ -89,7 +93,9 @@ def _build_zsh(case: CwsE2ECase) -> CwsE2EPlanCase:
 
     argv = ["zsh", "-f", "-c", command]
     display = f"{_env_prefix(case.env)}zsh -f -c {shlex.quote(command.strip())}"
-    return CwsE2EPlanCase(wrapper="zsh", case=case, command_argv=argv, command_display=display)
+    return CwsE2EPlanCase(
+        wrapper="zsh", case=case, command_argv=argv, command_display=display
+    )
 
 
 def base_cases() -> list[CwsE2ECase]:
@@ -100,13 +106,37 @@ def base_cases() -> list[CwsE2ECase]:
             cws_args=["--help"],
             purpose="Show top-level help and usage.",
         ),
-        CwsE2ECase(case_id="help_auth", cws_args=["auth", "--help"], purpose="Show help for auth."),
-        CwsE2ECase(case_id="help_create", cws_args=["create", "--help"], purpose="Show help for create."),
-        CwsE2ECase(case_id="help_ls", cws_args=["ls", "--help"], purpose="Show help for ls."),
-        CwsE2ECase(case_id="help_exec", cws_args=["exec", "--help"], purpose="Show help for exec."),
-        CwsE2ECase(case_id="help_rm", cws_args=["rm", "--help"], purpose="Show help for rm."),
-        CwsE2ECase(case_id="help_reset", cws_args=["reset", "--help"], purpose="Show help for reset."),
-        CwsE2ECase(case_id="help_tunnel", cws_args=["tunnel", "--help"], purpose="Show help for tunnel."),
+        CwsE2ECase(
+            case_id="help_auth",
+            cws_args=["auth", "--help"],
+            purpose="Show help for auth.",
+        ),
+        CwsE2ECase(
+            case_id="help_create",
+            cws_args=["create", "--help"],
+            purpose="Show help for create.",
+        ),
+        CwsE2ECase(
+            case_id="help_ls", cws_args=["ls", "--help"], purpose="Show help for ls."
+        ),
+        CwsE2ECase(
+            case_id="help_exec",
+            cws_args=["exec", "--help"],
+            purpose="Show help for exec.",
+        ),
+        CwsE2ECase(
+            case_id="help_rm", cws_args=["rm", "--help"], purpose="Show help for rm."
+        ),
+        CwsE2ECase(
+            case_id="help_reset",
+            cws_args=["reset", "--help"],
+            purpose="Show help for reset.",
+        ),
+        CwsE2ECase(
+            case_id="help_tunnel",
+            cws_args=["tunnel", "--help"],
+            purpose="Show help for tunnel.",
+        ),
         # create
         CwsE2ECase(
             case_id="create_public_owner_repo",
@@ -372,17 +402,23 @@ def run_cws_e2e(_case: CwsE2EPlanCase) -> None:
                         config,
                         include_private=_needs_private_repo(plan_case.case.cws_args),
                     )
-                    plan_case = _replace_workspace_for_case(plan_case, created_workspace, created_repo_path)
+                    plan_case = _replace_workspace_for_case(
+                        plan_case, created_workspace, created_repo_path
+                    )
                 elif not _workspace_exists(plan_case.wrapper, env, workspace):
                     _create_named_workspace(plan_case.wrapper, env, workspace)
                     created_workspace = workspace
 
             accept_exit_codes = {0}
             if _is_exec_shell(plan_case.case.cws_args):
-                result = _run_case_interactive(plan_case, env, input_text="exit\n", send_after_sec=0.5)
+                result = _run_case_interactive(
+                    plan_case, env, input_text="exit\n", send_after_sec=0.5
+                )
             elif plan_case.case.case_id in {"tunnel_foreground", "tunnel_named"}:
                 accept_exit_codes = {0, 130}
-                result = _run_case_interactive(plan_case, env, input_text="\x03", send_after_sec=3.0)
+                result = _run_case_interactive(
+                    plan_case, env, input_text="\x03", send_after_sec=3.0
+                )
             else:
                 result = _run_case(plan_case, env)
 
@@ -393,7 +429,11 @@ def run_cws_e2e(_case: CwsE2EPlanCase) -> None:
                     f"e2e failed: {plan_case.wrapper}:{plan_case.case.case_id} (exit {result.exit_code})"
                 )
 
-            if plan_case.case.cws_args[:1] == ["rm"] and created_workspace and created_workspace == workspace:
+            if (
+                plan_case.case.cws_args[:1] == ["rm"]
+                and created_workspace
+                and created_workspace == workspace
+            ):
                 created_workspace = None
 
             if _is_create_case(plan_case.case.cws_args):
@@ -432,7 +472,9 @@ def run_cws_e2e_flow(wrapper: str) -> None:
 
         def assert_ok(result: _E2ERunResult, label: str) -> None:
             if result.exit_code != 0:
-                raise AssertionError(f"e2e failed: {wrapper}:{label} (exit {result.exit_code})")
+                raise AssertionError(
+                    f"e2e failed: {wrapper}:{label} (exit {result.exit_code})"
+                )
 
         named_created = False
         repo_container: str | None = None
@@ -467,14 +509,22 @@ def run_cws_e2e_flow(wrapper: str) -> None:
 
             if wrapper == "cli" or config.full:
                 if not config.public_repo:
-                    pytest.skip("CWS_E2E_PUBLIC_REPO is required for repo-backed e2e flow.")
+                    pytest.skip(
+                        "CWS_E2E_PUBLIC_REPO is required for repo-backed e2e flow."
+                    )
 
-                create_repo = run("20_create_repo", ["create", config.public_repo], "Create a workspace from a public repo.")
+                create_repo = run(
+                    "20_create_repo",
+                    ["create", config.public_repo],
+                    "Create a workspace from a public repo.",
+                )
                 assert_ok(create_repo, "20_create_repo")
                 repo_container = _parse_created_workspace(create_repo.stdout)
                 repo_path = _parse_created_path(create_repo.stdout)
                 if not repo_container or not repo_path:
-                    raise AssertionError("Failed to parse repo workspace output (workspace/path).")
+                    raise AssertionError(
+                        "Failed to parse repo workspace output (workspace/path)."
+                    )
 
                 assert_ok(
                     run(
@@ -502,7 +552,11 @@ def run_cws_e2e_flow(wrapper: str) -> None:
                 )
         finally:
             if repo_container and not config.keep_workspaces:
-                run("90_rm_repo", ["rm", repo_container, "--yes"], "Remove repo workspace.")
+                run(
+                    "90_rm_repo",
+                    ["rm", repo_container, "--yes"],
+                    "Remove repo workspace.",
+                )
             if named_created and not config.keep_workspaces:
                 run("91_rm_named", ["rm", named, "--yes"], "Remove named workspace.")
 
@@ -587,7 +641,9 @@ def _build_case(wrapper: str, case: CwsE2ECase) -> CwsE2EPlanCase:
     return _build_zsh(case)
 
 
-def _replace_placeholders(args: list[str], wrapper: str, config: _E2EConfig) -> list[str]:
+def _replace_placeholders(
+    args: list[str], wrapper: str, config: _E2EConfig
+) -> list[str]:
     workspace = _workspace_label(wrapper, args)
     tunnel_name = f"{workspace}-tunnel"
 
@@ -595,7 +651,9 @@ def _replace_placeholders(args: list[str], wrapper: str, config: _E2EConfig) -> 
     for arg in args:
         sentinel = "__CWS_E2E_TUNNEL__"
         updated = (
-            arg.replace("ws-e2e-tunnel", sentinel).replace("ws-e2e", workspace).replace(sentinel, tunnel_name)
+            arg.replace("ws-e2e-tunnel", sentinel)
+            .replace("ws-e2e", workspace)
+            .replace(sentinel, tunnel_name)
         )
         if "OWNER/REPO" in updated and config.public_repo:
             updated = updated.replace("OWNER/REPO", config.public_repo)
@@ -632,7 +690,11 @@ def _skip_reason(plan_case: CwsE2EPlanCase, config: _E2EConfig) -> str | None:
     if _is_codex_auth_case(args) and not config.enable_codex:
         return "Codex auth disabled (set CWS_E2E_ENABLE_CODEX=1)."
 
-    if _is_codex_auth_case(args) and "CODEX_PROFILE" in args and not config.codex_profile:
+    if (
+        _is_codex_auth_case(args)
+        and "CODEX_PROFILE" in args
+        and not config.codex_profile
+    ):
         return "Codex profile not configured (set CWS_E2E_CODEX_PROFILE)."
 
     if _is_gpg_auth_case(args) and not config.enable_gpg:
@@ -711,7 +773,9 @@ def _is_rm_all_case(args: list[str]) -> bool:
 
 
 def _is_ssh_create_case(args: list[str]) -> bool:
-    return _is_create_case(args) and any(arg.startswith("git@") or arg.startswith("ssh://git@") for arg in args)
+    return _is_create_case(args) and any(
+        arg.startswith("git@") or arg.startswith("ssh://git@") for arg in args
+    )
 
 
 def _needs_existing_workspace(args: list[str]) -> bool:
@@ -925,7 +989,9 @@ def _create_repo_workspace(
     include_private: bool,
 ) -> tuple[str, str]:
     if not config.public_repo:
-        raise AssertionError("CWS_E2E_PUBLIC_REPO is required for repo-backed e2e cases.")
+        raise AssertionError(
+            "CWS_E2E_PUBLIC_REPO is required for repo-backed e2e cases."
+        )
     create_case = CwsE2ECase(
         case_id=f"e2e_setup_create_repo_{wrapper}",
         cws_args=(
@@ -939,7 +1005,9 @@ def _create_repo_workspace(
     result = _run_case(plan_case, env)
     _write_e2e_record(plan_case, result)
     if result.exit_code != 0:
-        raise AssertionError(f"Failed to create repo workspace (exit {result.exit_code}).")
+        raise AssertionError(
+            f"Failed to create repo workspace (exit {result.exit_code})."
+        )
     workspace = _parse_created_workspace(result.stdout)
     repo_path = _parse_created_path(result.stdout)
     if not workspace or not repo_path:
@@ -957,7 +1025,9 @@ def _create_named_workspace(wrapper: str, env: dict[str, str], workspace: str) -
     result = _run_case(plan_case, env)
     _write_e2e_record(plan_case, result)
     if result.exit_code != 0:
-        raise AssertionError(f"Failed to create workspace {workspace} (exit {result.exit_code}).")
+        raise AssertionError(
+            f"Failed to create workspace {workspace} (exit {result.exit_code})."
+        )
 
 
 def _remove_workspace(wrapper: str, env: dict[str, str], workspace: str | None) -> None:
