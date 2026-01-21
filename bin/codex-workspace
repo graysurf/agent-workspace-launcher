@@ -4,6 +4,41 @@ setopt errexit nounset pipe_fail
 
 export ZSH_SCRIPT_DIR="/opt/zsh-kit/scripts"
 
+if [[ "${1:-}" == "rm" ]] && [[ " ${*:2} " == *" --all "* ]]; then
+  shift
+
+  local -i yes=0
+  local arg=''
+  for arg in "$@"; do
+    if [[ "$arg" == "--yes" ]]; then
+      yes=1
+      break
+    fi
+  done
+
+  local -a workspaces=()
+  workspaces=(${(f)"$(docker ps -a --filter label=codex-kit.workspace=1 --format '{{.Names}}' 2>/dev/null || true)"})
+
+  if (( ${#workspaces[@]} == 0 )); then
+    print -r -- "no workspaces found"
+    exit 0
+  fi
+
+  if (( yes == 0 )); then
+    print -u2 -r -- "error: refusing to remove all workspaces without --yes"
+    print -u2 -r -- "hint: codex-workspace rm --all --yes"
+    exit 2
+  fi
+
+  local name=''
+  for name in "${workspaces[@]}"; do
+    docker rm -f "$name" >/dev/null 2>&1 || true
+    docker volume rm "${name}-work" "${name}-home" "${name}-codex-home" >/dev/null 2>&1 || true
+  done
+
+  exit 0
+fi
+
 feature_init="${ZSH_SCRIPT_DIR}/_features/codex-workspace/init.zsh"
 if [[ ! -f "$feature_init" ]]; then
   print -u2 -r -- "error: missing codex-workspace feature init: $feature_init"

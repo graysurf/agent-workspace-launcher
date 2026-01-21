@@ -380,7 +380,7 @@ def run_cws_e2e(_case: CwsE2EPlanCase) -> None:
             accept_exit_codes = {0}
             if _is_exec_shell(plan_case.case.cws_args):
                 result = _run_case_interactive(plan_case, env, input_text="exit\n", send_after_sec=0.5)
-            elif plan_case.case.case_id == "tunnel_foreground":
+            elif plan_case.case.case_id in {"tunnel_foreground", "tunnel_named"}:
                 accept_exit_codes = {0, 130}
                 result = _run_case_interactive(plan_case, env, input_text="\x03", send_after_sec=3.0)
             else:
@@ -593,7 +593,10 @@ def _replace_placeholders(args: list[str], wrapper: str, config: _E2EConfig) -> 
 
     replaced: list[str] = []
     for arg in args:
-        updated = arg.replace("ws-e2e-tunnel", tunnel_name).replace("ws-e2e", workspace)
+        sentinel = "__CWS_E2E_TUNNEL__"
+        updated = (
+            arg.replace("ws-e2e-tunnel", sentinel).replace("ws-e2e", workspace).replace(sentinel, tunnel_name)
+        )
         if "OWNER/REPO" in updated and config.public_repo:
             updated = updated.replace("OWNER/REPO", config.public_repo)
         if "OWNER/PRIVATE_REPO" in updated and config.private_repo:
@@ -784,6 +787,9 @@ def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str,
     env = os.environ.copy()
     if not config.use_host_home:
         env.pop("CWS_DOCKER_ARGS", None)
+    gh_token = env.get("CWS_E2E_GH_TOKEN", "")
+    if gh_token and not env.get("GH_TOKEN") and not env.get("GITHUB_TOKEN"):
+        env["GH_TOKEN"] = gh_token
     env["CODEX_HOME"] = str(repo_root())
     env["CODEX_WORKSPACE_OPEN_VSCODE_ENABLED"] = "false"
     env["NO_COLOR"] = "1"
