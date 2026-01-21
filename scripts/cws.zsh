@@ -184,6 +184,7 @@ cws() {
     -v /var/run/docker.sock:/var/run/docker.sock
     -e GH_TOKEN
     -e GITHUB_TOKEN
+    -e CODEX_WORKSPACE_OPEN_VSCODE_ENABLED
     -e CODEX_WORKSPACE_GPG
     -e CODEX_WORKSPACE_GPG_KEY
   )
