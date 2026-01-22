@@ -20,6 +20,11 @@ Use the helper script to update pins, regenerate the bundle, run checks, build, 
 ./scripts/bump_versions.sh --from-main
 ```
 
+Notes:
+
+- The bundle regeneration uses the pinned `zsh-kit` tool (`tools/bundle-wrapper.zsh`) at `ZSH_KIT_REF`.
+- You do not need `~/.config/zsh` on your machine unless you want a local fallback.
+
 Pin explicitly (still resolves to full commit SHAs and writes them into `VERSIONS.env`):
 
 ```sh

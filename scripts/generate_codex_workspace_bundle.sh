@@ -8,7 +8,7 @@ usage:
 
 notes:
   - Regenerates ./bin/codex-workspace from the pinned ZSH_KIT_REF in VERSIONS.env.
-  - Requires: git, zsh, and $HOME/.config/zsh/tools/bundle-wrapper.zsh
+  - Requires: git and zsh (bundling uses zsh-kit's tools/bundle-wrapper.zsh at the pinned ref).
 EOF
 }
 
@@ -30,13 +30,6 @@ source "$versions_file"
 
 if [[ -z "${ZSH_KIT_REF:-}" ]]; then
   echo "error: VERSIONS.env must set ZSH_KIT_REF" >&2
-  exit 1
-fi
-
-bundle_wrapper="${HOME}/.config/zsh/tools/bundle-wrapper.zsh"
-if [[ ! -x "$bundle_wrapper" ]]; then
-  echo "error: bundle wrapper not found/executable: $bundle_wrapper" >&2
-  echo "hint: install zsh-kit locally (expected at ~/.config/zsh)" >&2
   exit 1
 fi
 
@@ -66,6 +59,16 @@ git -C "$zsh_kit_dir" fetch --depth 1 origin "$ZSH_KIT_REF" >/dev/null
 git -C "$zsh_kit_dir" checkout --detach FETCH_HEAD >/dev/null
 resolved_zsh_kit_ref="$(git -C "$zsh_kit_dir" rev-parse HEAD)"
 
+bundle_wrapper="${zsh_kit_dir}/tools/bundle-wrapper.zsh"
+if [[ ! -f "$bundle_wrapper" ]]; then
+  bundle_wrapper="${HOME}/.config/zsh/tools/bundle-wrapper.zsh"
+fi
+if [[ ! -f "$bundle_wrapper" ]]; then
+  echo "error: bundle-wrapper.zsh not found (expected in pinned zsh-kit or locally)" >&2
+  echo "hint: check ZSH_KIT_REF=$ZSH_KIT_REF or install zsh-kit locally (~/.config/zsh)" >&2
+  exit 1
+fi
+
 manifest="${repo_root}/scripts/bundles/codex-workspace.wrapper.zsh"
 if [[ ! -f "$manifest" ]]; then
   echo "error: missing bundle manifest: $manifest" >&2
@@ -93,7 +96,7 @@ ZDOTDIR="${zsh_kit_dir}" \
 ZSH_CONFIG_DIR="${zsh_kit_dir}/config" \
 ZSH_BOOTSTRAP_SCRIPT_DIR="${zsh_kit_dir}/bootstrap" \
 ZSH_SCRIPT_DIR="${zsh_kit_dir}/scripts" \
-  "$bundle_wrapper" \
+  zsh -f "$bundle_wrapper" \
   --input "$manifest" \
   --output "$tmp_output" \
   --entry codex-workspace

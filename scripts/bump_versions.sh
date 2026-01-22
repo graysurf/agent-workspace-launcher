@@ -22,8 +22,7 @@ options:
 
 notes:
   - Always writes resolved commit SHAs into VERSIONS.env (no "main" drift).
-  - Requires local zsh-kit install for bundling:
-      ~/.config/zsh/tools/bundle-wrapper.zsh
+  - Bundling uses the pinned zsh-kit tool (tools/bundle-wrapper.zsh) when available.
 EOF
 }
 
@@ -273,4 +272,3 @@ main() {
 }
 
 main "$@"
-
