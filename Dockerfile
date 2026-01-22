@@ -34,12 +34,8 @@ COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 COPY bin/codex-workspace /usr/local/bin/codex-workspace
 RUN chmod +x /usr/local/bin/codex-workspace
 
-RUN git init -b main /opt/zsh-kit \
-  && git -C /opt/zsh-kit remote add origin "$ZSH_KIT_REPO" \
-  && git -C /opt/zsh-kit fetch --depth 1 origin "$ZSH_KIT_REF" \
-  && git -C /opt/zsh-kit checkout --detach FETCH_HEAD \
-  && git -C /opt/zsh-kit rev-parse HEAD >/opt/zsh-kit/.ref \
-  && rm -rf /opt/zsh-kit/.git
+RUN mkdir -p /opt \
+  && printf "%s\n" "$ZSH_KIT_REF" > /opt/zsh-kit.ref
 
 RUN git init -b main /opt/codex-kit \
   && git -C /opt/codex-kit remote add origin "$CODEX_KIT_REPO" \

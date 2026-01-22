@@ -69,7 +69,12 @@ CWS_IMAGE="codex-workspace-launcher:local" cws ls
 
 ## Pin upstream refs (recommended for reproducibility)
 
-The Dockerfile clones `zsh-kit` and `codex-kit` at build time. You can pin them to a branch, tag, or commit SHA:
+This repo pins the upstream pair in `VERSIONS.env`:
+
+- `ZSH_KIT_REF`: source ref for generating the bundled `bin/codex-workspace` (run `scripts/generate_codex_workspace_bundle.sh`)
+- `CODEX_KIT_REF`: build-time ref for vendoring `codex-kit` into the launcher image (low-level launcher)
+
+You can also override the build args to a branch/tag/SHA:
 
 ```sh
 docker build -t codex-workspace-launcher:local \
@@ -103,7 +108,12 @@ docker build -t codex-workspace-launcher:local \
 
 ## Build from forks / alternate sources
 
-You can build against a fork by overriding the repo URLs:
+You can build against a fork by overriding the repo URLs.
+
+Notes:
+
+- `CODEX_KIT_*` affects the image contents (Dockerfile vendors codex-kit at build time).
+- `ZSH_KIT_*` does not affect the bundled wrapper code by itself; to change the wrapper behavior, regenerate `bin/codex-workspace`.
 
 ```sh
 docker build -t codex-workspace-launcher:local \

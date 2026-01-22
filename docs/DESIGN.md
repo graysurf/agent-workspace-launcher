@@ -165,7 +165,7 @@ Recommended minimal layout:
 
 ```text
 Dockerfile
-bin/codex-workspace        # wrapper: source zsh and call codex-workspace "$@"
+bin/codex-workspace        # bundled entrypoint: vendored zsh-kit `codex-workspace`
 .github/workflows/publish.yml
 ```
 
@@ -174,8 +174,8 @@ Dockerfile design notes (macOS host; Ubuntu base recommended for predictable too
 - Install: `docker` CLI, `zsh`, `git`, `curl`, `ca-certificates`, `tar`, `rsync`, `python3`, `openssl`,
   and standard `awk/sed/coreutils`
 - Clone/pin:
-  - `/opt/zsh-kit` (contains `workspace-launcher.zsh`)
   - `/opt/codex-kit` (contains `docker/codex-env/bin/codex-workspace`)
+- Record zsh-kit ref (for traceability): `/opt/zsh-kit.ref`
 - Set defaults: `ENV CODEX_WORKSPACE_LAUNCHER=/opt/codex-kit/docker/codex-env/bin/codex-workspace`
 - Set `ENTRYPOINT ["codex-workspace"]`
 
@@ -192,8 +192,8 @@ docker build -t codex-workspace-launcher:dev \
 
 Wrapper requirements:
 
-1) `source /opt/zsh-kit/scripts/_features/codex-workspace/workspace-launcher.zsh`
-2) Execute the zsh function: `codex-workspace "$@"`
+1) `bin/codex-workspace` is a bundled wrapper generated from `zsh-kit` and committed to this repo
+2) `docker run ... <image> <args...>` executes the wrapper (image entrypoint)
 
 Verification:
 

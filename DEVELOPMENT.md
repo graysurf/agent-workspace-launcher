@@ -81,7 +81,7 @@ Tip: you can put these into a local `.env` (gitignored) and load them via `diren
 | `CWS_E2E` | yes | Enables real Docker e2e | `1` / `true` / `yes` / `on` |
 | `CWS_E2E_FULL` | optional | Runs full CLI plan suite (40 cases) and expands non-CLI flows | `1` to run everything |
 | `CWS_E2E_CASE` | optional | Select specific CLI plan cases | `help` or `help,ls` |
-| `CWS_E2E_IMAGE` | optional | Override launcher image tag for e2e (passed to `scripts/cws` as `CWS_IMAGE`) | `cws-launcher:e2e` |
+| `CWS_E2E_IMAGE` | optional | Override launcher image tag for e2e (passed to the wrapper as `CWS_IMAGE`) | `cws-launcher:e2e` |
 | `CWS_E2E_PUBLIC_REPO` | required for repo-backed cases | Enables public repo create/reset/exec cases | `OWNER/REPO` |
 | `CWS_E2E_PRIVATE_REPO` | required for private repo cases | Enables `create_seed_private_repo` + `reset_private_repo` | `OWNER/PRIVATE_REPO` |
 | `CWS_E2E_GH_TOKEN` | recommended (deterministic) | Token input for GitHub auth/private repo; E2E maps this to `GH_TOKEN` for the subprocess | Keep it separate from your “real” `GH_TOKEN` |

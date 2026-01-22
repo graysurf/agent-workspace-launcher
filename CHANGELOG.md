@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Changed
+- Remove `scripts/cws` shim; use `scripts/cws.bash` directly for executable mode.
+
 ## v1.0.1 - 2026-01-21
 
 ### Added

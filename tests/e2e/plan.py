@@ -54,7 +54,7 @@ def _repo_rel(path: Path) -> str:
 
 
 def _build_cli(case: CwsE2ECase) -> CwsE2EPlanCase:
-    script = repo_root() / "scripts" / "cws"
+    script = repo_root() / "scripts" / "cws.bash"
     argv = [str(script), *case.cws_args]
     display = f"{_env_prefix(case.env)}{_repo_rel(script)} {_shell_join(case.cws_args)}".rstrip()
     return CwsE2EPlanCase(
@@ -335,16 +335,6 @@ def wrapper_extra_cases(wrapper: str) -> list[CwsE2ECase]:
                 cws_args=["ls"],
                 env={"CWS_DOCKER_ARGS": "-e FOO=bar -e BAZ=qux"},
                 purpose="Verify extra docker args are passed through (string form).",
-            )
-        )
-
-    if wrapper == "cli":
-        cases.append(
-            CwsE2ECase(
-                case_id="env_cws_bash_path",
-                cws_args=["ls"],
-                env={"CWS_BASH_PATH": _repo_rel(repo_root() / "scripts" / "cws.bash")},
-                purpose="Verify scripts/cws can be pointed at a specific cws.bash path.",
             )
         )
 
