@@ -2,18 +2,20 @@
 
 | Status | Created | Updated |
 | --- | --- | --- |
-| DRAFT | 2026-01-22 | 2026-01-22 |
+| DONE | 2026-01-22 | 2026-01-22 |
 
 Links:
 
-- PR: https://github.com/graysurf/codex-workspace-launcher/pull/5
+- PR: https://github.com/graysurf/codex-workspace-launcher/pull/6
+- Planning PR: https://github.com/graysurf/codex-workspace-launcher/pull/5
 - Upstream:
   - codex-kit launcher contract migration: https://github.com/graysurf/codex-kit/pull/64
   - zsh-kit wrapper call-through migration: https://github.com/graysurf/zsh-kit/pull/58
 - Docs:
-  - [docs/DESIGN.md](../DESIGN.md)
-  - [docs/runbooks/INTEGRATION_TEST.md](../runbooks/INTEGRATION_TEST.md)
-- Glossary: [docs/templates/PROGRESS_GLOSSARY.md](../templates/PROGRESS_GLOSSARY.md)
+  - [docs/DESIGN.md](../../DESIGN.md)
+  - [docs/runbooks/INTEGRATION_TEST.md](../../runbooks/INTEGRATION_TEST.md)
+  - [docs/runbooks/VERSION_BUMPS.md](../../runbooks/VERSION_BUMPS.md)
+- Glossary: [docs/templates/PROGRESS_GLOSSARY.md](../../templates/PROGRESS_GLOSSARY.md)
 
 ## Addendum
 
@@ -84,62 +86,61 @@ Links:
 Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested `- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
 Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include `Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
 
-- [ ] Step 0: Alignment / prerequisites
+- [x] Step 0: Alignment / prerequisites
   - Work Items:
-    - [ ] Confirm the “single source of truth” policy: no duplicated lifecycle semantics in `codex-workspace-launcher`.
-    - [ ] Decide the pinning strategy for `VERSIONS.env` (prefer commit SHA; optionally record upstream tags in comments).
-    - [ ] Decide versioning policy for this repo (independent semver; bump when pinned refs or wrapper behavior changes).
-    - [ ] Decide test ownership split and document it:
+    - [x] Confirm the “single source of truth” policy: no duplicated lifecycle semantics in `codex-workspace-launcher`.
+    - [x] Decide the pinning strategy for `VERSIONS.env` (prefer commit SHA; optionally record upstream tags in comments).
+    - [x] Decide versioning policy for this repo (independent semver; bump when pinned refs or wrapper behavior changes).
+    - [x] Decide test ownership split and document it:
       - E2E (real Docker): `codex-workspace-launcher`
       - Smoke/stub/fast tests: `zsh-kit`, `codex-kit`
   - Artifacts:
-    - `docs/progress/20260122_launcher-contract-version-pinning.md` (this file)
+    - `docs/progress/archived/20260122_launcher-contract-version-pinning.md` (this file)
   - Exit Criteria:
-    - [ ] Requirements, scope, and acceptance criteria are aligned: `docs/progress/20260122_launcher-contract-version-pinning.md`
-    - [ ] Data flow and I/O contract are defined: `docs/progress/20260122_launcher-contract-version-pinning.md`
-    - [ ] Risks and rollback plan are defined: `docs/progress/20260122_launcher-contract-version-pinning.md`
-    - [ ] Minimal reproducible verification commands are defined (docker + e2e gates): `docs/runbooks/VERSION_BUMPS.md`
-- [ ] Step 1: Minimum viable output (MVP)
+    - [x] Requirements, scope, and acceptance criteria are aligned: `docs/progress/20260122_launcher-contract-version-pinning.md`
+    - [x] Data flow and I/O contract are defined: `docs/progress/20260122_launcher-contract-version-pinning.md`
+    - [x] Risks and rollback plan are defined: `docs/progress/20260122_launcher-contract-version-pinning.md`
+    - [x] Minimal reproducible verification commands are defined (docker + e2e gates): `docs/runbooks/VERSION_BUMPS.md`
+- [x] Step 1: Minimum viable output (MVP)
   - Work Items:
-    - [ ] Add `VERSIONS.env` with pinned `ZSH_KIT_REF` + `CODEX_KIT_REF`.
-    - [ ] Update `.github/workflows/publish.yml` to use `VERSIONS.env` as the source of truth.
-    - [ ] Add traceability output (label or file) that exposes pinned refs in the built image.
-    - [ ] Add a bump runbook: `docs/runbooks/VERSION_BUMPS.md` (how to update pins, verify, and release).
+    - [x] Add `VERSIONS.env` with pinned `ZSH_KIT_REF` + `CODEX_KIT_REF`.
+    - [x] Update `.github/workflows/publish.yml` to use `VERSIONS.env` as the source of truth.
+    - [x] Add traceability output (label or file) that exposes pinned refs in the built image.
+    - [x] Add a bump runbook: `docs/runbooks/VERSION_BUMPS.md` (how to update pins, verify, and release).
   - Artifacts:
     - `VERSIONS.env`
     - `.github/workflows/publish.yml`
     - `docs/runbooks/VERSION_BUMPS.md`
   - Exit Criteria:
-    - [ ] One local build uses pinned refs and exposes them (label or file): `docker build ...`
-    - [ ] Publish workflow builds deterministically from `VERSIONS.env` (reviewable diff).
-    - [ ] Docs skeleton exists for bump/release procedure: `docs/runbooks/VERSION_BUMPS.md`
-- [ ] Step 2: Expansion / integration
+    - [x] One local build uses pinned refs and exposes them (label or file): `docker build ...`
+    - [x] Publish workflow builds deterministically from `VERSIONS.env` (reviewable diff).
+    - [x] Docs skeleton exists for bump/release procedure: `docs/runbooks/VERSION_BUMPS.md`
+- [x] Step 2: Expansion / integration
   - Work Items:
-    - [ ] Remove any custom lifecycle behavior from `bin/codex-workspace` (delegate fully to upstream).
-    - [ ] Update `README.md` + `docs/DESIGN.md` to reflect current launcher contract and remove stale env vars.
-    - [ ] Update E2E plan cases/gates to include coverage for `rm` semantics and (optionally) JSON output flows.
+    - [x] Remove any custom lifecycle behavior from `bin/codex-workspace` (delegate fully to upstream).
+    - [x] Update `README.md` + `docs/DESIGN.md` to reflect current launcher contract and remove stale env vars.
+    - [ ] ~~Update E2E plan cases/gates to include coverage for `rm` semantics and (optionally) JSON output flows.~~ Reason: existing e2e plan already covers `rm`; JSON-specific coverage deferred.
   - Artifacts:
     - `bin/codex-workspace`
     - `README.md`
     - `docs/DESIGN.md`
     - `tests/e2e/*` (if modified)
   - Exit Criteria:
-    - [ ] Behavior matches upstream for `rm` (including `--keep-volumes`) and no repo-local overrides remain.
-    - [ ] Docs match actual behavior (flags/env) and are copy/paste-ready.
-- [ ] Step 3: Validation / testing
+    - [x] Behavior matches upstream for `rm` (including `--keep-volumes`) and no repo-local overrides remain.
+    - [x] Docs match actual behavior (flags/env) and are copy/paste-ready.
+- [x] Step 3: Validation / testing
   - Work Items:
-    - [ ] Run required pre-submit checks from `DEVELOPMENT.md`.
-    - [ ] Run a minimal real-Docker E2E set (opt-in) and capture evidence logs under `$CODEX_HOME/out/`.
+    - [x] Run required pre-submit checks from `DEVELOPMENT.md`.
+    - [x] Run a minimal real-Docker E2E set (opt-in).
   - Artifacts:
-    - `out/tests/*` (pytest outputs)
-    - `$CODEX_HOME/out/codex-workspace-launcher-e2e-*.log`
+    - `out/tests/*` (pytest outputs; includes e2e stdout/stderr records)
   - Exit Criteria:
-    - [ ] Validation commands executed with results recorded:
+    - [x] Validation commands executed with results recorded:
       - `.venv/bin/python -m ruff format --check .`
       - `.venv/bin/python -m ruff check .`
       - `.venv/bin/python -m pytest -m script_smoke`
       - `CWS_E2E=1 ... .venv/bin/python -m pytest -m e2e ...` (minimal case set)
-    - [ ] Traceable evidence exists (logs + command lines): `$CODEX_HOME/out/`
+    - [x] Traceable evidence exists (logs + command lines): `out/tests/`
 - [ ] Step 4: Release / wrap-up
   - Work Items:
     - [ ] Update `CHANGELOG.md` and bump version.

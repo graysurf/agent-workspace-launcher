@@ -146,9 +146,7 @@ Source (local): `/Users/terry/.config/codex-kit/docker/codex-env/bin/codex-works
 | `CODEX_ENV_IMAGE` | `graysurf/codex-env:linuxbrew` | Workspace runtime image |
 | `CODEX_WORKSPACE_PREFIX` | `codex-ws` | Same as above (container/volume naming) |
 | `GITHUB_HOST` | `github.com` | Repo host (when using `OWNER/REPO` form) |
-| `CODEX_SECRET_DIR_HOST` | `$HOME/.config/zsh/scripts/_features/codex/secrets` | Default secrets dir (pay attention to DooD host-path rules) |
-| `CODEX_CONFIG_DIR_HOST` | (empty) | Bind-mount host config into the workspace (`/home/codex/.config:ro`) |
-| `CODEX_ZSH_PRIVATE_DIR_HOST` | (empty) | Bind-mount host zsh private into the workspace (`/opt/zsh-kit/.private:ro`) |
+| `DEFAULT_SECRETS_MOUNT` | `/home/codex/codex_secrets` | Default container mount path when `--secrets-dir` is used |
 
 ---
 
@@ -218,6 +216,7 @@ Recommendation (macOS users can be Apple Silicon or Intel):
 - Multi-arch: `linux/amd64,linux/arm64`
 - Tags: `latest` + `sha-<short>` (or semver)
 - Build args: `ZSH_KIT_REF`, `CODEX_KIT_REF` (use commit SHAs for reproducibility)
+- Source of truth: `VERSIONS.env` (CI should build from the pinned pair)
 
 Example (manual):
 

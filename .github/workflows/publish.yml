@@ -99,15 +99,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Resolve upstream refs
+      - name: Load pinned upstream refs (VERSIONS.env)
         id: refs
         shell: bash
         run: |
           set -euo pipefail
-          zsh_kit_ref="$(git ls-remote https://github.com/graysurf/zsh-kit.git refs/heads/main | awk '{print $1}' | head -n 1)"
-          codex_kit_ref="$(git ls-remote https://github.com/graysurf/codex-kit.git refs/heads/main | awk '{print $1}' | head -n 1)"
-          echo "zsh_kit_ref=$zsh_kit_ref" >>"$GITHUB_OUTPUT"
-          echo "codex_kit_ref=$codex_kit_ref" >>"$GITHUB_OUTPUT"
+
+          if [[ ! -f VERSIONS.env ]]; then
+            echo "error: missing VERSIONS.env at repo root" >&2
+            exit 1
+          fi
+
+          # shellcheck disable=SC1091
+          source VERSIONS.env
+
+          if [[ -z "${ZSH_KIT_REF:-}" || -z "${CODEX_KIT_REF:-}" ]]; then
+            echo "error: VERSIONS.env must set ZSH_KIT_REF and CODEX_KIT_REF" >&2
+            exit 1
+          fi
+
+          echo "zsh_kit_ref=${ZSH_KIT_REF}" >>"$GITHUB_OUTPUT"
+          echo "codex_kit_ref=${CODEX_KIT_REF}" >>"$GITHUB_OUTPUT"
 
       - name: Compute tags
         id: tags

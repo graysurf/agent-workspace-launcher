@@ -188,9 +188,7 @@ Low-level launcher (`codex-kit` script; invoked by the zsh layer):
 | `CODEX_ENV_IMAGE` | `graysurf/codex-env:linuxbrew` | Workspace runtime image |
 | `CODEX_WORKSPACE_PREFIX` | `codex-ws` | Workspace container name prefix |
 | `GITHUB_HOST` | `github.com` | Repo host (when using `OWNER/REPO` form) |
-| `CODEX_SECRET_DIR_HOST` | `$HOME/.config/zsh/scripts/_features/codex/secrets` | Default secrets dir (host path; requires DooD same-path bind) |
-| `CODEX_CONFIG_DIR_HOST` | (empty) | Bind-mount host config into the workspace (`/home/codex/.config:ro`) |
-| `CODEX_ZSH_PRIVATE_DIR_HOST` | (empty) | Bind-mount host zsh private into the workspace (`/opt/zsh-kit/.private:ro`) |
+| `DEFAULT_SECRETS_MOUNT` | `/home/codex/codex_secrets` | Default container mount path when `--secrets-dir` is used |
 
 ## Troubleshooting
 
@@ -207,18 +205,19 @@ Low-level launcher (`codex-kit` script; invoked by the zsh layer):
 ## Development
 
 Local builds (custom tags): [`docs/BUILD.md`](docs/BUILD.md)
+Upstream pin bumps: [`docs/runbooks/VERSION_BUMPS.md`](docs/runbooks/VERSION_BUMPS.md)
 
 Publishing (CI):
 
 - Workflow: [`.github/workflows/publish.yml`](.github/workflows/publish.yml)
-- Triggers: PRs build only; pushes to `main` publish images
+- Triggers: PRs build only; pushes to `docker` publish images
 - Registries:
   - Docker Hub: `graysurf/codex-workspace-launcher` (publish requires secrets)
   - GHCR: `ghcr.io/graysurf/codex-workspace-launcher` (publish uses `GITHUB_TOKEN`)
 - Tags: `latest`, `sha-<short>`
 - Secrets (GitHub Actions; Docker Hub only): `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`
-- Ref pinning: the workflow resolves `graysurf/zsh-kit@main` and `graysurf/codex-kit@main` to commit SHAs and
-  builds with those SHAs (reproducible published images).
+- Ref pinning: `VERSIONS.env` is the single source of truth for pinned `zsh-kit` + `codex-kit` refs.
+  - Bump pins via: `docs/runbooks/VERSION_BUMPS.md`
 
 ## Docs
 

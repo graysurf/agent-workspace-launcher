@@ -87,6 +87,20 @@ docker build -t codex-workspace-launcher:local \
   .
 ```
 
+This repo also ships a pinned pair in `VERSIONS.env` (used by CI). Build the exact pins like this:
+
+```sh
+set -euo pipefail
+set -a
+source ./VERSIONS.env
+set +a
+
+docker build -t codex-workspace-launcher:local \
+  --build-arg ZSH_KIT_REF="$ZSH_KIT_REF" \
+  --build-arg CODEX_KIT_REF="$CODEX_KIT_REF" \
+  .
+```
+
 ## Build from forks / alternate sources
 
 You can build against a fork by overriding the repo URLs:
