@@ -188,9 +188,7 @@ Low-level launcher (`codex-kit` script; invoked by the zsh layer):
 | `CODEX_ENV_IMAGE` | `graysurf/codex-env:linuxbrew` | Workspace runtime image |
 | `CODEX_WORKSPACE_PREFIX` | `codex-ws` | Workspace container name prefix |
 | `GITHUB_HOST` | `github.com` | Repo host (when using `OWNER/REPO` form) |
-| `CODEX_SECRET_DIR_HOST` | `$HOME/.config/zsh/scripts/_features/codex/secrets` | Default secrets dir (host path; requires DooD same-path bind) |
-| `CODEX_CONFIG_DIR_HOST` | (empty) | Bind-mount host config into the workspace (`/home/codex/.config:ro`) |
-| `CODEX_ZSH_PRIVATE_DIR_HOST` | (empty) | Bind-mount host zsh private into the workspace (`/opt/zsh-kit/.private:ro`) |
+| `DEFAULT_SECRETS_MOUNT` | `/home/codex/codex_secrets` | Default container mount path when `--secrets-dir` is used |
 
 ## Troubleshooting
 

@@ -47,8 +47,8 @@ docker build -t codex-workspace-launcher:local \
 ## Verify the built image contains the pins
 
 ```sh
-docker run --rm codex-workspace-launcher:local cat /opt/zsh-kit/.ref
-docker run --rm codex-workspace-launcher:local cat /opt/codex-kit/.ref
+docker run --rm --entrypoint cat codex-workspace-launcher:local /opt/zsh-kit/.ref
+docker run --rm --entrypoint cat codex-workspace-launcher:local /opt/codex-kit/.ref
 ```
 
 You can also inspect labels:

@@ -112,13 +112,13 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
     - `.github/workflows/publish.yml`
     - `docs/runbooks/VERSION_BUMPS.md`
   - Exit Criteria:
-    - [ ] One local build uses pinned refs and exposes them (label or file): `docker build ...`
-    - [ ] Publish workflow builds deterministically from `VERSIONS.env` (reviewable diff).
-    - [ ] Docs skeleton exists for bump/release procedure: `docs/runbooks/VERSION_BUMPS.md`
+    - [x] One local build uses pinned refs and exposes them (label or file): `docker build ...`
+    - [x] Publish workflow builds deterministically from `VERSIONS.env` (reviewable diff).
+    - [x] Docs skeleton exists for bump/release procedure: `docs/runbooks/VERSION_BUMPS.md`
 - [ ] Step 2: Expansion / integration
   - Work Items:
-    - [ ] Remove any custom lifecycle behavior from `bin/codex-workspace` (delegate fully to upstream).
-    - [ ] Update `README.md` + `docs/DESIGN.md` to reflect current launcher contract and remove stale env vars.
+    - [x] Remove any custom lifecycle behavior from `bin/codex-workspace` (delegate fully to upstream).
+    - [x] Update `README.md` + `docs/DESIGN.md` to reflect current launcher contract and remove stale env vars.
     - [ ] Update E2E plan cases/gates to include coverage for `rm` semantics and (optionally) JSON output flows.
   - Artifacts:
     - `bin/codex-workspace`
@@ -126,22 +126,21 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
     - `docs/DESIGN.md`
     - `tests/e2e/*` (if modified)
   - Exit Criteria:
-    - [ ] Behavior matches upstream for `rm` (including `--keep-volumes`) and no repo-local overrides remain.
-    - [ ] Docs match actual behavior (flags/env) and are copy/paste-ready.
+    - [x] Behavior matches upstream for `rm` (including `--keep-volumes`) and no repo-local overrides remain.
+    - [x] Docs match actual behavior (flags/env) and are copy/paste-ready.
 - [ ] Step 3: Validation / testing
   - Work Items:
-    - [ ] Run required pre-submit checks from `DEVELOPMENT.md`.
-    - [ ] Run a minimal real-Docker E2E set (opt-in) and capture evidence logs under `$CODEX_HOME/out/`.
+    - [x] Run required pre-submit checks from `DEVELOPMENT.md`.
+    - [x] Run a minimal real-Docker E2E set (opt-in).
   - Artifacts:
-    - `out/tests/*` (pytest outputs)
-    - `$CODEX_HOME/out/codex-workspace-launcher-e2e-*.log`
+    - `out/tests/*` (pytest outputs; includes e2e stdout/stderr records)
   - Exit Criteria:
-    - [ ] Validation commands executed with results recorded:
+    - [x] Validation commands executed with results recorded:
       - `.venv/bin/python -m ruff format --check .`
       - `.venv/bin/python -m ruff check .`
       - `.venv/bin/python -m pytest -m script_smoke`
       - `CWS_E2E=1 ... .venv/bin/python -m pytest -m e2e ...` (minimal case set)
-    - [ ] Traceable evidence exists (logs + command lines): `$CODEX_HOME/out/`
+    - [x] Traceable evidence exists (logs + command lines): `out/tests/`
 - [ ] Step 4: Release / wrap-up
   - Work Items:
     - [ ] Update `CHANGELOG.md` and bump version.
