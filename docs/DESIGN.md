@@ -275,4 +275,3 @@ Expected failure mode:
 ## Security / Risks (Must Be Explicit)
 
 - `-v /var/run/docker.sock:/var/run/docker.sock` effectively grants root-equivalent control over the host (can create privileged containers and access mounted paths).
-- If the workflow injects tokens into the workspace container environment (e.g. `--persist-gh-token`), those are visible via `docker inspect` and must be documented clearly.

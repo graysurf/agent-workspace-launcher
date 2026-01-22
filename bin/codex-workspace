@@ -1,5 +1,5 @@
 #!/usr/bin/env -S zsh -f
-# Generated from: graysurf/zsh-kit@aa964753efcea4466ee7789151eb81083ebc4d11
+# Generated from: graysurf/zsh-kit@38da358e333a49a116205c93f61c185e9fec08c7
 # DO NOT EDIT: regenerate via scripts/generate_codex_workspace_bundle.sh
 set -e
 
