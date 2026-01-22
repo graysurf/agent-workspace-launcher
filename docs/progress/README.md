@@ -6,6 +6,7 @@ Purpose: Track feature work with consistent, verifiable progress files under `do
 
 | Date | Feature | PR |
 | --- | --- | --- |
+| 2026-01-22 | [Launcher contract alignment + version pinning](20260122_launcher-contract-version-pinning.md) | [#5](https://github.com/graysurf/codex-workspace-launcher/pull/5) |
 
 ## Archived
 
