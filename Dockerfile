@@ -24,6 +24,7 @@ RUN apt-get update \
     curl \
     git \
     gnupg \
+    jq \
     rsync \
     zsh \
   && mkdir -p /root/.config \
