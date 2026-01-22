@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v1.0.4 - 2026-01-22
+
+### Upstream pins
+- zsh-kit: bbc89ec80659df8b76e8c98f44f510c14d34ea54
+- codex-kit: a3d7eb40d9a895546d60041b5d8ac850a7b03933
+
+### Changed
+- Remove `--persist-gh-token` flag (auth is now applied container-side).
+- Align launcher `create` parameters with updated zsh-kit behavior.
+
+### Docs
+- Remove outdated security note from `docs/DESIGN.md`.
+
 ## v1.0.3 - 2026-01-22
 
 ### Upstream pins
