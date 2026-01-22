@@ -4,15 +4,6 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-### Added
-- None
-
-### Changed
-- None
-
-### Fixed
-- None
-
 ## v1.0.2 - 2026-01-22
 
 ### Upstream pins

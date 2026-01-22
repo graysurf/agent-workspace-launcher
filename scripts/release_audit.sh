@@ -15,6 +15,7 @@ checks:
       ### Upstream pins
       - zsh-kit: <ZSH_KIT_REF>
       - codex-kit: <CODEX_KIT_REF>
+  - Release entry contains no placeholder lines (e.g. `- None`, `- ...`, `...`, `vX.Y.Z`, `YYYY-MM-DD`)
 
 exit:
   - 0: all checks pass
@@ -79,6 +80,29 @@ extract_release_notes() {
       print
     }
   ' "$changelog" 2>/dev/null || true
+}
+
+has_placeholder_lines() {
+  local text="$1"
+  if printf '%s\n' "$text" | grep -qE '^[[:space:]]*-[[:space:]]+None[[:space:]]*$'; then
+    return 0
+  fi
+  if printf '%s\n' "$text" | grep -qE '^[[:space:]]*-[[:space:]]+\\.{3}[[:space:]]*$'; then
+    return 0
+  fi
+  if printf '%s\n' "$text" | grep -qE '^[[:space:]]*\\.{3}[[:space:]]*$'; then
+    return 0
+  fi
+  if printf '%s\n' "$text" | grep -q 'vX.Y.Z'; then
+    return 0
+  fi
+  if printf '%s\n' "$text" | grep -q 'YYYY-MM-DD'; then
+    return 0
+  fi
+  if printf '%s\n' "$text" | grep -q '<!--'; then
+    return 0
+  fi
+  return 1
 }
 
 main() {
@@ -229,6 +253,17 @@ main() {
       else
         [[ -n "$codex_ref" ]] && say_ok "pin recorded: codex-kit"
       fi
+
+      if has_placeholder_lines "$notes"; then
+        if (( strict )); then
+          say_fail "placeholder content detected in changelog entry for ${version} (remove placeholders before release)"
+          failed=1
+        else
+          say_warn "placeholder content detected in changelog entry for ${version} (remove placeholders before release)"
+        fi
+      else
+        say_ok "no placeholders detected in changelog entry: $version"
+      fi
     fi
   fi
 
@@ -254,4 +289,3 @@ main() {
 }
 
 main "$@"
-

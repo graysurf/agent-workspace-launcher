@@ -13,7 +13,7 @@ what it does:
       ### Upstream pins
       - zsh-kit: <ZSH_KIT_REF>
       - codex-kit: <CODEX_KIT_REF>
-  - Resets "## Unreleased" to an empty skeleton (Added/Changed/Fixed => - None).
+  - Resets "## Unreleased" to an empty section.
 
 notes:
   - This edits CHANGELOG.md in-place.
@@ -93,13 +93,7 @@ def _read_versions(path: Path) -> tuple[str, str]:
 
 
 def _ensure_release_sections(text: str) -> str:
-    required = ["### Added", "### Changed", "### Fixed"]
-    present = {h for h in required if re.search(rf"(?m)^{re.escape(h)}$", text)}
-    out = text.strip("\n")
-    for heading in required:
-        if heading not in present:
-            out += f"\n\n{heading}\n- None"
-    return out.strip("\n") + "\n"
+    return text.strip("\n") + ("\n" if text.strip("\n") else "")
 
 
 def main() -> None:
@@ -137,33 +131,8 @@ def main() -> None:
 
     moved = unreleased_body.strip("\n")
     if not moved.strip():
-        moved = "\n".join(
-            [
-                "### Added",
-                "- None",
-                "",
-                "### Changed",
-                "- None",
-                "",
-                "### Fixed",
-                "- None",
-            ]
-        )
+        moved = ""
     moved = _ensure_release_sections(moved)
-
-    unreleased_reset = "\n".join(
-        [
-            "### Added",
-            "- None",
-            "",
-            "### Changed",
-            "- None",
-            "",
-            "### Fixed",
-            "- None",
-            "",
-        ]
-    )
 
     release_entry = "\n".join(
         [
@@ -182,8 +151,6 @@ def main() -> None:
     out = (
         prefix.rstrip("\n")
         + "\n\n## Unreleased\n\n"
-        + unreleased_reset.rstrip("\n")
-        + "\n\n"
         + release_entry.rstrip("\n")
         + "\n\n"
         + rest.lstrip("\n").rstrip("\n")
@@ -202,4 +169,3 @@ PY
 }
 
 main "$@"
-
