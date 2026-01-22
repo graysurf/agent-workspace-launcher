@@ -72,5 +72,4 @@ This repo publishes the launcher image from the `docker` branch (see `.github/wo
      - `git checkout main`
 
 10. Verify publish
-   - Follow `docs/runbooks/INTEGRATION_TEST.md` and record the workflow run URL + tags evidence.
-
+       - Follow `docs/runbooks/INTEGRATION_TEST.md` and record the workflow run URL + tags evidence.
