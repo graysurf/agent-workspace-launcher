@@ -4,8 +4,8 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 usage:
-  scripts/bump_versions.sh --from-main
-  scripts/bump_versions.sh --zsh-kit-ref <ref|sha> --codex-kit-ref <ref|sha>
+  scripts/bump_versions.sh --from-main [--run-e2e]
+  scripts/bump_versions.sh --zsh-kit-ref <ref|sha> --codex-kit-ref <ref|sha> [--run-e2e]
 
 options:
   --from-main              Resolve both upstream pins from refs/heads/main.
@@ -19,10 +19,13 @@ options:
   --skip-checks            Skip ruff + pytest script_smoke.
   --skip-docker            Skip docker build and /opt/*.ref verification.
   --skip-bundle            Skip regenerating bin/codex-workspace.
+  --run-e2e                Run real-Docker e2e (pytest -m e2e) against the built image.
 
 notes:
   - Always writes resolved commit SHAs into VERSIONS.env (no "main" drift).
   - Bundling uses the pinned zsh-kit tool (tools/bundle-wrapper.zsh) when available.
+  - E2E forces CWS_E2E=1, CWS_E2E_FULL=1, and sets CWS_E2E_IMAGE=<image-tag>.
+  - rm --all coverage is still gated by CWS_E2E_ALLOW_RM_ALL=1.
 EOF
 }
 
@@ -107,6 +110,7 @@ main() {
   local skip_checks=0
   local skip_docker=0
   local skip_bundle=0
+  local run_e2e=0
 
   while [[ $# -gt 0 ]]; do
     case "${1-}" in
@@ -148,6 +152,10 @@ main() {
         ;;
       --skip-bundle)
         skip_bundle=1
+        shift
+        ;;
+      --run-e2e)
+        run_e2e=1
         shift
         ;;
       *)
@@ -262,6 +270,33 @@ main() {
     docker run --rm "$image_tag" --help >/dev/null
   else
     info "skipping docker build/verify (--skip-docker)"
+  fi
+
+  if (( run_e2e == 1 )); then
+    require_cmd docker
+
+    if (( skip_docker == 1 )); then
+      if ! docker image inspect "$image_tag" >/dev/null 2>&1; then
+        die "cannot run e2e: image not found (tag=${image_tag}); remove --skip-docker or build it first"
+      fi
+    fi
+
+    local allow_rm_all="${CWS_E2E_ALLOW_RM_ALL:-}"
+    local allow_rm_all_lc=''
+    allow_rm_all_lc="$(printf '%s' "$allow_rm_all" | tr '[:upper:]' '[:lower:]')"
+    if [[ "$allow_rm_all_lc" != "1" && "$allow_rm_all_lc" != "true" && "$allow_rm_all_lc" != "yes" && "$allow_rm_all_lc" != "on" ]]; then
+      info "e2e note: rm --all coverage excluded unless CWS_E2E_ALLOW_RM_ALL=1"
+    fi
+
+    info "running real Docker e2e (full matrix) against: ${image_tag}"
+    (
+      cd "$repo_root"
+      export CWS_E2E=1
+      export CWS_E2E_FULL=1
+      export CWS_E2E_IMAGE="$image_tag"
+      unset CWS_E2E_CASE 2>/dev/null || true
+      "${repo_root}/.venv/bin/python" -m pytest -m e2e -q -ra
+    )
   fi
 
   info "done"

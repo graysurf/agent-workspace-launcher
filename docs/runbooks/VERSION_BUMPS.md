@@ -20,10 +20,18 @@ Use the helper script to update pins, regenerate the bundle, run checks, build, 
 ./scripts/bump_versions.sh --from-main
 ```
 
+To also run real-Docker E2E (full matrix) against the built image:
+
+```sh
+./scripts/bump_versions.sh --from-main --run-e2e
+```
+
 Notes:
 
 - The bundle regeneration uses the pinned `zsh-kit` tool (`tools/bundle-wrapper.zsh`) at `ZSH_KIT_REF`.
 - You do not need `~/.config/zsh` on your machine unless you want a local fallback.
+- E2E requires your local env to be configured (see “Real-Docker E2E” below for required env vars).
+- Destructive coverage (`rm --all --yes`) is still gated by `CWS_E2E_ALLOW_RM_ALL=1` (use with care).
 
 Pin explicitly (still resolves to full commit SHAs and writes them into `VERSIONS.env`):
 
