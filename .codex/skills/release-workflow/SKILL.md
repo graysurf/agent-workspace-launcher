@@ -77,23 +77,25 @@ Notes:
 
 2. Run mandatory local E2E gate (real Docker)
    - Use the command in “Key rule: E2E gate is mandatory” above.
-   - If it fails: stop and report (use `references/OUTPUT_TEMPLATE_BLOCKED.md`).
+   - If it fails: stop and report (use `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`).
 
 3. Prepare the changelog (records upstream pins)
    - Use the helper that moves `## Unreleased` into a new release entry and injects pins from `VERSIONS.env`:
      - `./scripts/release_prepare_changelog.sh --version vX.Y.Z`
    - Review `CHANGELOG.md` (fill out wording; remove `- None` if you added real bullets).
 
-4. Audit (strict)
-   - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`
-
-5. Run required repo checks (per `DEVELOPMENT.md`)
+4. Run required repo checks (per `DEVELOPMENT.md`)
    - `.venv/bin/python -m ruff format --check .`
    - `.venv/bin/python -m ruff check .`
    - `.venv/bin/python -m pytest -m script_smoke`
 
-6. Commit the release notes
+5. Commit the release notes
    - Suggested message: `chore(release): vX.Y.Z`
+   - Do not run `git commit` directly; use the repo’s Semantic Commit helper (see `AGENTS.md`).
+
+6. Audit (strict)
+   - Run after committing (audit requires a clean working tree):
+     - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`
 
 7. (Optional) Tag the release
    - Create: `git tag vX.Y.Z`
@@ -120,5 +122,5 @@ Notes:
 
 ## Output templates
 
-- Success: `references/OUTPUT_TEMPLATE.md`
-- Blocked: `references/OUTPUT_TEMPLATE_BLOCKED.md`
+- Success: `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE.md`
+- Blocked: `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`
