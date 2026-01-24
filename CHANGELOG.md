@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v1.0.5 - 2026-01-24
+
+### Upstream pins
+- zsh-kit: dcf65f9600c24b87d14bf506d017996a70a32103
+- codex-kit: 3aae1c3cbc4ca33d0d0656b0bef457ea19766b5b
+
+### Changed
+- Bump pinned upstream refs (zsh-kit + codex-kit).
+
 ## v1.0.4 - 2026-01-22
 
 ### Upstream pins
