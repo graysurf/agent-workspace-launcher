@@ -1,0 +1,26 @@
+{
+  "smoke": [
+    {
+      "name": "help",
+      "command": ["bash", "scripts/release_notes_from_changelog.sh", "--help"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stderr_regex": "(?s)usage:.*scripts/release_notes_from_changelog\\.sh"
+      }
+    },
+    {
+      "name": "extract_release_notes",
+      "command": [
+        "bash",
+        "-c",
+        "set -euo pipefail; tmp=$(mktemp -d 2>/dev/null || true); if [[ -z \"${tmp:-}\" ]]; then tmp=\"/tmp/cws-smoke.release_notes.$$\"; mkdir -p -- \"$tmp\"; fi; cleanup(){ rm -rf -- \"$tmp\" >/dev/null 2>&1 || true; }; trap cleanup EXIT; changelog=\"$tmp/CHANGELOG.md\"; out=\"$tmp/release-notes.md\"; printf '%s\\n' '# Changelog' '' '## v1.2.3 - 2026-01-02' '' '- Added thing' '' '## v1.2.2 - 2026-01-01' '' '- Older thing' '' >\"$changelog\"; out_path=$(bash scripts/release_notes_from_changelog.sh --version v1.2.3 --changelog \"$changelog\" --output \"$out\"); [[ \"$out_path\" == \"$out\" ]]; grep -q '^## v1\\.2\\.3 - 2026-01-02$' \"$out\"; grep -q '^- Added thing$' \"$out\"; echo OK"
+      ],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?m)^OK$"
+      }
+    }
+  ]
+}

@@ -28,6 +28,7 @@ To also run real-Docker E2E (full matrix) against the built image:
 
 Notes:
 
+- `--from-main` keeps backward-compatible CLI naming, but resolves `zsh-kit` from `refs/heads/nils-cli` and `codex-kit` from `refs/heads/main`.
 - The bundle regeneration uses the pinned `zsh-kit` tool (`tools/bundle-wrapper.zsh`) at `ZSH_KIT_REF`.
 - You do not need `~/.config/zsh` on your machine unless you want a local fallback.
 - E2E requires your local env to be configured (see “Real-Docker E2E” below for required env vars).
@@ -47,10 +48,10 @@ Tip: use `--skip-docker` when you only want to update files + run tests locally.
 
 Recommended: pin by commit SHA (most deterministic).
 
-Example: pin to upstream `main` heads (replace URLs/refs as needed):
+Example: pin to upstream default release heads (replace URLs/refs as needed):
 
 ```sh
-git ls-remote https://github.com/graysurf/zsh-kit.git refs/heads/main | awk '{print $1}' | head -n 1
+git ls-remote https://github.com/graysurf/zsh-kit.git refs/heads/nils-cli | awk '{print $1}' | head -n 1
 git ls-remote https://github.com/graysurf/codex-kit.git refs/heads/main | awk '{print $1}' | head -n 1
 ```
 

@@ -1,0 +1,26 @@
+{
+  "smoke": [
+    {
+      "name": "load",
+      "command": ["zsh", "-f", "scripts/bundles/codex-workspace.wrapper.zsh"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0]
+      }
+    },
+    {
+      "name": "sources_array",
+      "command": [
+        "zsh",
+        "-f",
+        "-c",
+        "source scripts/bundles/codex-workspace.wrapper.zsh; [[ ${#sources[@]} -eq 5 ]] && [[ ${sources[1]} == _features/codex-workspace/alias.zsh ]] && [[ ${sources[5]} == _features/codex-workspace/workspace-launcher.zsh ]] && print -r -- OK"
+      ],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?m)^OK$"
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## v1.0.7 - 2026-01-27
+## v1.0.7 - 2026-02-09
 
 ### Upstream pins
 - zsh-kit: dcf65f9600c24b87d14bf506d017996a70a32103

@@ -1,0 +1,26 @@
+{
+  "smoke": [
+    {
+      "name": "help",
+      "command": ["bash", "scripts/release_prepare_changelog.sh", "--help"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stderr_regex": "(?s)usage:.*scripts/release_prepare_changelog\\.sh"
+      }
+    },
+    {
+      "name": "prepare_changelog_moves_unreleased",
+      "command": [
+        "bash",
+        "-c",
+        "set -euo pipefail; repo=$(pwd); tmp=$(mktemp -d 2>/dev/null || true); if [[ -z \"${tmp:-}\" ]]; then tmp=\"/tmp/cws-smoke.release_prepare.$$\"; mkdir -p -- \"$tmp\"; fi; cleanup(){ rm -rf -- \"$tmp\" >/dev/null 2>&1 || true; }; trap cleanup EXIT; printf '%s\\n' 'ZSH_KIT_REF=1111111111111111111111111111111111111111' 'CODEX_KIT_REF=2222222222222222222222222222222222222222' >\"$tmp/VERSIONS.env\"; printf '%s\\n' '# Changelog' '' '## Unreleased' '' '### Added' '- New thing' '' '## v0.1.0 - 2026-01-01' '' '- Old thing' '' >\"$tmp/CHANGELOG.md\"; cd \"$tmp\"; bash \"$repo/scripts/release_prepare_changelog.sh\" --version v1.2.3 --date 2026-01-02 >/dev/null; grep -q '^## v1\\.2\\.3 - 2026-01-02$' CHANGELOG.md; grep -q '^### Upstream pins$' CHANGELOG.md; grep -q '^- zsh-kit: 1111111111111111111111111111111111111111$' CHANGELOG.md; grep -q '^- codex-kit: 2222222222222222222222222222222222222222$' CHANGELOG.md; grep -q '^### Added$' CHANGELOG.md; grep -q '^- New thing$' CHANGELOG.md; python3 -c 'from pathlib import Path; t=Path(\"CHANGELOG.md\").read_text(\"utf-8\"); assert \"## Unreleased\\n\\n## v1.2.3 - 2026-01-02\" in t'; echo OK"
+      ],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?m)^OK$"
+      }
+    }
+  ]
+}

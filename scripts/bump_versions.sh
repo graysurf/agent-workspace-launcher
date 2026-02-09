@@ -8,7 +8,8 @@ usage:
   scripts/bump_versions.sh --zsh-kit-ref <ref|sha> --codex-kit-ref <ref|sha> [--run-e2e]
 
 options:
-  --from-main              Resolve both upstream pins from refs/heads/main.
+  --from-main              Resolve upstream pins from default release branches:
+                           zsh-kit=refs/heads/nils-cli, codex-kit=refs/heads/main.
   --zsh-kit-ref <ref|sha>  Resolve zsh-kit ref to a full 40-char commit SHA.
   --codex-kit-ref <ref|sha> Resolve codex-kit ref to a full 40-char commit SHA.
 
@@ -175,7 +176,7 @@ main() {
   fi
 
   if (( from_main == 1 )); then
-    zsh_kit_ref="refs/heads/main"
+    zsh_kit_ref="refs/heads/nils-cli"
     codex_kit_ref="refs/heads/main"
   fi
 
