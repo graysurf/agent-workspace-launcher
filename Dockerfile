@@ -45,6 +45,7 @@ RUN git init -b main /opt/agent-kit \
   && git -C /opt/agent-kit remote add origin "$AGENT_KIT_REPO" \
   && git -C /opt/agent-kit fetch --depth 1 origin "$resolved_ref" \
   && git -C /opt/agent-kit checkout --detach FETCH_HEAD \
+  && sed -i 's/chown -R codex:codex/chown -R agent:agent/g' /opt/agent-kit/docker/agent-env/bin/agent-workspace \
   && git -C /opt/agent-kit rev-parse HEAD >/opt/agent-kit/.ref \
   && rm -rf /opt/agent-kit/.git /tmp/VERSIONS.env
 

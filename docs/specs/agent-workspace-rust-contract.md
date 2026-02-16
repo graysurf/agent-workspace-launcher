@@ -18,7 +18,6 @@ Define the Rust `agent-workspace` CLI contract shipped in the launcher image.
   - Env override: `AGENT_WORKSPACE_LAUNCHER`
   - Auto-detect default:
     - `/opt/agent-kit/docker/agent-env/bin/agent-workspace`
-    - fallback `/opt/agent-kit/docker/codex-env/bin/codex-workspace`
 - Exit code mirrors child process exit code.
 
 ## Naming policy

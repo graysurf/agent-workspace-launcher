@@ -17,7 +17,7 @@
   - `AWS_E2E=1 AWS_E2E_CASE=help .venv/bin/python -m pytest -m e2e tests/e2e/test_aws_cli_cases.py`
 
 ## Agent-env integration checks
-- Launcher path resolution auto-detects `/opt/agent-kit/docker/agent-env/bin/agent-workspace` and falls back to `/opt/agent-kit/docker/codex-env/bin/codex-workspace`.
+- Launcher path resolution auto-detects `/opt/agent-kit/docker/agent-env/bin/agent-workspace`.
 - `create` emits expected workspace/path outputs through low-level launcher.
 - `exec/reset/rm` round-trips through wrapper and low-level launcher contract.
 

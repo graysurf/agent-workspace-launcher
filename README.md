@@ -140,9 +140,9 @@ docker run --rm -it \
 
 | Env | Default | Purpose |
 | --- | --- | --- |
-| `AGENT_WORKSPACE_PREFIX` | `codex-ws` | Workspace container name prefix |
+| `AGENT_WORKSPACE_PREFIX` | `agent-ws` | Workspace container name prefix |
 | `AGENT_WORKSPACE_PRIVATE_REPO` | (empty) | During `create`, clone/pull into `~/.private` |
-| `AGENT_WORKSPACE_LAUNCHER` | auto-detect (`agent-env` then legacy `codex-env`) | Low-level launcher path override |
+| `AGENT_WORKSPACE_LAUNCHER` | auto-detect (`/opt/agent-kit/docker/agent-env/bin/agent-workspace`) | Low-level launcher path override |
 | `AGENT_WORKSPACE_AUTH` | `auto` | Auth source policy |
 | `AGENT_WORKSPACE_GPG` | `none` | Default GPG import mode (`import\|none`) |
 | `AGENT_WORKSPACE_GPG_KEY` | (empty) | Default signing key for `auth gpg` |

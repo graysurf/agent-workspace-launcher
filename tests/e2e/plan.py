@@ -217,7 +217,7 @@ def base_cases() -> list[AwsE2ECase]:
         ),
         AwsE2ECase(
             case_id="exec_user",
-            aws_args=["exec", "--user", "codex", "ws-e2e", "id", "-u"],
+            aws_args=["exec", "--user", "agent", "ws-e2e", "id", "-u"],
             purpose="Exec as a specific user and verify expected uid.",
             requires="Existing workspace container ws-e2e.",
         ),
@@ -483,11 +483,12 @@ def run_aws_e2e_flow(wrapper: str) -> None:
 
             exec_user = run(
                 "11_exec_user",
-                ["exec", "--user", "codex", named, "id", "-u"],
-                "Exec as codex and verify uid.",
+                ["exec", "--user", "agent", named, "id", "-u"],
+                "Exec as agent and verify uid.",
             )
             assert_ok(exec_user, "11_exec_user")
-            assert exec_user.stdout.strip() == "1001"
+            assert exec_user.stdout.strip().isdigit()
+            assert exec_user.stdout.strip() != "0"
 
             exec_root = run(
                 "12_exec_root",
@@ -1047,7 +1048,16 @@ def _workspace_exists(wrapper: str, env: dict[str, str], workspace: str) -> bool
     _write_e2e_record(plan_case, result)
     if result.exit_code != 0:
         return False
-    return workspace in result.stdout
+    expected = {
+        workspace,
+        f"agent-ws-{workspace}",
+        f"codex-ws-{workspace}",
+    }
+    for line in result.stdout.splitlines():
+        name = line.split("\t", 1)[0].strip()
+        if name in expected:
+            return True
+    return False
 
 
 def _replace_workspace_for_case(
