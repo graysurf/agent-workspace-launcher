@@ -169,9 +169,10 @@ fn parse_create_args(args: &[OsString]) -> Result<ParsedCreate, String> {
                     if idx >= args.len() {
                         return Err(String::from("missing value for --name"));
                     }
-                    let value = args[idx].clone();
-                    parsed.workspace_name = trimmed_nonempty(value.to_string_lossy().as_ref());
-                    parsed.forwarded_args.push(value);
+                    let value = args[idx].to_string_lossy().into_owned();
+                    let normalized_name = normalize_workspace_name_for_create(&value);
+                    parsed.workspace_name = trimmed_nonempty(&normalized_name);
+                    parsed.forwarded_args.push(OsString::from(normalized_name));
                     idx += 1;
                     continue;
                 }
@@ -187,8 +188,12 @@ fn parse_create_args(args: &[OsString]) -> Result<ParsedCreate, String> {
                     continue;
                 }
                 _ if text.starts_with("--name=") => {
-                    parsed.workspace_name = trimmed_nonempty(text["--name=".len()..].trim());
-                    parsed.forwarded_args.push(current);
+                    let value = text["--name=".len()..].trim();
+                    let normalized_name = normalize_workspace_name_for_create(value);
+                    parsed.workspace_name = trimmed_nonempty(&normalized_name);
+                    parsed
+                        .forwarded_args
+                        .push(OsString::from(format!("--name={normalized_name}")));
                     idx += 1;
                     continue;
                 }
@@ -1908,20 +1913,7 @@ fn resolve_workspace_container_name_str(workspace_name: &str) -> String {
         return workspace_name.to_string();
     }
 
-    let mut prefixes: Vec<String> = Vec::new();
-    if let Ok(value) = std::env::var("AGENT_WORKSPACE_PREFIX")
-        && !value.trim().is_empty()
-    {
-        prefixes.push(value);
-    }
-    if let Ok(value) = std::env::var("CODEX_WORKSPACE_PREFIX")
-        && !value.trim().is_empty()
-    {
-        prefixes.push(value);
-    }
-    prefixes.push(String::from("agent-ws"));
-    prefixes.push(String::from("codex-ws"));
-
+    let prefixes = workspace_prefixes();
     for prefix in prefixes {
         let prefixed = if workspace_name.starts_with(&(prefix.clone() + "-")) {
             workspace_name.to_string()
@@ -1934,6 +1926,71 @@ fn resolve_workspace_container_name_str(workspace_name: &str) -> String {
     }
 
     workspace_name.to_string()
+}
+
+fn workspace_prefixes() -> Vec<String> {
+    let mut prefixes: Vec<String> = Vec::new();
+    if let Ok(value) = std::env::var("AGENT_WORKSPACE_PREFIX")
+        && let Some(cleaned) = trimmed_nonempty(&value)
+    {
+        push_unique(&mut prefixes, cleaned);
+    }
+    if let Ok(value) = std::env::var("CODEX_WORKSPACE_PREFIX")
+        && let Some(cleaned) = trimmed_nonempty(&value)
+    {
+        push_unique(&mut prefixes, cleaned);
+    }
+    push_unique(&mut prefixes, String::from("agent-ws"));
+    push_unique(&mut prefixes, String::from("codex-ws"));
+    prefixes
+}
+
+fn workspace_name_variants(input: &str, prefixes: &[String]) -> Vec<String> {
+    let Some(mut current) = trimmed_nonempty(input) else {
+        return Vec::new();
+    };
+
+    let mut variants = vec![current.clone()];
+    loop {
+        let mut stripped: Option<String> = None;
+
+        for prefix in prefixes {
+            let prefix = format!("{prefix}-");
+            if let Some(rest) = current.strip_prefix(&prefix)
+                && let Some(cleaned) = trimmed_nonempty(rest)
+            {
+                stripped = Some(cleaned);
+                break;
+            }
+        }
+
+        if stripped.is_none()
+            && let Some(rest) = current.strip_prefix("ws-")
+            && let Some(cleaned) = trimmed_nonempty(rest)
+        {
+            stripped = Some(cleaned);
+        }
+
+        let Some(next) = stripped else {
+            break;
+        };
+        if variants.iter().any(|known| known == &next) {
+            break;
+        }
+        variants.push(next.clone());
+        current = next;
+    }
+
+    variants
+}
+
+fn normalize_workspace_name_for_create(name: &str) -> String {
+    let variants = workspace_name_variants(name, &workspace_prefixes());
+    variants
+        .last()
+        .cloned()
+        .or_else(|| trimmed_nonempty(name))
+        .unwrap_or_default()
 }
 
 fn docker_container_exists(name: &str) -> bool {
@@ -2268,6 +2325,12 @@ fn trimmed_nonempty(input: &str) -> Option<String> {
     }
 }
 
+fn push_unique(values: &mut Vec<String>, value: String) {
+    if !values.iter().any(|known| known == &value) {
+        values.push(value);
+    }
+}
+
 pub(crate) fn forward_with_launcher_and_env(
     launcher: &Path,
     subcommand: &str,
@@ -2359,7 +2422,8 @@ mod tests {
 
     use super::{
         DEFAULT_LAUNCHER_PATH, forward_with_launcher_and_env, launcher_path_from_env,
-        parse_auth_args, parse_create_args, parse_exec_args, parse_reset_repo_args, parse_rm_args,
+        normalize_workspace_name_for_create, parse_auth_args, parse_create_args, parse_exec_args,
+        parse_reset_repo_args, parse_rm_args, workspace_name_variants,
     };
     use crate::EXIT_RUNTIME;
 
@@ -2443,7 +2507,7 @@ mod tests {
         let translated = parse_create_args(&[
             OsString::from("--no-work-repos"),
             OsString::from("--name"),
-            OsString::from("ws-test"),
+            OsString::from("demo"),
         ])
         .expect("parse")
         .forwarded_args;
@@ -2451,7 +2515,55 @@ mod tests {
             .into_iter()
             .map(|item| item.to_string_lossy().into_owned())
             .collect();
-        assert_eq!(values, vec!["--no-clone", "--name", "ws-test"]);
+        assert_eq!(values, vec!["--no-clone", "--name", "demo"]);
+    }
+
+    #[test]
+    fn create_translation_normalizes_ws_prefixed_name() {
+        let translated = parse_create_args(&[OsString::from("--name"), OsString::from("ws-test")])
+            .expect("parse")
+            .forwarded_args;
+        let values: Vec<String> = translated
+            .into_iter()
+            .map(|item| item.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(values, vec!["--name", "test"]);
+    }
+
+    #[test]
+    fn create_translation_normalizes_name_equals_syntax() {
+        let translated = parse_create_args(&[OsString::from("--name=agent-ws-ws-test")])
+            .expect("parse")
+            .forwarded_args;
+        let values: Vec<String> = translated
+            .into_iter()
+            .map(|item| item.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(values, vec!["--name=test"]);
+    }
+
+    #[test]
+    fn workspace_variants_strip_known_prefixes_in_order() {
+        let variants = workspace_name_variants(
+            "agent-ws-ws-debug-auth",
+            &[String::from("agent-ws"), String::from("codex-ws")],
+        );
+        assert_eq!(
+            variants,
+            vec![
+                String::from("agent-ws-ws-debug-auth"),
+                String::from("ws-debug-auth"),
+                String::from("debug-auth"),
+            ]
+        );
+    }
+
+    #[test]
+    fn create_name_normalization_keeps_plain_names() {
+        assert_eq!(
+            normalize_workspace_name_for_create("debug-auth"),
+            String::from("debug-auth")
+        );
     }
 
     #[test]
