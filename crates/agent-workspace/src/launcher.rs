@@ -1909,19 +1909,10 @@ fn resolve_workspace_container_name(workspace: &OsString) -> OsString {
 }
 
 fn resolve_workspace_container_name_str(workspace_name: &str) -> String {
-    if docker_container_exists(workspace_name) {
-        return workspace_name.to_string();
-    }
-
     let prefixes = workspace_prefixes();
-    for prefix in prefixes {
-        let prefixed = if workspace_name.starts_with(&(prefix.clone() + "-")) {
-            workspace_name.to_string()
-        } else {
-            format!("{prefix}-{workspace_name}")
-        };
-        if docker_container_exists(&prefixed) {
-            return prefixed;
+    for candidate in workspace_resolution_candidates(workspace_name, &prefixes) {
+        if docker_container_exists(&candidate) {
+            return candidate;
         }
     }
 
@@ -1982,6 +1973,28 @@ fn workspace_name_variants(input: &str, prefixes: &[String]) -> Vec<String> {
     }
 
     variants
+}
+
+fn workspace_resolution_candidates(workspace_name: &str, prefixes: &[String]) -> Vec<String> {
+    let variants = workspace_name_variants(workspace_name, prefixes);
+    let mut candidates: Vec<String> = Vec::new();
+
+    for variant in &variants {
+        push_unique(&mut candidates, variant.clone());
+    }
+
+    for variant in variants {
+        for prefix in prefixes {
+            let prefixed = if variant.starts_with(&(prefix.clone() + "-")) {
+                variant.clone()
+            } else {
+                format!("{prefix}-{variant}")
+            };
+            push_unique(&mut candidates, prefixed);
+        }
+    }
+
+    candidates
 }
 
 fn normalize_workspace_name_for_create(name: &str) -> String {
@@ -2424,6 +2437,7 @@ mod tests {
         DEFAULT_LAUNCHER_PATH, forward_with_launcher_and_env, launcher_path_from_env,
         normalize_workspace_name_for_create, parse_auth_args, parse_create_args, parse_exec_args,
         parse_reset_repo_args, parse_rm_args, workspace_name_variants,
+        workspace_resolution_candidates,
     };
     use crate::EXIT_RUNTIME;
 
@@ -2554,6 +2568,25 @@ mod tests {
                 String::from("agent-ws-ws-debug-auth"),
                 String::from("ws-debug-auth"),
                 String::from("debug-auth"),
+            ]
+        );
+    }
+
+    #[test]
+    fn workspace_resolution_candidates_include_ws_stripped_prefix_forms() {
+        let candidates = workspace_resolution_candidates(
+            "ws-e2e-cli",
+            &[String::from("agent-ws"), String::from("codex-ws")],
+        );
+        assert_eq!(
+            candidates,
+            vec![
+                String::from("ws-e2e-cli"),
+                String::from("e2e-cli"),
+                String::from("agent-ws-ws-e2e-cli"),
+                String::from("codex-ws-ws-e2e-cli"),
+                String::from("agent-ws-e2e-cli"),
+                String::from("codex-ws-e2e-cli"),
             ]
         );
     }
