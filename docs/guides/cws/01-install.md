@@ -5,8 +5,8 @@
 ## Option A: clone the repo (recommended for contributors)
 
 ```sh
-git clone https://github.com/graysurf/codex-workspace-launcher.git
-cd codex-workspace-launcher
+git clone https://github.com/graysurf/agent-workspace-launcher.git
+cd agent-workspace-launcher
 
 # zsh
 source ./scripts/cws.zsh
@@ -20,19 +20,19 @@ source ./scripts/cws.zsh
 zsh:
 
 ```sh
-mkdir -p "$HOME/.config/codex-workspace-launcher"
-curl -fsSL https://raw.githubusercontent.com/graysurf/codex-workspace-launcher/main/scripts/cws.zsh \
-  -o "$HOME/.config/codex-workspace-launcher/cws.zsh"
-source "$HOME/.config/codex-workspace-launcher/cws.zsh"
+mkdir -p "$HOME/.config/agent-workspace-launcher"
+curl -fsSL https://raw.githubusercontent.com/graysurf/agent-workspace-launcher/main/scripts/cws.zsh \
+  -o "$HOME/.config/agent-workspace-launcher/cws.zsh"
+source "$HOME/.config/agent-workspace-launcher/cws.zsh"
 ```
 
 bash:
 
 ```sh
-mkdir -p "$HOME/.config/codex-workspace-launcher"
-curl -fsSL https://raw.githubusercontent.com/graysurf/codex-workspace-launcher/main/scripts/cws.bash \
-  -o "$HOME/.config/codex-workspace-launcher/cws.bash"
-source "$HOME/.config/codex-workspace-launcher/cws.bash"
+mkdir -p "$HOME/.config/agent-workspace-launcher"
+curl -fsSL https://raw.githubusercontent.com/graysurf/agent-workspace-launcher/main/scripts/cws.bash \
+  -o "$HOME/.config/agent-workspace-launcher/cws.bash"
+source "$HOME/.config/agent-workspace-launcher/cws.bash"
 ```
 
 ## Option C: install as an executable
@@ -53,13 +53,13 @@ cp ./scripts/cws.bash ~/.local/bin/cws
 Default:
 
 ```sh
-export CWS_IMAGE="graysurf/codex-workspace-launcher:latest"
+export CWS_IMAGE="graysurf/agent-workspace-launcher:latest"
 ```
 
 Use GHCR:
 
 ```sh
-export CWS_IMAGE="ghcr.io/graysurf/codex-workspace-launcher:latest"
+export CWS_IMAGE="ghcr.io/graysurf/agent-workspace-launcher:latest"
 ```
 
 ### Add extra `docker run` args (optional)

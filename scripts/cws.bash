@@ -158,7 +158,7 @@ _cws_gh_keyring_token_for_repo() {
 }
 
 cws() {
-  local image="${CWS_IMAGE:-graysurf/codex-workspace-launcher:latest}"
+  local image="${CWS_IMAGE:-graysurf/agent-workspace-launcher:latest}"
 
   local -a run_args
   run_args=(run --rm)
@@ -172,9 +172,9 @@ cws() {
     -v /var/run/docker.sock:/var/run/docker.sock
     -e GH_TOKEN
     -e GITHUB_TOKEN
-    -e CODEX_WORKSPACE_OPEN_VSCODE_ENABLED
-    -e CODEX_WORKSPACE_GPG
-    -e CODEX_WORKSPACE_GPG_KEY
+    -e AGENT_WORKSPACE_OPEN_VSCODE_ENABLED
+    -e AGENT_WORKSPACE_GPG
+    -e AGENT_WORKSPACE_GPG_KEY
   )
 
   local injected_token=""
@@ -184,12 +184,12 @@ cws() {
   local provider="${2:-}"
 
   local injected_gpg_key=""
-  if [[ -z "${CODEX_WORKSPACE_GPG_KEY:-}" ]]; then
+  if [[ -z "${AGENT_WORKSPACE_GPG_KEY:-}" ]]; then
     local want_gpg=0
     local has_explicit_key=0
 
     if [[ "$subcmd" == "create" ]]; then
-      local gpg_mode="${CODEX_WORKSPACE_GPG:-none}"
+      local gpg_mode="${AGENT_WORKSPACE_GPG:-none}"
       case "$gpg_mode" in
         import|true) want_gpg=1 ;;
       esac
@@ -288,13 +288,13 @@ cws() {
 
   if [[ -n "$injected_token" ]]; then
     if [[ -n "$injected_gpg_key" ]]; then
-      GH_TOKEN="$injected_token" GITHUB_TOKEN="" CODEX_WORKSPACE_GPG_KEY="$injected_gpg_key" docker "${run_args[@]}" "$image" "$@"
+      GH_TOKEN="$injected_token" GITHUB_TOKEN="" AGENT_WORKSPACE_GPG_KEY="$injected_gpg_key" docker "${run_args[@]}" "$image" "$@"
     else
       GH_TOKEN="$injected_token" GITHUB_TOKEN="" docker "${run_args[@]}" "$image" "$@"
     fi
   else
     if [[ -n "$injected_gpg_key" ]]; then
-      CODEX_WORKSPACE_GPG_KEY="$injected_gpg_key" docker "${run_args[@]}" "$image" "$@"
+      AGENT_WORKSPACE_GPG_KEY="$injected_gpg_key" docker "${run_args[@]}" "$image" "$@"
     else
       docker "${run_args[@]}" "$image" "$@"
     fi
@@ -303,7 +303,7 @@ cws() {
 
 _cws_workspaces() {
   command -v docker >/dev/null 2>&1 || return 0
-  docker ps -a --filter label=codex-kit.workspace=1 --format '{{.Names}}' 2>/dev/null || true
+  docker ps -a --filter label=agent-kit.workspace=1 --format '{{.Names}}' 2>/dev/null || true
 }
 
 _cws_compgen_words() {

@@ -1,6 +1,6 @@
-# cws / codex-workspace guide
+# cws / agent-workspace guide
 
-`cws` is a small host-side wrapper that runs the `graysurf/codex-workspace-launcher` image. The launcher container
+`cws` is a small host-side wrapper that runs the `graysurf/agent-workspace-launcher` image. The launcher container
 talks to your host Docker daemon (**Docker-outside-of-Docker / DooD**) and creates **workspace containers** on the
 host.
 
@@ -15,11 +15,11 @@ This guide focuses on the end-user experience: install `cws`, create a workspace
 
 The wrapper defaults to Docker Hub:
 
-- `graysurf/codex-workspace-launcher:latest`
+- `graysurf/agent-workspace-launcher:latest`
 
 GHCR is also available:
 
-- `ghcr.io/graysurf/codex-workspace-launcher:latest`
+- `ghcr.io/graysurf/agent-workspace-launcher:latest`
 
 Override with `CWS_IMAGE=...`.
 
@@ -42,4 +42,4 @@ Override with `CWS_IMAGE=...`.
 - DooD rules + host mounts: [docs/guides/cws/09-dood-rules.md](09-dood-rules.md)
 - Troubleshooting: [docs/guides/cws/10-troubleshooting.md](10-troubleshooting.md)
 - Reference (commands + env): [docs/guides/cws/11-reference.md](11-reference.md)
-- Without `cws` (direct `docker run`): [docs/guides/cws/12-codex-workspace.md](12-codex-workspace.md)
+- Without `cws` (direct `docker run`): [docs/guides/cws/12-agent-workspace.md](12-agent-workspace.md)

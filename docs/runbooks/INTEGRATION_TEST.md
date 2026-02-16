@@ -20,8 +20,8 @@ This checklist is for validating the end-to-end experience after merging to `mai
 
 This validates the end-user “Quickstart” path:
 
-- Pull + run `graysurf/codex-workspace-launcher`
-- During `create`, the workspace runtime image `graysurf/codex-env:linuxbrew` also gets pulled (so you implicitly
+- Pull + run `graysurf/agent-workspace-launcher`
+- During `create`, the workspace runtime image `graysurf/agent-env:linuxbrew` also gets pulled (so you implicitly
   validate it exists and is runnable on your platform).
 
 Pre-flight:
@@ -42,10 +42,10 @@ cws --help
 cws ls
 
 # End-to-end create (public repo).
-cws create graysurf/codex-kit
+cws create graysurf/agent-kit
 
 # Copy the printed workspace name, then:
-cws exec <name|container> git -C /work/graysurf/codex-kit status
+cws exec <name|container> git -C /work/graysurf/agent-kit status
 cws rm <name|container> --yes
 ```
 
@@ -62,8 +62,8 @@ Capture evidence:
 
 Evidence (2026-01-20):
 
-- `$CODEX_HOME/out/macos-quickstart-smoke-20260120-080236.log`
-- `$CODEX_HOME/out/macos-quickstart-create-20260120-080236.log`
+- `$AGENT_HOME/out/macos-quickstart-smoke-20260120-080236.log`
+- `$AGENT_HOME/out/macos-quickstart-create-20260120-080236.log`
 
 ## Linux exploratory smoke (do not claim support yet)
 
@@ -71,21 +71,21 @@ Run on a real Linux host with Docker (rootful):
 
 ```sh
 # Should print help without talking to the Docker daemon.
-docker run --rm -it graysurf/codex-workspace-launcher:latest --help
+docker run --rm -it graysurf/agent-workspace-launcher:latest --help
 
 # Verify Docker daemon connectivity from the launcher container.
 docker run --rm -it \
   --user 0:0 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   ls
 
 # End-to-end create (public repo).
 docker run --rm -it \
   --user 0:0 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
-  create graysurf/codex-kit
+  graysurf/agent-workspace-launcher:latest \
+  create graysurf/agent-kit
 ```
 
 Expected failure mode:
@@ -99,8 +99,8 @@ Capture evidence:
 
 Evidence (2026-01-20; OrbStack on macOS):
 
-- `$CODEX_HOME/out/linux-exploratory-smoke-orbstack-20260120-085812.log`
-- `$CODEX_HOME/out/linux-exploratory-create-orbstack-20260120-085812.log`
+- `$AGENT_HOME/out/linux-exploratory-smoke-orbstack-20260120-085812.log`
+- `$AGENT_HOME/out/linux-exploratory-create-orbstack-20260120-085812.log`
 
 ## CI publish verification
 
@@ -108,25 +108,25 @@ After merge to `main`, verify:
 
 - GitHub Actions workflow `.github/workflows/publish.yml` ran successfully on `main` (record the run URL).
 - Docker Hub has the expected tags:
-  - `graysurf/codex-workspace-launcher:latest`
-  - `graysurf/codex-workspace-launcher:sha-<short>`
+  - `graysurf/agent-workspace-launcher:latest`
+  - `graysurf/agent-workspace-launcher:sha-<short>`
 - GHCR has the expected tags:
-  - `ghcr.io/graysurf/codex-workspace-launcher:latest`
-  - `ghcr.io/graysurf/codex-workspace-launcher:sha-<short>`
+  - `ghcr.io/graysurf/agent-workspace-launcher:latest`
+  - `ghcr.io/graysurf/agent-workspace-launcher:sha-<short>`
 - The published images are multi-arch:
 
 ```sh
-docker buildx imagetools inspect graysurf/codex-workspace-launcher:latest
-docker buildx imagetools inspect ghcr.io/graysurf/codex-workspace-launcher:latest
+docker buildx imagetools inspect graysurf/agent-workspace-launcher:latest
+docker buildx imagetools inspect ghcr.io/graysurf/agent-workspace-launcher:latest
 ```
 
 Expected platforms include `linux/amd64` and `linux/arm64`.
 
 Evidence (2026-01-20):
 
-- Docker Hub verification (before GHCR publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21154177325
-- Docker Hub inspect log: `$CODEX_HOME/out/ci-publish-verification-20260120-081548.log`
-- PR build (no publish): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21155245507
-- GHCR verification (push to `main`): https://github.com/graysurf/codex-workspace-launcher/actions/runs/21155498181
-- GHCR inspect log: `$CODEX_HOME/out/ghcr-verification-20260120-084948.log`
-- GHCR not found (pre-merge check): `$CODEX_HOME/out/ghcr-verification-20260120-083359.log`
+- Docker Hub verification (before GHCR publish): https://github.com/graysurf/agent-workspace-launcher/actions/runs/21154177325
+- Docker Hub inspect log: `$AGENT_HOME/out/ci-publish-verification-20260120-081548.log`
+- PR build (no publish): https://github.com/graysurf/agent-workspace-launcher/actions/runs/21155245507
+- GHCR verification (push to `main`): https://github.com/graysurf/agent-workspace-launcher/actions/runs/21155498181
+- GHCR inspect log: `$AGENT_HOME/out/ghcr-verification-20260120-084948.log`
+- GHCR not found (pre-merge check): `$AGENT_HOME/out/ghcr-verification-20260120-083359.log`

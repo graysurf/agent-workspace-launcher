@@ -7,12 +7,12 @@ usage:
   scripts/release_prepare_changelog.sh --version <vX.Y.Z> [--date <YYYY-MM-DD>]
 
 what it does:
-  - Reads pinned upstream refs from VERSIONS.env (ZSH_KIT_REF + CODEX_KIT_REF).
+  - Reads pinned upstream refs from VERSIONS.env (ZSH_KIT_REF + AGENT_KIT_REF).
   - Moves the current CHANGELOG.md "## Unreleased" content into a new release entry:
       ## vX.Y.Z - YYYY-MM-DD
       ### Upstream pins
       - zsh-kit: <ZSH_KIT_REF>
-      - codex-kit: <CODEX_KIT_REF>
+      - agent-kit: <AGENT_KIT_REF>
   - Resets "## Unreleased" to an empty section.
 
 notes:
@@ -76,20 +76,20 @@ def die(msg: str) -> None:
 
 def _read_versions(path: Path) -> tuple[str, str]:
     zsh_ref: str | None = None
-    codex_ref: str | None = None
+    AGENT_ref: str | None = None
     for raw in path.read_text("utf-8").splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         if line.startswith("ZSH_KIT_REF="):
             zsh_ref = line.split("=", 1)[1].strip().strip('"').strip("'")
-        if line.startswith("CODEX_KIT_REF="):
-            codex_ref = line.split("=", 1)[1].strip().strip('"').strip("'")
+        if line.startswith("AGENT_KIT_REF="):
+            AGENT_ref = line.split("=", 1)[1].strip().strip('"').strip("'")
     if not zsh_ref:
         die(f"VERSIONS.env missing ZSH_KIT_REF: {path}")
-    if not codex_ref:
-        die(f"VERSIONS.env missing CODEX_KIT_REF: {path}")
-    return zsh_ref, codex_ref
+    if not AGENT_ref:
+        die(f"VERSIONS.env missing AGENT_KIT_REF: {path}")
+    return zsh_ref, AGENT_ref
 
 
 def _ensure_release_sections(text: str) -> str:
@@ -111,7 +111,7 @@ def main() -> None:
     if not versions_path.is_file():
         die(f"missing VERSIONS.env: {versions_path}")
 
-    zsh_ref, codex_ref = _read_versions(versions_path)
+    zsh_ref, AGENT_ref = _read_versions(versions_path)
     raw = changelog_path.read_text("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
     if f"## {version} - " in raw:
@@ -140,7 +140,7 @@ def main() -> None:
             "",
             "### Upstream pins",
             f"- zsh-kit: {zsh_ref}",
-            f"- codex-kit: {codex_ref}",
+            f"- agent-kit: {AGENT_ref}",
             "",
             moved.strip("\n"),
             "",
@@ -159,7 +159,7 @@ def main() -> None:
 
     changelog_path.write_text(out, "utf-8")
     print(
-        f"updated {changelog_path} for {version} (zsh-kit={zsh_ref} codex-kit={codex_ref})"
+        f"updated {changelog_path} for {version} (zsh-kit={zsh_ref} agent-kit={AGENT_ref})"
     )
 
 

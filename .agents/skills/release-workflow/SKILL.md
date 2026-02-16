@@ -1,9 +1,9 @@
 ---
-name: release-codex-workspace-launcher
-description: "Release codex-workspace-launcher: record pinned codex-kit/zsh-kit refs in CHANGELOG, run local real-Docker e2e, and publish via docker branch."
+name: release-agent-workspace-launcher
+description: "Release agent-workspace-launcher: record pinned agent-kit/zsh-kit refs in CHANGELOG, run local real-Docker e2e, and publish via docker branch."
 ---
 
-# Release Workflow (codex-workspace-launcher)
+# Release Workflow (agent-workspace-launcher)
 
 This repo publishes the launcher image from the `docker` branch (see `.github/workflows/publish.yml`).
 
@@ -36,7 +36,7 @@ Outputs:
 - `CHANGELOG.md` updated with a `## vX.Y.Z - YYYY-MM-DD` entry that includes:
   - `### Upstream pins`
     - `- zsh-kit: <ZSH_KIT_REF>`
-    - `- codex-kit: <CODEX_KIT_REF>`
+    - `- agent-kit: <AGENT_KIT_REF>`
 - Local E2E run result (pass required; artifacts under `out/tests/e2e/`)
 - Optionally:
   - Git tag `vX.Y.Z` pushed
@@ -59,7 +59,7 @@ set -a; source ./VERSIONS.env; set +a
 
 direnv exec . ./scripts/bump_versions.sh \
   --zsh-kit-ref "$ZSH_KIT_REF" \
-  --codex-kit-ref "$CODEX_KIT_REF" \
+  --agent-kit-ref "$AGENT_KIT_REF" \
   --image-tag cws-launcher:e2e \
   --run-e2e
 ```
@@ -77,7 +77,7 @@ Notes:
 
 2. Run mandatory local E2E gate (real Docker)
    - Use the command in “Key rule: E2E gate is mandatory” above.
-   - If it fails: stop and report (use `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`).
+   - If it fails: stop and report (use `.agents/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`).
 
 3. Prepare the changelog (records upstream pins)
    - Use the helper that moves `## Unreleased` into a new release entry and injects pins from `VERSIONS.env`:
@@ -122,5 +122,5 @@ Notes:
 
 ## Output templates
 
-- Success: `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE.md`
-- Blocked: `.codex/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`
+- Success: `.agents/skills/release-workflow/references/OUTPUT_TEMPLATE.md`
+- Blocked: `.agents/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`

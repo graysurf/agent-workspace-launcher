@@ -9,7 +9,7 @@ docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN \
   -e GITHUB_TOKEN \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   --help
 ```
 
@@ -20,7 +20,7 @@ docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN \
   -e GITHUB_TOKEN \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   create OWNER/REPO
 ```
 
@@ -31,7 +31,7 @@ docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN \
   -e GITHUB_TOKEN \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   auth github <name|container>
 ```
 
@@ -42,8 +42,8 @@ docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e HOME="$HOME" \
   -v "$HOME/.gnupg:$HOME/.gnupg:ro" \
-  -e CODEX_WORKSPACE_GPG_KEY="<keyid|fingerprint>" \
-  graysurf/codex-workspace-launcher:latest \
+  -e AGENT_WORKSPACE_GPG_KEY="<keyid|fingerprint>" \
+  graysurf/agent-workspace-launcher:latest \
   auth gpg <name|container>
 ```
 
@@ -53,7 +53,7 @@ If you have `gh` logged in on the host and want a one-off token pass-through (wi
 GH_TOKEN="$(gh auth token -h github.com)" docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   create OWNER/REPO
 ```
 
@@ -63,7 +63,7 @@ Same idea for `auth github`:
 GH_TOKEN="$(gh auth token -h github.com)" docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   auth github <name|container>
 ```
 
@@ -72,6 +72,6 @@ Use GHCR instead:
 ```sh
 docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/graysurf/codex-workspace-launcher:latest \
+  ghcr.io/graysurf/agent-workspace-launcher:latest \
   ls
 ```

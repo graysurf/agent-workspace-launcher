@@ -38,8 +38,8 @@ def repo_root() -> Path:
     except Exception:
         pass
 
-    if code_home := os.environ.get("CODEX_HOME"):
-        p = Path(code_home)
+    if AGENT_HOME := os.environ.get("AGENT_HOME"):
+        p = Path(AGENT_HOME)
         if p.is_dir():
             return p.resolve()
 
@@ -73,7 +73,7 @@ def default_smoke_env(repo: Path) -> dict[str, str]:
 
     base.update(
         {
-            "CODEX_HOME": str(repo),
+            "AGENT_HOME": str(repo),
             "HOME": str(home),
             "XDG_CONFIG_HOME": str(xdg_config),
             "XDG_CACHE_HOME": str(xdg_cache),
@@ -88,7 +88,7 @@ def default_smoke_env(repo: Path) -> dict[str, str]:
             "GIT_PAGER": "cat",
             "PAGER": "cat",
             "CWS_AUTH": "env",
-            "CWS_IMAGE": "graysurf/codex-workspace-launcher:latest",
+            "CWS_IMAGE": "graysurf/agent-workspace-launcher:latest",
         }
     )
 
@@ -114,7 +114,7 @@ def default_env(repo: Path) -> dict[str, str]:
 
     base.update(
         {
-            "CODEX_HOME": str(repo),
+            "AGENT_HOME": str(repo),
             "HOME": str(home),
             "XDG_CONFIG_HOME": str(xdg_config),
             "XDG_CACHE_HOME": str(xdg_cache),
@@ -129,7 +129,7 @@ def default_env(repo: Path) -> dict[str, str]:
             "GIT_PAGER": "cat",
             "PAGER": "cat",
             "CWS_AUTH": "env",
-            "CWS_IMAGE": "graysurf/codex-workspace-launcher:latest",
+            "CWS_IMAGE": "graysurf/agent-workspace-launcher:latest",
         }
     )
 

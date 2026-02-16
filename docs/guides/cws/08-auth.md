@@ -49,7 +49,7 @@ Notes:
   ```sh
   CWS_DOCKER_ARGS=(
     -e HOME="$HOME"
-    -v "$HOME/.config/codex_secrets:$HOME/.config/codex_secrets:rw"
+    -v "$HOME/.config/AGENT_secrets:$HOME/.config/AGENT_secrets:rw"
   )
   cws auth codex --profile work <name|container>
   ```
@@ -62,10 +62,10 @@ Import a GPG signing key into an existing workspace:
 cws auth gpg --key <keyid|fingerprint> <name|container>
 ```
 
-If you set `CODEX_WORKSPACE_GPG_KEY` on the host, you can omit `--key`:
+If you set `AGENT_WORKSPACE_GPG_KEY` on the host, you can omit `--key`:
 
 ```sh
-export CODEX_WORKSPACE_GPG_KEY="<keyid|fingerprint>"
+export AGENT_WORKSPACE_GPG_KEY="<keyid|fingerprint>"
 cws auth gpg <name|container>
 ```
 

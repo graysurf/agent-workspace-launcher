@@ -1,10 +1,10 @@
-# Design: codex-workspace-launcher
+# Design: agent-workspace-launcher
 
-Goal: package `zsh-kit`'s `codex-workspace` (`auth/create/ls/rm/exec/reset/tunnel`) into a Docker image so a macOS
-machine without `zsh-kit` + `codex-kit` checked out can still use it with Docker only:
+Goal: package `zsh-kit`'s `agent-workspace` (`auth/create/ls/rm/exec/reset/tunnel`) into a Docker image so a macOS
+machine without `zsh-kit` + `agent-kit` checked out can still use it with Docker only:
 
 ```sh
-docker run ... graysurf/codex-workspace-launcher create OWNER/REPO
+docker run ... graysurf/agent-workspace-launcher create OWNER/REPO
 ```
 
 Platform: macOS (Docker Desktop / OrbStack).
@@ -16,19 +16,19 @@ Platform: macOS (Docker Desktop / OrbStack).
 This repo is extracted from the existing local setup to create a portable launcher. Keep these paths at the
 top of the doc for quick lookups during development:
 
-- Project repo (local): `/Users/terry/Project/graysurf/codex-workspace-launcher`
-- `codex-kit` (local): `/Users/terry/.config/codex-kit`
-  - Workspace runtime image (Ubuntu 24.04 + tools): `/Users/terry/.config/codex-kit/Dockerfile`
-  - Low-level launcher (bash; subcommands are `up/...`): `/Users/terry/.config/codex-kit/docker/codex-env/bin/codex-workspace`
+- Project repo (local): `/Users/terry/Project/graysurf/agent-workspace-launcher`
+- `agent-kit` (local): `/Users/terry/.config/agent-kit`
+  - Workspace runtime image (Ubuntu 24.04 + tools): `/Users/terry/.config/agent-kit/Dockerfile`
+  - Low-level launcher (bash; subcommands are `up/...`): `/Users/terry/.config/agent-kit/docker/agent-env/bin/agent-workspace`
 - `zsh-kit` (local): `/Users/terry/.config/zsh`
-  - Full feature set packaged by this repo (zsh; subcommands are `create/...`): `/Users/terry/.config/zsh/scripts/_features/codex-workspace/workspace-launcher.zsh`
+  - Full feature set packaged by this repo (zsh; subcommands are `create/...`): `/Users/terry/.config/zsh/scripts/_features/agent-workspace/workspace-launcher.zsh`
 
 ---
 
 ## Architecture in One Sentence (Two Layers)
 
-1) This repo builds a **launcher image** that exposes `codex-workspace create ...` (the public interface is `create`).
-2) The launcher uses `docker.sock` to create/manage **workspace containers** on the host (runtime image defaults to `graysurf/codex-env:linuxbrew`).
+1) This repo builds a **launcher image** that exposes `agent-workspace create ...` (the public interface is `create`).
+2) The launcher uses `docker.sock` to create/manage **workspace containers** on the host (runtime image defaults to `graysurf/agent-env:linuxbrew`).
 
 ---
 
@@ -44,8 +44,8 @@ Public repo:
 ```sh
 docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
-  create graysurf/codex-kit
+  graysurf/agent-workspace-launcher:latest \
+  create graysurf/agent-kit
 ```
 
 Private repo (token only; no secrets/config mounts by default):
@@ -54,17 +54,17 @@ Private repo (token only; no secrets/config mounts by default):
 docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e GH_TOKEN="$GH_TOKEN" \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   create OWNER/PRIVATE_REPO
 ```
 
 Common operations:
 
 ```sh
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest ls
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest exec <name|container>
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest rm <name|container> --yes
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest rm --all --yes
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest ls
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest exec <name|container>
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest rm <name|container> --yes
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest rm --all --yes
 ```
 
 ---
@@ -87,14 +87,14 @@ Therefore, any feature that reads host files (secrets / `~/.config` snapshot / p
 The simplest approach is to bind-mount `host_path:host_path` into the launcher container using the same absolute
 path, and set `-e HOME="$HOME"` so `$HOME` expands consistently inside the launcher container.
 
-Example: mount host `~/.config/codex_secrets` (read-write; compatible with `codex-use` syncing)
+Example: mount host `~/.config/AGENT_secrets` (read-write; compatible with `codex-use` syncing)
 
 ```sh
 docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e HOME="$HOME" \
-  -v "$HOME/.config/codex_secrets:$HOME/.config/codex_secrets:rw" \
-  graysurf/codex-workspace-launcher:latest \
+  -v "$HOME/.config/AGENT_secrets:$HOME/.config/AGENT_secrets:rw" \
+  graysurf/agent-workspace-launcher:latest \
   create OWNER/REPO
 ```
 
@@ -105,7 +105,7 @@ docker run --rm -it \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -e HOME="$HOME" \
   -v "$HOME/.config:$HOME/.config:ro" \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   create OWNER/REPO
 ```
 
@@ -115,23 +115,23 @@ docker run --rm -it \
 
 ### A) zsh layer: full-feature entrypoint (`create/...`)
 
-Source (local): `/Users/terry/.config/zsh/scripts/_features/codex-workspace/workspace-launcher.zsh`
+Source (local): `/Users/terry/.config/zsh/scripts/_features/agent-workspace/workspace-launcher.zsh`
 
 | Env | Default | Purpose |
 | --- | --- | --- |
-| `CODEX_WORKSPACE_PREFIX` | `codex-ws` | Workspace container name prefix |
-| `CODEX_WORKSPACE_PRIVATE_REPO` | (empty) | During `create`, clone/pull this repo into workspace `~/.private` |
-| `CODEX_WORKSPACE_LAUNCHER` | (empty) | Path to the low-level launcher script (recommended default in this image: `/opt/codex-kit/docker/codex-env/bin/codex-workspace`) |
-| `CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD` | `true` | Auto-download launcher when missing (recommended: `false` in this image, or set `CODEX_WORKSPACE_LAUNCHER` to avoid runtime network dependency) |
-| `CODEX_WORKSPACE_LAUNCHER_URL` | GitHub raw | Launcher download URL (only when auto-download is enabled and the script is missing) |
-| `CODEX_WORKSPACE_LAUNCHER_AUTO_PATH` | `$XDG_CACHE_HOME/...` | Auto-download install path |
-| `CODEX_WORKSPACE_AUTH` | `auto` | `auto\|gh\|env\|none`: token source selection (inside the launcher container, `env` is usually the most practical) |
-| `CODEX_WORKSPACE_GPG` | `none` | Default gpg import mode for `create` (`import\|none`) |
-| `CODEX_WORKSPACE_GPG_KEY` | (empty) | Default signing key for `auth gpg` (keyid or fingerprint) |
-| `CODEX_WORKSPACE_TUNNEL_NAME` | (empty) | Tunnel name for the `tunnel` subcommand (<= 20 chars) |
-| `CODEX_WORKSPACE_OPEN_VSCODE_ENABLED` | (empty/false) | Auto-run `code --new-window` if host has `code` CLI (typically not effective inside the launcher container) |
+| `AGENT_WORKSPACE_PREFIX` | `codex-ws` | Workspace container name prefix |
+| `AGENT_WORKSPACE_PRIVATE_REPO` | (empty) | During `create`, clone/pull this repo into workspace `~/.private` |
+| `AGENT_WORKSPACE_LAUNCHER` | (empty) | Path to the low-level launcher script (recommended default in this image: `/opt/agent-kit/docker/agent-env/bin/agent-workspace`) |
+| `AGENT_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD` | `true` | Auto-download launcher when missing (recommended: `false` in this image, or set `AGENT_WORKSPACE_LAUNCHER` to avoid runtime network dependency) |
+| `AGENT_WORKSPACE_LAUNCHER_URL` | GitHub raw | Launcher download URL (only when auto-download is enabled and the script is missing) |
+| `AGENT_WORKSPACE_LAUNCHER_AUTO_PATH` | `$XDG_CACHE_HOME/...` | Auto-download install path |
+| `AGENT_WORKSPACE_AUTH` | `auto` | `auto\|gh\|env\|none`: token source selection (inside the launcher container, `env` is usually the most practical) |
+| `AGENT_WORKSPACE_GPG` | `none` | Default gpg import mode for `create` (`import\|none`) |
+| `AGENT_WORKSPACE_GPG_KEY` | (empty) | Default signing key for `auth gpg` (keyid or fingerprint) |
+| `AGENT_WORKSPACE_TUNNEL_NAME` | (empty) | Tunnel name for the `tunnel` subcommand (<= 20 chars) |
+| `AGENT_WORKSPACE_OPEN_VSCODE_ENABLED` | (empty/false) | Auto-run `code --new-window` if host has `code` CLI (typically not effective inside the launcher container) |
 
-Additional variables used (without `CODEX_WORKSPACE_` prefix, but behavior depends on them):
+Additional variables used (without `AGENT_WORKSPACE_` prefix, but behavior depends on them):
 
 - `GH_TOKEN` / `GITHUB_TOKEN`: clone private repos; configure git auth inside the workspace
 - `XDG_CACHE_HOME`: launcher auto-download cache root
@@ -139,14 +139,14 @@ Additional variables used (without `CODEX_WORKSPACE_` prefix, but behavior depen
 
 ### B) low-level launcher (invoked by the zsh layer; `up/...`)
 
-Source (local): `/Users/terry/.config/codex-kit/docker/codex-env/bin/codex-workspace`
+Source (local): `/Users/terry/.config/agent-kit/docker/agent-env/bin/agent-workspace`
 
 | Env | Default | Purpose |
 | --- | --- | --- |
-| `CODEX_ENV_IMAGE` | `graysurf/codex-env:linuxbrew` | Workspace runtime image |
-| `CODEX_WORKSPACE_PREFIX` | `codex-ws` | Same as above (container/volume naming) |
+| `AGENT_ENV_IMAGE` | `graysurf/agent-env:linuxbrew` | Workspace runtime image |
+| `AGENT_WORKSPACE_PREFIX` | `codex-ws` | Same as above (container/volume naming) |
 | `GITHUB_HOST` | `github.com` | Repo host (when using `OWNER/REPO` form) |
-| `DEFAULT_SECRETS_MOUNT` | `/home/codex/codex_secrets` | Default container mount path when `--secrets-dir` is used |
+| `DEFAULT_SECRETS_MOUNT` | `/home/agent/AGENT_secrets` | Default container mount path when `--secrets-dir` is used |
 
 ---
 
@@ -165,7 +165,7 @@ Recommended minimal layout:
 
 ```text
 Dockerfile
-bin/codex-workspace        # bundled entrypoint: vendored zsh-kit `codex-workspace`
+bin/agent-workspace        # bundled entrypoint: vendored zsh-kit `agent-workspace`
 .github/workflows/publish.yml
 ```
 
@@ -174,17 +174,17 @@ Dockerfile design notes (macOS host; Ubuntu base recommended for predictable too
 - Install: `docker` CLI, `zsh`, `git`, `curl`, `ca-certificates`, `tar`, `rsync`, `python3`, `openssl`,
   and standard `awk/sed/coreutils`
 - Clone/pin:
-  - `/opt/codex-kit` (contains `docker/codex-env/bin/codex-workspace`)
+  - `/opt/agent-kit` (contains `docker/agent-env/bin/agent-workspace`)
 - Record zsh-kit ref (for traceability): `/opt/zsh-kit.ref`
-- Set defaults: `ENV CODEX_WORKSPACE_LAUNCHER=/opt/codex-kit/docker/codex-env/bin/codex-workspace`
-- Set `ENTRYPOINT ["codex-workspace"]`
+- Set defaults: `ENV AGENT_WORKSPACE_LAUNCHER=/opt/agent-kit/docker/agent-env/bin/agent-workspace`
+- Set `ENTRYPOINT ["agent-workspace"]`
 
 Local build (start with a dev tag):
 
 ```sh
-docker build -t codex-workspace-launcher:dev \
+docker build -t agent-workspace-launcher:dev \
   --build-arg ZSH_KIT_REF=main \
-  --build-arg CODEX_KIT_REF=main \
+  --build-arg AGENT_KIT_REF=main \
   .
 ```
 
@@ -192,21 +192,21 @@ docker build -t codex-workspace-launcher:dev \
 
 Wrapper requirements:
 
-1) `bin/codex-workspace` is a bundled wrapper generated from `zsh-kit` and committed to this repo
+1) `bin/agent-workspace` is a bundled wrapper generated from `zsh-kit` and committed to this repo
 2) `docker run ... <image> <args...>` executes the wrapper (image entrypoint)
 
 Verification:
 
 ```sh
-docker run --rm -it codex-workspace-launcher:dev --help
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock codex-workspace-launcher:dev ls
+docker run --rm -it agent-workspace-launcher:dev --help
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock agent-workspace-launcher:dev ls
 ```
 
 ### Step 3: minimal smoke checks (validate end-to-end)
 
 ```sh
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock codex-workspace-launcher:dev create graysurf/codex-kit
-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock codex-workspace-launcher:dev ls
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock agent-workspace-launcher:dev create graysurf/agent-kit
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock agent-workspace-launcher:dev ls
 ```
 
 ### Step 4: CI publishing (GitHub Actions)
@@ -215,17 +215,17 @@ Recommendation (macOS users can be Apple Silicon or Intel):
 
 - Multi-arch: `linux/amd64,linux/arm64`
 - Tags: `latest` + `sha-<short>` (or semver)
-- Build args: `ZSH_KIT_REF`, `CODEX_KIT_REF` (use commit SHAs for reproducibility)
+- Build args: `ZSH_KIT_REF`, `AGENT_KIT_REF` (use commit SHAs for reproducibility)
 - Source of truth: `VERSIONS.env` (CI should build from the pinned pair)
 
 Example (manual):
 
 ```sh
 docker buildx build --platform linux/amd64,linux/arm64 \
-  -t graysurf/codex-workspace-launcher:latest \
-  -t graysurf/codex-workspace-launcher:sha-$(git rev-parse --short HEAD) \
+  -t graysurf/agent-workspace-launcher:latest \
+  -t graysurf/agent-workspace-launcher:sha-$(git rev-parse --short HEAD) \
   --build-arg ZSH_KIT_REF=main \
-  --build-arg CODEX_KIT_REF=main \
+  --build-arg AGENT_KIT_REF=main \
   --push \
   .
 ```
@@ -248,21 +248,21 @@ Smoke commands (Linux host):
 
 ```sh
 # Should print help without talking to the Docker daemon.
-docker run --rm -it graysurf/codex-workspace-launcher:latest --help
+docker run --rm -it graysurf/agent-workspace-launcher:latest --help
 
 # Verify Docker daemon connectivity from the launcher container.
 docker run --rm -it \
   --user 0:0 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   ls
 
 # End-to-end create (public repo).
 docker run --rm -it \
   --user 0:0 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
-  create graysurf/codex-kit
+  graysurf/agent-workspace-launcher:latest \
+  create graysurf/agent-kit
 ```
 
 Expected failure mode:

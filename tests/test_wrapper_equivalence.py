@@ -26,15 +26,15 @@ def _run_plan_case_stub(plan_case: CwsE2EPlanCase) -> list[str]:
     for key in [
         "CWS_BASH_PATH",
         "CWS_DOCKER_ARGS",
-        "CODEX_WORKSPACE_GPG",
-        "CODEX_WORKSPACE_GPG_KEY",
+        "AGENT_WORKSPACE_GPG",
+        "AGENT_WORKSPACE_GPG_KEY",
         "GH_TOKEN",
         "GITHUB_TOKEN",
     ]:
         env.pop(key, None)
 
-    env["CODEX_WORKSPACE_GPG"] = "none"
-    env["CODEX_WORKSPACE_GPG_KEY"] = ""
+    env["AGENT_WORKSPACE_GPG"] = "none"
+    env["AGENT_WORKSPACE_GPG_KEY"] = ""
 
     if plan_case.case.env:
         env.update({str(k): str(v) for k, v in plan_case.case.env.items()})

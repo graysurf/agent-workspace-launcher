@@ -266,3 +266,8 @@ def test_script_smoke_spec(script: str, case: str, spec: dict[str, Any]):
 
     result = run_smoke_script(script, case, spec, repo)
     SCRIPT_SMOKE_RUN_RESULTS.append(result)
+    assert result.status == "pass", (
+        f"script smoke failed: {script} case={case} "
+        f"exit={result.exit_code} note={result.note} "
+        f"stdout={result.stdout_path} stderr={result.stderr_path}"
+    )

@@ -1,4 +1,4 @@
-# codex-workspace-launcher: Portable DooD launcher image
+# agent-workspace-launcher: Portable DooD launcher image
 
 | Status | Created | Updated |
 | --- | --- | --- |
@@ -6,10 +6,10 @@
 
 Links:
 
-- PR: https://github.com/graysurf/codex-workspace-launcher/pull/2
-- Planning PR: [#1](https://github.com/graysurf/codex-workspace-launcher/pull/1)
-- Implementation PR: [#2](https://github.com/graysurf/codex-workspace-launcher/pull/2)
-- Integration testing PR: [#3](https://github.com/graysurf/codex-workspace-launcher/pull/3)
+- PR: https://github.com/graysurf/agent-workspace-launcher/pull/2
+- Planning PR: [#1](https://github.com/graysurf/agent-workspace-launcher/pull/1)
+- Implementation PR: [#2](https://github.com/graysurf/agent-workspace-launcher/pull/2)
+- Integration testing PR: [#3](https://github.com/graysurf/agent-workspace-launcher/pull/3)
 - Docs: [docs/DESIGN.md](../../DESIGN.md)
 - User guide: [docs/guides/README.md](../../guides/README.md)
 - Integration checklist: [docs/runbooks/INTEGRATION_TEST.md](../../runbooks/INTEGRATION_TEST.md)
@@ -24,19 +24,19 @@ Links:
   - ~~CI publish run URL + published image tags.~~
     - Reason: requires a main-branch run (and Docker Hub secrets); will be recorded in the integration testing PR.
 - 2026-01-20: Completed deferred Step 3/4 validation evidence (see `docs/runbooks/INTEGRATION_TEST.md`).
-  - Linux exploratory smoke evidence (OrbStack engine): `$CODEX_HOME/out/linux-exploratory-smoke-orbstack-20260120-085812.log`
-  - CI publish + Docker Hub tags evidence: `$CODEX_HOME/out/ci-publish-verification-20260120-081548.log`
-  - CI publish + GHCR tags evidence: `$CODEX_HOME/out/ghcr-verification-20260120-084948.log`
+  - Linux exploratory smoke evidence (OrbStack engine): `$AGENT_HOME/out/linux-exploratory-smoke-orbstack-20260120-085812.log`
+  - CI publish + Docker Hub tags evidence: `$AGENT_HOME/out/ci-publish-verification-20260120-081548.log`
+  - CI publish + GHCR tags evidence: `$AGENT_HOME/out/ghcr-verification-20260120-084948.log`
 
 ## Goal
 
-- Publish a portable `graysurf/codex-workspace-launcher` image that exposes `codex-workspace create/ls/rm/exec/reset/tunnel` via `docker run`.
+- Publish a portable `graysurf/agent-workspace-launcher` image that exposes `agent-workspace create/ls/rm/exec/reset/tunnel` via `docker run`.
 - Document DooD footguns (docker.sock + host-path mounts) and auth paths (`GH_TOKEN`) for macOS hosts.
 
 ## Acceptance Criteria
 
-- `docker run --rm -it graysurf/codex-workspace-launcher:latest --help` lists `create/ls/rm/exec/reset/tunnel` and exits `0`.
-- With `-v /var/run/docker.sock:/var/run/docker.sock`, `ls`, `create graysurf/codex-kit`, `exec <name>`, and `rm <name> --yes` work end-to-end on a clean macOS host.
+- `docker run --rm -it graysurf/agent-workspace-launcher:latest --help` lists `create/ls/rm/exec/reset/tunnel` and exits `0`.
+- With `-v /var/run/docker.sock:/var/run/docker.sock`, `ls`, `create graysurf/agent-kit`, `exec <name>`, and `rm <name> --yes` work end-to-end on a clean macOS host.
 - With `-e GH_TOKEN="$GH_TOKEN"`, `create OWNER/PRIVATE_REPO` can clone/pull private repos (no host mounts required by default).
 - `README.md` documents Quickstart, DooD rules, env vars (including deprecated), and security notes.
 - CI publishes multi-arch (`linux/amd64,linux/arm64`) images with `latest` + `sha-<short>` tags (Docker Hub + GHCR).
@@ -44,13 +44,13 @@ Links:
 ## Scope
 
 - In-scope:
-  - `Dockerfile` + `bin/codex-workspace` wrapper to run `workspace-launcher.zsh` inside the launcher image.
-  - Build args to pin `zsh-kit` and `codex-kit` refs at image build time.
+  - `Dockerfile` + `bin/agent-workspace` wrapper to run `workspace-launcher.zsh` inside the launcher image.
+  - Build args to pin `zsh-kit` and `agent-kit` refs at image build time.
   - GitHub Actions workflow for multi-arch build and publish.
   - Documentation updates in `README.md` (Quickstart, env table, security, DooD rules, examples).
   - Manual smoke commands recorded as evidence (macOS; Linux exploratory).
 - Out-of-scope:
-  - Modifying upstream behavior in `zsh-kit` / `codex-kit` beyond pinning refs.
+  - Modifying upstream behavior in `zsh-kit` / `agent-kit` beyond pinning refs.
   - Guaranteeing Linux host support (only smoke exploration; no support claim in docs).
   - Host-side editor integration (e.g. auto `code --new-window`) beyond documenting limitations.
   - New subcommands beyond the existing `create/ls/rm/exec/reset/tunnel` contract.
@@ -59,7 +59,7 @@ Links:
 
 ### Input
 
-- CLI: `docker run ... graysurf/codex-workspace-launcher:<tag> <subcommand> [args]`
+- CLI: `docker run ... graysurf/agent-workspace-launcher:<tag> <subcommand> [args]`
 - Host mounts/env:
   - `-v /var/run/docker.sock:/var/run/docker.sock`
   - optional `-e GH_TOKEN=...` (private repo cloning)
@@ -68,36 +68,36 @@ Links:
 ### Output
 
 - Host Docker side effects:
-  - Workspace container(s) named with `CODEX_WORKSPACE_PREFIX` (default `codex-ws`)
+  - Workspace container(s) named with `AGENT_WORKSPACE_PREFIX` (default `codex-ws`)
   - Named volumes for workspace persistence (as created by the low-level launcher)
 - CLI output for `ls/exec/rm/reset/tunnel` plus standard exit codes
 
 ### Intermediate Artifacts
 
-- Repo files: `Dockerfile`, `bin/codex-workspace`, `.github/workflows/publish.yml`, `README.md`
-- Evidence logs: `$CODEX_HOME/out/codex-workspace-launcher-smoke-*.md`
+- Repo files: `Dockerfile`, `bin/agent-workspace`, `.github/workflows/publish.yml`, `README.md`
+- Evidence logs: `$AGENT_HOME/out/agent-workspace-launcher-smoke-*.md`
 
 ## Design / Decisions
 
 ### Rationale
 
-- Use the existing two-layer launcher stack from `zsh-kit` (public `create/...`) and `codex-kit` (low-level `up/...`) to avoid re-implementing orchestration logic.
-- Pin `zsh-kit` and `codex-kit` refs at build time to make the launcher image reproducible and reduce runtime network dependency.
-- Default `CODEX_WORKSPACE_LAUNCHER` to `/opt/codex-kit/docker/codex-env/bin/codex-workspace` and prefer env-based auth (`GH_TOKEN`) inside the launcher container.
+- Use the existing two-layer launcher stack from `zsh-kit` (public `create/...`) and `agent-kit` (low-level `up/...`) to avoid re-implementing orchestration logic.
+- Pin `zsh-kit` and `agent-kit` refs at build time to make the launcher image reproducible and reduce runtime network dependency.
+- Default `AGENT_WORKSPACE_LAUNCHER` to `/opt/agent-kit/docker/agent-env/bin/agent-workspace` and prefer env-based auth (`GH_TOKEN`) inside the launcher container.
 
 ### Open Decisions (Step 0)
 
-- Ref pinning (`ZSH_KIT_REF`, `CODEX_KIT_REF`):
+- Ref pinning (`ZSH_KIT_REF`, `AGENT_KIT_REF`):
   - a) **Selected**: Dockerfile defaults to `main`; CI pins to commit SHAs for published images.
   - b) Always pin Dockerfile defaults to fixed SHAs/tags (manual bump when upstream changes).
   - c) Vendor scripts into this repo/image (no git clone at build; higher maintenance).
-- Default runtime image (`CODEX_ENV_IMAGE`):
-  - a) **Selected**: rely on upstream default `graysurf/codex-env:linuxbrew` (document; overridable via env).
-  - b) Set `ENV CODEX_ENV_IMAGE=graysurf/codex-env:linuxbrew` in Dockerfile for clarity (still overridable).
+- Default runtime image (`AGENT_ENV_IMAGE`):
+  - a) **Selected**: rely on upstream default `graysurf/agent-env:linuxbrew` (document; overridable via env).
+  - b) Set `ENV AGENT_ENV_IMAGE=graysurf/agent-env:linuxbrew` in Dockerfile for clarity (still overridable).
   - c) Change default to a different image/tag (specify).
 - Publish registry + tags:
-  - a) Docker Hub only (`graysurf/codex-workspace-launcher`); on push to `main` publish `latest` + `sha-<short>`.
-  - b) **Selected**: Docker Hub + GHCR (`ghcr.io/graysurf/codex-workspace-launcher`) with the same tags.
+  - a) Docker Hub only (`graysurf/agent-workspace-launcher`); on push to `main` publish `latest` + `sha-<short>`.
+  - b) **Selected**: Docker Hub + GHCR (`ghcr.io/graysurf/agent-workspace-launcher`) with the same tags.
   - c) Publish only on release tags `v*` (optionally also `latest`).
 
 ### Proposed Enhancements (Host Wrapper + Shell Completion)
@@ -137,7 +137,7 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
 - [x] Step 0: Alignment / prerequisites
   - Work Items:
     - [x] Confirm external CLI contract matches `workspace-launcher.zsh` help output and `docs/DESIGN.md`.
-    - [x] Decide ref pinning strategy (`ZSH_KIT_REF`, `CODEX_KIT_REF`) and default runtime image (`CODEX_ENV_IMAGE`). (Decision: 1a, 2a)
+    - [x] Decide ref pinning strategy (`ZSH_KIT_REF`, `AGENT_KIT_REF`) and default runtime image (`AGENT_ENV_IMAGE`). (Decision: 1a, 2a)
     - [x] Decide publish target(s) and tag strategy (`latest`, `sha-<short>`, optional semver). (Decision: 3b)
   - Artifacts:
     - `docs/progress/20260120_portable-dood-launcher-image.md` (this file)
@@ -147,23 +147,23 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
     - [x] Data flow and I/O contract are defined (DooD + host mounts + env): `docs/DESIGN.md`.
     - [x] Risks and rollback plan are defined (no DB migrations): rollback = revert published tag / pin refs; risks in this file.
     - [x] Minimal reproducible verification commands are defined:
-      - `docker run --rm -it graysurf/codex-workspace-launcher:latest --help`
-      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest ls`
-      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/codex-workspace-launcher:latest create graysurf/codex-kit`
+      - `docker run --rm -it graysurf/agent-workspace-launcher:latest --help`
+      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest ls`
+      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock graysurf/agent-workspace-launcher:latest create graysurf/agent-kit`
 - [x] Step 1: Minimum viable output (MVP)
   - Work Items:
-    - [x] Implement `Dockerfile` with required tooling and clone/pin `zsh-kit` + `codex-kit` into `/opt/...`.
-    - [x] Add `bin/codex-workspace` wrapper that sources `workspace-launcher.zsh` and runs `codex-workspace "$@"`.
+    - [x] Implement `Dockerfile` with required tooling and clone/pin `zsh-kit` + `agent-kit` into `/opt/...`.
+    - [x] Add `bin/agent-workspace` wrapper that sources `workspace-launcher.zsh` and runs `agent-workspace "$@"`.
     - [x] Add minimal `README.md` quickstart and common commands (`--help`, `ls`, `create`).
   - Artifacts:
     - `Dockerfile`
-    - `bin/codex-workspace`
+    - `bin/agent-workspace`
     - `README.md`
   - Exit Criteria:
-    - [x] At least one happy path runs end-to-end (evidence: `$CODEX_HOME/out/codex-workspace-launcher-step1-smoke-20260120.md`):
-      - `docker build -t codex-workspace-launcher:dev .`
-      - `docker run --rm -it codex-workspace-launcher:dev --help`
-      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock codex-workspace-launcher:dev create graysurf/codex-kit`
+    - [x] At least one happy path runs end-to-end (evidence: `$AGENT_HOME/out/agent-workspace-launcher-step1-smoke-20260120.md`):
+      - `docker build -t agent-workspace-launcher:dev .`
+      - `docker run --rm -it agent-workspace-launcher:dev --help`
+      - `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock agent-workspace-launcher:dev create graysurf/agent-kit`
     - [x] Primary outputs are verifiable (workspace containers/volumes exist): `docker ps -a` and `docker volume ls`.
     - [x] Usage docs skeleton exists (TL;DR + common commands + DooD rules): `README.md`.
 - [x] Step 2: Expansion / integration
@@ -173,16 +173,16 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
     - [x] Validate private repo flows using `GH_TOKEN` inside the launcher container.
   - Artifacts:
     - `README.md`
-    - `$CODEX_HOME/out/codex-workspace-launcher-private-repo.md`
+    - `$AGENT_HOME/out/agent-workspace-launcher-private-repo.md`
   - Exit Criteria:
-    - [x] Common branches are covered (evidence: `$CODEX_HOME/out/codex-workspace-launcher-private-repo.md`):
+    - [x] Common branches are covered (evidence: `$AGENT_HOME/out/agent-workspace-launcher-private-repo.md`):
       - [x] `rm <name> --yes`
       - [x] `exec <name>`
       - [x] `reset work-repos <name> --yes`
       - [ ] ~~rm --all --yes~~
         - Reason: destructive on host; not executed in local smoke.
       - [x] Optional mounts are non-fatal when absent; host mount setup is documented in `README.md`.
-    - [x] Compatible with existing naming conventions: `CODEX_WORKSPACE_PREFIX` matches upstream behavior (evidence: `$CODEX_HOME/out/codex-workspace-launcher-private-repo.md`).
+    - [x] Compatible with existing naming conventions: `AGENT_WORKSPACE_PREFIX` matches upstream behavior (evidence: `$AGENT_HOME/out/agent-workspace-launcher-private-repo.md`).
     - [x] Required migrations / backfill scripts and documentation exist: None (no DB/migrations in this repo).
 - [x] Step 3: Validation / testing
   - Work Items:
@@ -191,11 +191,11 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
     - [x] Verify security docs mention docker.sock risk and token visibility (`docker inspect`) (see `README.md`).
   - Artifacts:
     - `docs/runbooks/INTEGRATION_TEST.md`
-    - Evidence logs under `$CODEX_HOME/out/` (see `docs/runbooks/INTEGRATION_TEST.md`)
+    - Evidence logs under `$AGENT_HOME/out/` (see `docs/runbooks/INTEGRATION_TEST.md`)
   - Exit Criteria:
     - [x] Validation commands executed with results recorded: see `docs/runbooks/INTEGRATION_TEST.md`.
     - [x] Run with real repos and representative samples:
-      - public: `graysurf/codex-kit`
+      - public: `graysurf/agent-kit`
       - private: `OWNER/PRIVATE_REPO` (with `GH_TOKEN`) and rerun after any fix
     - [x] Traceable evidence exists: smoke logs + CI run URL + published image tags (see `docs/runbooks/INTEGRATION_TEST.md`).
 - [x] Step 4: Release / wrap-up
@@ -217,7 +217,7 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
 ## Modules
 
 - `Dockerfile`: Build the launcher image and install required tools/dependencies.
-- `bin/codex-workspace`: Container entrypoint wrapper that sources `workspace-launcher.zsh`.
+- `bin/agent-workspace`: Container entrypoint wrapper that sources `workspace-launcher.zsh`.
 - `.github/workflows/publish.yml`: Multi-arch build and publish workflow.
 - `README.md`: User-facing docs (Quickstart, DooD rules, env vars, security notes).
 - `docs/DESIGN.md`: Architecture and development reference (source of truth).

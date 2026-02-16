@@ -17,7 +17,7 @@
 
 | Env | Default | Purpose |
 | --- | --- | --- |
-| `CWS_IMAGE` | `graysurf/codex-workspace-launcher:latest` | Launcher image to run |
+| `CWS_IMAGE` | `graysurf/agent-workspace-launcher:latest` | Launcher image to run |
 | `CWS_DOCKER_ARGS` | (empty) | Extra `docker run` args for the launcher container |
 | `CWS_AUTH` | `auto` | `auto\|env\|none`: when `auto`, reuse host `gh` keyring token for `create/reset/auth github` if no `GH_TOKEN`/`GITHUB_TOKEN` |
 

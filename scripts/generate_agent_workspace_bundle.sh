@@ -4,10 +4,10 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 usage:
-  scripts/generate_codex_workspace_bundle.sh
+  scripts/generate_agent_workspace_bundle.sh
 
 notes:
-  - Regenerates ./bin/codex-workspace from the pinned ZSH_KIT_REF in VERSIONS.env.
+  - Regenerates ./bin/agent-workspace from the pinned ZSH_KIT_REF in VERSIONS.env.
   - Requires: git and zsh (bundling uses zsh-kit's tools/bundle-wrapper.zsh at the pinned ref).
 EOF
 }
@@ -45,7 +45,7 @@ fi
 
 tmpdir="$(mktemp -d 2>/dev/null || true)"
 if [[ -z "$tmpdir" ]]; then
-  tmpdir="/tmp/codex-workspace-launcher.bundle.$$"
+  tmpdir="/tmp/agent-workspace-launcher.bundle.$$"
   mkdir -p -- "$tmpdir"
 fi
 cleanup() { rm -rf -- "$tmpdir" >/dev/null 2>&1 || true; }
@@ -69,40 +69,76 @@ if [[ ! -f "$bundle_wrapper" ]]; then
   exit 1
 fi
 
-manifest="${repo_root}/scripts/bundles/codex-workspace.wrapper.zsh"
+manifest="${repo_root}/scripts/bundles/agent-workspace.wrapper.zsh"
 if [[ ! -f "$manifest" ]]; then
   echo "error: missing bundle manifest: $manifest" >&2
   exit 1
 fi
 
-for required in \
-  "scripts/_features/codex-workspace/alias.zsh" \
-  "scripts/_features/codex-workspace/repo-reset.zsh" \
-  "scripts/_features/codex-workspace/workspace-rm.zsh" \
-  "scripts/_features/codex-workspace/workspace-rsync.zsh" \
-  "scripts/_features/codex-workspace/workspace-launcher.zsh"
-do
+feature_namespace='agent-workspace'
+if [[ ! -f "${zsh_kit_dir}/scripts/_features/agent-workspace/alias.zsh" ]]; then
+  if [[ -f "${zsh_kit_dir}/scripts/_features/codex-workspace/alias.zsh" ]]; then
+    feature_namespace='codex-workspace'
+  else
+    echo "error: missing expected zsh-kit feature namespace: agent-workspace (or codex-workspace fallback)" >&2
+    echo "hint: check ZSH_KIT_REF=$ZSH_KIT_REF" >&2
+    exit 1
+  fi
+fi
+
+manifest_input="$manifest"
+if [[ "$feature_namespace" == "codex-workspace" ]]; then
+  manifest_input="${tmpdir}/agent-workspace.wrapper.compat.zsh"
+  sed 's#_features/agent-workspace/#_features/codex-workspace/#g' "$manifest" >"$manifest_input"
+fi
+
+for feature_file in alias.zsh repo-reset.zsh workspace-rm.zsh workspace-rsync.zsh workspace-launcher.zsh; do
+  required="scripts/_features/${feature_namespace}/${feature_file}"
   if [[ ! -f "${zsh_kit_dir}/${required}" ]]; then
     echo "error: missing expected zsh-kit file: ${required}" >&2
-    echo "hint: check ZSH_KIT_REF=$ZSH_KIT_REF and ensure it contains codex-workspace" >&2
+    echo "hint: check ZSH_KIT_REF=$ZSH_KIT_REF and ensure it contains ${feature_namespace}" >&2
     exit 1
   fi
 done
 
-output="${repo_root}/bin/codex-workspace"
-tmp_output="${tmpdir}/codex-workspace.bundled"
+output="${repo_root}/bin/agent-workspace"
+tmp_output="${tmpdir}/agent-workspace.bundled"
+tmp_output_transformed="${tmpdir}/agent-workspace.bundled.transformed"
+tmp_output_source="$tmp_output"
 
 ZDOTDIR="${zsh_kit_dir}" \
 ZSH_CONFIG_DIR="${zsh_kit_dir}/config" \
 ZSH_BOOTSTRAP_SCRIPT_DIR="${zsh_kit_dir}/bootstrap" \
 ZSH_SCRIPT_DIR="${zsh_kit_dir}/scripts" \
   zsh -f "$bundle_wrapper" \
-  --input "$manifest" \
+  --input "$manifest_input" \
   --output "$tmp_output" \
-  --entry codex-workspace
+  --entry agent-workspace
 
-normalized_bundled_from="scripts/bundles/codex-workspace.wrapper.zsh"
-tmp_output2="${tmpdir}/codex-workspace.bundled.header"
+normalized_bundled_from="scripts/bundles/agent-workspace.wrapper.zsh"
+tmp_output2="${tmpdir}/agent-workspace.bundled.header"
+
+if [[ "$feature_namespace" == "codex-workspace" ]]; then
+  # Transitional compatibility:
+  # upstream zsh-kit may still ship codex-named feature sources while this repo
+  # exposes an agent-facing command/env contract.
+  perl -pe '
+    s/\bcodex-workspace\b/agent-workspace/g;
+    s/\bCODEX_WORKSPACE_/AGENT_WORKSPACE_/g;
+    s/\bAGENT_WORKSPACE_CODEX_PROFILE\b/AGENT_WORKSPACE_AGENT_PROFILE/g;
+    s/\bCODEX_HOME\b/AGENT_HOME/g;
+    s/codex-kit\.workspace/agent-kit.workspace/g;
+    s/\bcodex-kit\b/agent-kit/g;
+    s/\bcodex-env\b/agent-env/g;
+    s/\.agent-env/.agents-env/g;
+    s/\bcodex_secrets\b/AGENT_secrets/g;
+    s{/home/codex/codex_secrets}{/home/agent/AGENT_secrets}g;
+    s{/home/codex}{/home/agent}g;
+    s{/home/agent/\.codex}{/home/agent/.agents}g;
+    s{\.config/codex_secrets}{.config/AGENT_secrets}g;
+  ' "$tmp_output" >"$tmp_output_transformed"
+  tmp_output_source="$tmp_output_transformed"
+fi
 
 {
   IFS= read -r first || true
@@ -113,7 +149,7 @@ tmp_output2="${tmpdir}/codex-workspace.bundled.header"
 
   printf '%s\n' "${first}"
   printf '# Generated from: graysurf/zsh-kit@%s\n' "${resolved_zsh_kit_ref}"
-  printf '# DO NOT EDIT: regenerate via scripts/generate_codex_workspace_bundle.sh\n'
+  printf '# DO NOT EDIT: regenerate via scripts/generate_agent_workspace_bundle.sh\n'
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ "$line" == "# Bundled from:"* ]]; then
@@ -122,7 +158,7 @@ tmp_output2="${tmpdir}/codex-workspace.bundled.header"
     fi
     printf '%s\n' "$line"
   done
-} <"$tmp_output" >"$tmp_output2"
+} <"$tmp_output_source" >"$tmp_output2"
 
 mkdir -p -- "${output%/*}"
 mv -f -- "$tmp_output2" "$output"

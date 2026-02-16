@@ -17,7 +17,7 @@ cws --help
 ## 3) Create a workspace
 
 ```sh
-cws create graysurf/codex-kit
+cws create graysurf/agent-kit
 ```
 
 The output includes:
@@ -28,7 +28,7 @@ The output includes:
 ## 4) Run commands in the workspace
 
 ```sh
-cws exec <name|container> git -C /work/graysurf/codex-kit status
+cws exec <name|container> git -C /work/graysurf/agent-kit status
 ```
 
 Interactive shell:

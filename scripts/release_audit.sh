@@ -14,7 +14,7 @@ checks:
   - Release entry records pinned upstream refs from VERSIONS.env:
       ### Upstream pins
       - zsh-kit: <ZSH_KIT_REF>
-      - codex-kit: <CODEX_KIT_REF>
+      - agent-kit: <AGENT_KIT_REF>
   - Release entry contains no placeholder lines (e.g. `- None`, `- ...`, `...`, `vX.Y.Z`, `YYYY-MM-DD`)
 
 exit:
@@ -41,7 +41,7 @@ is_full_sha() {
 read_pins() {
   local file="$1"
   local zsh=''
-  local codex=''
+  local agent=''
   while IFS= read -r line || [[ -n "$line" ]]; do
     case "$line" in
       \#*|'') continue ;;
@@ -53,21 +53,21 @@ read_pins() {
         zsh="${zsh%\'}"
         zsh="${zsh#\'}"
         ;;
-      CODEX_KIT_REF=*)
-        codex="${line#CODEX_KIT_REF=}"
-        codex="${codex%$'\r'}"
-        codex="${codex%\"}"
-        codex="${codex#\"}"
-        codex="${codex%\'}"
-        codex="${codex#\'}"
+      AGENT_KIT_REF=*)
+        agent="${line#AGENT_KIT_REF=}"
+        agent="${agent%$'\r'}"
+        agent="${agent%\"}"
+        agent="${agent#\"}"
+        agent="${agent%\'}"
+        agent="${agent#\'}"
         ;;
     esac
   done <"$file"
 
   [[ -n "$zsh" ]] || die "missing ZSH_KIT_REF in $file"
-  [[ -n "$codex" ]] || die "missing CODEX_KIT_REF in $file"
+  [[ -n "$agent" ]] || die "missing AGENT_KIT_REF in $file"
 
-  printf '%s %s\n' "$zsh" "$codex"
+  printf '%s %s\n' "$zsh" "$agent"
 }
 
 extract_release_notes() {
@@ -197,10 +197,10 @@ main() {
   fi
 
   local zsh_ref=''
-  local codex_ref=''
+  local AGENT_ref=''
   if [[ -f "$versions_file" ]]; then
-    read -r zsh_ref codex_ref < <(read_pins "$versions_file")
-    say_ok "pins loaded: zsh-kit=${zsh_ref} codex-kit=${codex_ref}"
+    read -r zsh_ref AGENT_ref < <(read_pins "$versions_file")
+    say_ok "pins loaded: zsh-kit=${zsh_ref} agent-kit=${AGENT_ref}"
     if ! is_full_sha "$zsh_ref"; then
       if (( strict )); then
         say_fail "ZSH_KIT_REF is not a full 40-char sha: $zsh_ref"
@@ -209,12 +209,12 @@ main() {
         say_warn "ZSH_KIT_REF is not a full 40-char sha: $zsh_ref"
       fi
     fi
-    if ! is_full_sha "$codex_ref"; then
+    if ! is_full_sha "$AGENT_ref"; then
       if (( strict )); then
-        say_fail "CODEX_KIT_REF is not a full 40-char sha: $codex_ref"
+        say_fail "AGENT_KIT_REF is not a full 40-char sha: $AGENT_ref"
         failed=1
       else
-        say_warn "CODEX_KIT_REF is not a full 40-char sha: $codex_ref"
+        say_warn "AGENT_KIT_REF is not a full 40-char sha: $AGENT_ref"
       fi
     fi
   fi
@@ -247,11 +247,11 @@ main() {
         [[ -n "$zsh_ref" ]] && say_ok "pin recorded: zsh-kit"
       fi
 
-      if [[ -n "$codex_ref" && "$notes" != *"- codex-kit: ${codex_ref}"* ]]; then
-        say_fail "missing or mismatched pin line: - codex-kit: ${codex_ref}"
+      if [[ -n "$AGENT_ref" && "$notes" != *"- agent-kit: ${AGENT_ref}"* ]]; then
+        say_fail "missing or mismatched pin line: - agent-kit: ${AGENT_ref}"
         failed=1
       else
-        [[ -n "$codex_ref" ]] && say_ok "pin recorded: codex-kit"
+        [[ -n "$AGENT_ref" ]] && say_ok "pin recorded: agent-kit"
       fi
 
       if has_placeholder_lines "$notes"; then

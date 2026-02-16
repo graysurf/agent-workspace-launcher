@@ -1,23 +1,23 @@
 #!/usr/bin/env -S zsh -f
 # Generated from: graysurf/zsh-kit@dcf65f9600c24b87d14bf506d017996a70a32103
-# DO NOT EDIT: regenerate via scripts/generate_codex_workspace_bundle.sh
+# DO NOT EDIT: regenerate via scripts/generate_agent_workspace_bundle.sh
 set -e
 
-# Bundled from: scripts/bundles/codex-workspace.wrapper.zsh
+# Bundled from: scripts/bundles/agent-workspace.wrapper.zsh
 : "${ZDOTDIR:=$HOME/.config/zsh}"
 export ZDOTDIR
 export ZSH_CONFIG_DIR="${ZSH_CONFIG_DIR:-$ZDOTDIR/config}"
 export ZSH_BOOTSTRAP_SCRIPT_DIR="${ZSH_BOOTSTRAP_SCRIPT_DIR:-$ZDOTDIR/bootstrap}"
 export ZSH_SCRIPT_DIR="${ZSH_SCRIPT_DIR:-$ZDOTDIR/scripts}"
 
-# --- BEGIN _features/codex-workspace/alias.zsh
-# Feature: codex-workspace aliases
+# --- BEGIN _features/agent-workspace/alias.zsh
+# Feature: agent-workspace aliases
 #
-# Provides short aliases for codex-workspace helpers.
-# - `cw`   -> `codex-workspace`
-# - `cw*`  -> `codex-workspace <subcommand> ...`
-# - `cwa*` -> `codex-workspace auth ...`
-# - `cwr*` -> `codex-workspace reset ...`
+# Provides short aliases for agent-workspace helpers.
+# - `cw`   -> `agent-workspace`
+# - `cw*`  -> `agent-workspace <subcommand> ...`
+# - `cwa*` -> `agent-workspace auth ...`
+# - `cwr*` -> `agent-workspace reset ...`
 
 if command -v safe_unalias >/dev/null; then
   safe_unalias \
@@ -29,95 +29,95 @@ if command -v safe_unalias >/dev/null; then
 fi
 
 # cw
-# Alias of `codex-workspace`.
+# Alias of `agent-workspace`.
 # Usage: cw <subcommand> [args...]
-alias cw='codex-workspace'
+alias cw='agent-workspace'
 
 # ────────────────────────────────────────────────────────
-# codex-workspace subcommands (cw*)
+# agent-workspace subcommands (cw*)
 # ────────────────────────────────────────────────────────
 
 # cwa
-# Alias of `codex-workspace auth`.
+# Alias of `agent-workspace auth`.
 # Usage: cwa <provider> [args...]
-alias cwa='codex-workspace auth'
+alias cwa='agent-workspace auth'
 
 # cwac
-# Alias of `codex-workspace auth codex`.
+# Alias of `agent-workspace auth codex`.
 # Usage: cwac [args...]
-alias cwac='codex-workspace auth codex'
+alias cwac='agent-workspace auth codex'
 
 # cwah
-# Alias of `codex-workspace auth github`.
+# Alias of `agent-workspace auth github`.
 # Usage: cwah [args...]
-alias cwah='codex-workspace auth github'
+alias cwah='agent-workspace auth github'
 
 # cwag
-# Alias of `codex-workspace auth gpg`.
+# Alias of `agent-workspace auth gpg`.
 # Usage: cwag [args...]
-alias cwag='codex-workspace auth gpg'
+alias cwag='agent-workspace auth gpg'
 
 # cwc
-# Alias of `codex-workspace create`.
+# Alias of `agent-workspace create`.
 # Usage: cwc [args...]
-alias cwc='codex-workspace create'
+alias cwc='agent-workspace create'
 
 # cwl
-# Alias of `codex-workspace ls`.
+# Alias of `agent-workspace ls`.
 # Usage: cwl [args...]
-alias cwl='codex-workspace ls'
+alias cwl='agent-workspace ls'
 
 # cwe
-# Alias of `codex-workspace exec`.
+# Alias of `agent-workspace exec`.
 # Usage: cwe [args...]
-alias cwe='codex-workspace exec'
+alias cwe='agent-workspace exec'
 
 # cwr
-# Alias of `codex-workspace reset`.
+# Alias of `agent-workspace reset`.
 # Usage: cwr <command> [args...]
-alias cwr='codex-workspace reset'
+alias cwr='agent-workspace reset'
 
 # cwrr
-# Alias of `codex-workspace reset repo`.
+# Alias of `agent-workspace reset repo`.
 # Usage: cwrr [args...]
-alias cwrr='codex-workspace reset repo'
+alias cwrr='agent-workspace reset repo'
 
 # cwrw
-# Alias of `codex-workspace reset work-repos`.
+# Alias of `agent-workspace reset work-repos`.
 # Usage: cwrw [args...]
-alias cwrw='codex-workspace reset work-repos'
+alias cwrw='agent-workspace reset work-repos'
 
 # cwro
-# Alias of `codex-workspace reset opt-repos`.
+# Alias of `agent-workspace reset opt-repos`.
 # Usage: cwro [args...]
-alias cwro='codex-workspace reset opt-repos'
+alias cwro='agent-workspace reset opt-repos'
 
 # cwrp
-# Alias of `codex-workspace reset private-repo`.
+# Alias of `agent-workspace reset private-repo`.
 # Usage: cwrp [args...]
-alias cwrp='codex-workspace reset private-repo'
+alias cwrp='agent-workspace reset private-repo'
 
 # cwm
-# Alias of `codex-workspace rm`.
+# Alias of `agent-workspace rm`.
 # Usage: cwm [args...]
-alias cwm='codex-workspace rm'
+alias cwm='agent-workspace rm'
 
 # cwt
-# Alias of `codex-workspace tunnel`.
+# Alias of `agent-workspace tunnel`.
 # Usage: cwt [args...]
-alias cwt='codex-workspace tunnel'
+alias cwt='agent-workspace tunnel'
 
-# --- END _features/codex-workspace/alias.zsh
+# --- END _features/agent-workspace/alias.zsh
 
-# --- BEGIN _features/codex-workspace/repo-reset.zsh
-# Repo reset helpers for Codex workspace containers (feature: codex-workspace).
+# --- BEGIN _features/agent-workspace/repo-reset.zsh
+# Repo reset helpers for Codex workspace containers (feature: agent-workspace).
 #
 # Public functions:
-#   - codex-workspace-reset <subcommand> [args...]
-#   - codex-workspace-refresh-opt-repos <container> [--yes]
-#   - codex-workspace-reset-repo <container> <repo_dir> [--ref <remote/branch>] [--yes]
-#   - codex-workspace-reset-private-repo <container> [--ref <remote/branch>] [--yes]
-#   - codex-workspace-reset-work-repos <container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+#   - agent-workspace-reset <subcommand> [args...]
+#   - agent-workspace-refresh-opt-repos <container> [--yes]
+#   - agent-workspace-reset-repo <container> <repo_dir> [--ref <remote/branch>] [--yes]
+#   - agent-workspace-reset-private-repo <container> [--ref <remote/branch>] [--yes]
+#   - agent-workspace-reset-work-repos <container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
 
 # _codex_workspace_confirm <prompt>
 # Prompt for y/N confirmation (returns 0 only on "y"/"Y").
@@ -349,9 +349,9 @@ print -rl -- ${(ou)repos}
 EOF
 }
 
-# codex-workspace-reset <subcommand> [args...]
-# Reset helpers under the `codex-workspace reset ...` namespace.
-codex-workspace-reset() {
+# agent-workspace-reset <subcommand> [args...]
+# Reset helpers under the `agent-workspace reset ...` namespace.
+agent-workspace-reset() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -360,50 +360,50 @@ codex-workspace-reset() {
     ""|-h|--help)
       cat <<'EOF'
 usage:
-  codex-workspace reset repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
-  codex-workspace reset work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
-  codex-workspace reset opt-repos <name|container> [--yes]
-  codex-workspace reset private-repo <name|container> [--ref <remote/branch>] [--yes]
+  agent-workspace reset repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
+  agent-workspace reset work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+  agent-workspace reset opt-repos <name|container> [--yes]
+  agent-workspace reset private-repo <name|container> [--ref <remote/branch>] [--yes]
 
 subcommands:
   repo         Reset a single repo inside the container
   work-repos   Reset all git repos under a root dir (default: /work)
-  opt-repos    Refresh /opt/codex-kit + /opt/zsh-kit inside the container
+  opt-repos    Refresh /opt/agent-kit + /opt/zsh-kit inside the container
   private-repo Reset ~/.private inside the container
 EOF
       return 0
       ;;
     repo)
       shift 1 2>/dev/null || true
-      codex-workspace-reset-repo "$@"
+      agent-workspace-reset-repo "$@"
       return $?
       ;;
     work-repos)
       shift 1 2>/dev/null || true
-      codex-workspace-reset-work-repos "$@"
+      agent-workspace-reset-work-repos "$@"
       return $?
       ;;
     opt-repos)
       shift 1 2>/dev/null || true
-      codex-workspace-refresh-opt-repos "$@"
+      agent-workspace-refresh-opt-repos "$@"
       return $?
       ;;
     private-repo)
       shift 1 2>/dev/null || true
-      codex-workspace-reset-private-repo "$@"
+      agent-workspace-reset-private-repo "$@"
       return $?
       ;;
     *)
       print -u2 -r -- "error: unknown reset subcommand: $subcmd"
-      print -u2 -r -- "hint: codex-workspace reset --help"
+      print -u2 -r -- "hint: agent-workspace reset --help"
       return 2
       ;;
   esac
 }
 
-# codex-workspace-reset-repo <container> <repo_dir> [--ref <remote/branch>] [--yes]
+# agent-workspace-reset-repo <container> <repo_dir> [--ref <remote/branch>] [--yes]
 # Reset a single repo inside a workspace container.
-codex-workspace-reset-repo() {
+agent-workspace-reset-repo() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -411,7 +411,7 @@ codex-workspace-reset-repo() {
   local repo_dir="${2:-}"
   if [[ -z "$name" || "$name" == "-h" || "$name" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace-reset-repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
 
 Reset a repo inside a workspace container to a remote-tracking branch.
 Defaults:
@@ -425,7 +425,7 @@ EOF
 
   if [[ -z "$repo_dir" ]]; then
     print -u2 -r -- "error: missing required args"
-    print -u2 -r -- "hint: codex-workspace-reset-repo <container> <repo_dir> [--ref origin/main]"
+    print -u2 -r -- "hint: agent-workspace-reset-repo <container> <repo_dir> [--ref origin/main]"
     return 2
   fi
 
@@ -446,7 +446,7 @@ EOF
         ;;
       -h|--help)
         cat <<'EOF'
-usage: codex-workspace-reset-repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
 
 Reset a repo inside a workspace container to a remote-tracking branch.
 Defaults:
@@ -466,7 +466,7 @@ EOF
 
   if [[ -z "$name" || -z "$repo_dir" ]]; then
     print -u2 -r -- "error: missing required args"
-    print -u2 -r -- "hint: codex-workspace-reset-repo <container> <repo_dir> [--ref origin/main]"
+    print -u2 -r -- "hint: agent-workspace-reset-repo <container> <repo_dir> [--ref origin/main]"
     return 2
   fi
 
@@ -475,7 +475,7 @@ EOF
   if (( $+functions[_codex_workspace_normalize_container_name] )); then
     container="$(_codex_workspace_normalize_container_name "$name")" || return 1
   else
-    local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+    local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
     if [[ "$name" == "${prefix}-"* ]]; then
       container="$name"
     else
@@ -498,16 +498,16 @@ EOF
   _codex_workspace_container_reset_repo "$container" "$repo_dir" "$ref"
 }
 
-# codex-workspace-reset-private-repo <container> [--ref <remote/branch>] [--yes]
+# agent-workspace-reset-private-repo <container> [--ref <remote/branch>] [--yes]
 # Reset ~/.private inside a workspace container.
-codex-workspace-reset-private-repo() {
+agent-workspace-reset-private-repo() {
   emulate -L zsh
   setopt pipe_fail
 
   local name="${1:-}"
   if [[ -z "$name" || "$name" == "-h" || "$name" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace-reset-private-repo <name|container> [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-private-repo <name|container> [--ref <remote/branch>] [--yes]
 
 Reset ~/.private inside a workspace container to a remote-tracking branch.
 Defaults:
@@ -536,7 +536,7 @@ EOF
         ;;
       -h|--help)
         cat <<'EOF'
-usage: codex-workspace-reset-private-repo <name|container> [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-private-repo <name|container> [--ref <remote/branch>] [--yes]
 
 Reset ~/.private inside a workspace container to a remote-tracking branch.
 Defaults:
@@ -556,7 +556,7 @@ EOF
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing container"
-    print -u2 -r -- "hint: codex-workspace-reset-private-repo <container> [--ref origin/main]"
+    print -u2 -r -- "hint: agent-workspace-reset-private-repo <container> [--ref origin/main]"
     return 2
   fi
 
@@ -565,7 +565,7 @@ EOF
   if (( $+functions[_codex_workspace_normalize_container_name] )); then
     container="$(_codex_workspace_normalize_container_name "$name")" || return 1
   else
-    local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+    local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
     if [[ "$name" == "${prefix}-"* ]]; then
       container="$name"
     else
@@ -574,11 +574,11 @@ EOF
   fi
   _codex_workspace_require_container "$container" || return $?
 
-  local repo_dir="/home/codex/.private"
+  local repo_dir="/home/agent/.private"
 
   if ! docker exec -u codex "$container" bash -lc 'test -d "$HOME/.private/.git"' >/dev/null 2>&1; then
     print -u2 -r -- "warn: ~/.private not found (or not a git repo) in container: $container"
-    print -u2 -r -- "hint: seed it with: CODEX_WORKSPACE_PRIVATE_REPO=OWNER/REPO codex-workspace create ..."
+    print -u2 -r -- "hint: seed it with: AGENT_WORKSPACE_PRIVATE_REPO=OWNER/REPO agent-workspace create ..."
     return 0
   fi
 
@@ -596,16 +596,16 @@ EOF
   _codex_workspace_container_reset_repo "$container" "$repo_dir" "$ref"
 }
 
-# codex-workspace-reset-work-repos <container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+# agent-workspace-reset-work-repos <container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
 # Reset all git repos under a root directory inside a workspace container.
-codex-workspace-reset-work-repos() {
+agent-workspace-reset-work-repos() {
   emulate -L zsh
   setopt pipe_fail
 
   local name="${1:-}"
   if [[ -z "$name" || "$name" == "-h" || "$name" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace-reset-work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
 
 	Reset all git repos under a root directory inside a workspace container.
 	Defaults:
@@ -643,7 +643,7 @@ EOF
         ;;
       -h|--help)
         cat <<'EOF'
-usage: codex-workspace-reset-work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+usage: agent-workspace-reset-work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
 
 	Reset all git repos under a root directory inside a workspace container.
 	Defaults:
@@ -662,7 +662,7 @@ EOF
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing container"
-    print -u2 -r -- "hint: codex-workspace-reset-work-repos <container> [--depth 3]"
+    print -u2 -r -- "hint: agent-workspace-reset-work-repos <container> [--depth 3]"
     return 2
   fi
 
@@ -671,7 +671,7 @@ EOF
   if (( $+functions[_codex_workspace_normalize_container_name] )); then
     container="$(_codex_workspace_normalize_container_name "$name")" || return 1
   else
-    local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+    local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
     if [[ "$name" == "${prefix}-"* ]]; then
       container="$name"
     else
@@ -834,25 +834,25 @@ EOF
   print -r -- "$repos_out" | docker exec -i -u codex "$container" zsh -c "$reset_script" -- "$ref"
 }
 
-# codex-workspace-refresh-opt-repos <name|container> [--yes]
-# Force-update the image-bundled repos inside a workspace container, then sync codex-kit.
-codex-workspace-refresh-opt-repos() {
+# agent-workspace-refresh-opt-repos <name|container> [--yes]
+# Force-update the image-bundled repos inside a workspace container, then sync agent-kit.
+agent-workspace-refresh-opt-repos() {
   emulate -L zsh
   setopt pipe_fail
 
   local name="${1:-}"
   if [[ -z "$name" || "$name" == "-h" || "$name" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace-refresh-opt-repos <name|container> [--yes]
+usage: agent-workspace-refresh-opt-repos <name|container> [--yes]
 
 Force-update the image-bundled repos inside a workspace container:
-  - /opt/codex-kit
+  - /opt/agent-kit
   - /opt/zsh-kit
 
 Notes:
   - Uses `git-reset-remote --yes` when available (fallback: git fetch/reset/clean).
   - Re-wires zsh-kit codex secrets symlink when secrets are mounted.
-  - Syncs /opt/codex-kit -> $CODEX_HOME (default: /home/codex/.codex) via rsync.
+  - Syncs /opt/agent-kit -> $AGENT_HOME (default: /home/agent/.agents) via rsync.
   - Add --yes to skip the preflight confirmation prompt.
 EOF
     return 0
@@ -869,16 +869,16 @@ EOF
         ;;
       -h|--help)
         cat <<'EOF'
-usage: codex-workspace-refresh-opt-repos <name|container> [--yes]
+usage: agent-workspace-refresh-opt-repos <name|container> [--yes]
 
 Force-update the image-bundled repos inside a workspace container:
-  - /opt/codex-kit
+  - /opt/agent-kit
   - /opt/zsh-kit
 
 Notes:
   - Uses `git-reset-remote --yes` when available (fallback: git fetch/reset/clean).
   - Re-wires zsh-kit codex secrets symlink when secrets are mounted.
-  - Syncs /opt/codex-kit -> $CODEX_HOME (default: /home/codex/.codex) via rsync.
+  - Syncs /opt/agent-kit -> $AGENT_HOME (default: /home/agent/.agents) via rsync.
   - Add --yes to skip the preflight confirmation prompt.
 EOF
         return 0
@@ -892,7 +892,7 @@ EOF
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing container"
-    print -u2 -r -- "hint: codex-workspace-refresh-opt-repos <container>"
+    print -u2 -r -- "hint: agent-workspace-refresh-opt-repos <container>"
     return 2
   fi
 
@@ -902,7 +902,7 @@ EOF
   if (( $+functions[_codex_workspace_normalize_container_name] )); then
     container="$(_codex_workspace_normalize_container_name "$name")" || return 1
   else
-    local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+    local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
     if [[ "$name" == "${prefix}-"* ]]; then
       container="$name"
     else
@@ -911,7 +911,7 @@ EOF
   fi
   _codex_workspace_require_container "$container" || return $?
 
-  local -a repo_dirs=(/opt/codex-kit /opt/zsh-kit)
+  local -a repo_dirs=(/opt/agent-kit /opt/zsh-kit)
   if (( !want_yes )); then
     print -r -- "This will reset /opt repos inside container: $container"
     _codex_workspace_print_folders "${repo_dirs[@]}"
@@ -931,8 +931,8 @@ if command -v gh >/dev/null 2>&1; then
   gh config set git_protocol https -h github.com 2>/dev/null || gh config set git_protocol https 2>/dev/null || true
 fi
 
-codex_home="${CODEX_HOME:-/home/codex/.codex}"
-codex_src="/opt/codex-kit"
+codex_home="${AGENT_HOME:-/home/agent/.agents}"
+codex_src="/opt/agent-kit"
 
 # _restore_zsh_kit_codex_secrets_mount <dst>
 # If secrets are mounted outside the default, restore the zsh-kit codex secrets symlink.
@@ -1077,21 +1077,21 @@ _detect_codex_secrets_mount() {
     dst="${CODEX_SECRET_DIR-}"
   fi
 
-  if [[ -z "$dst" && -d "$HOME/codex_secrets" ]]; then
-    if [[ -f "$HOME/codex_secrets/codex-secret.zsh" ]]; then
-      dst="$HOME/codex_secrets"
+  if [[ -z "$dst" && -d "$HOME/AGENT_secrets" ]]; then
+    if [[ -f "$HOME/AGENT_secrets/codex-secret.zsh" ]]; then
+      dst="$HOME/AGENT_secrets"
     else
-      local -a json_files=("$HOME/codex_secrets"/*.json(N))
-      (( ${#json_files} > 0 )) && dst="$HOME/codex_secrets"
+      local -a json_files=("$HOME/AGENT_secrets"/*.json(N))
+      (( ${#json_files} > 0 )) && dst="$HOME/AGENT_secrets"
     fi
   fi
 
-  if [[ -z "$dst" && -d /home/codex/codex_secrets ]]; then
-    if [[ -f /home/codex/codex_secrets/codex-secret.zsh ]]; then
-      dst="/home/codex/codex_secrets"
+  if [[ -z "$dst" && -d /home/agent/AGENT_secrets ]]; then
+    if [[ -f /home/agent/AGENT_secrets/codex-secret.zsh ]]; then
+      dst="/home/agent/AGENT_secrets"
     else
-      local -a json_files=(/home/codex/codex_secrets/*.json(N))
-      (( ${#json_files} > 0 )) && dst="/home/codex/codex_secrets"
+      local -a json_files=(/home/agent/AGENT_secrets/*.json(N))
+      (( ${#json_files} > 0 )) && dst="/home/agent/AGENT_secrets"
     fi
   fi
 
@@ -1101,17 +1101,17 @@ _detect_codex_secrets_mount() {
 
 codex_secrets_mount="$(_detect_codex_secrets_mount 2>/dev/null || true)"
 
-_reset_repo_to_ref /opt/codex-kit origin/main
+_reset_repo_to_ref /opt/agent-kit origin/main
 _reset_repo_to_ref /opt/zsh-kit origin/main
 _restore_zsh_kit_codex_secrets_mount "$codex_secrets_mount"
 
 if ! command -v rsync >/dev/null 2>&1; then
-  print -u2 -r -- "warn: rsync not available; skipped /opt/codex-kit -> ${codex_home} sync"
+  print -u2 -r -- "warn: rsync not available; skipped /opt/agent-kit -> ${codex_home} sync"
   exit 0
 fi
 
 mkdir -p "$codex_home"
-print -r -- "+ rsync /opt/codex-kit -> ${codex_home} (delete + excludes)"
+print -r -- "+ rsync /opt/agent-kit -> ${codex_home} (delete + excludes)"
 rsync -a --delete \
   --exclude='.env' \
   --exclude='.venv' \
@@ -1128,29 +1128,29 @@ rsync -a --delete \
 EOF
 }
 
-# --- END _features/codex-workspace/repo-reset.zsh
+# --- END _features/agent-workspace/repo-reset.zsh
 
-# --- BEGIN _features/codex-workspace/workspace-rm.zsh
-# Host helper to remove a Codex workspace container and its named volumes (feature: codex-workspace).
+# --- BEGIN _features/agent-workspace/workspace-rm.zsh
+# Host helper to remove a Codex workspace container and its named volumes (feature: agent-workspace).
 #
 # Usage:
-#   codex-workspace-rm <name|container> [--yes]
-#   codex-workspace-rm --all [--yes]
+#   agent-workspace-rm <name|container> [--yes]
+#   agent-workspace-rm --all [--yes]
 #
 # Notes:
-#   - Delegates workspace removal to the codex-kit launcher (canonical).
+#   - Delegates workspace removal to the agent-kit launcher (canonical).
 #   - Removes volumes by default; pass `--keep-volumes` to preserve volumes.
 #   - `--volumes` is accepted for backwards compatibility (no-op; launcher removes volumes by default).
 
 # _codex_workspace_normalize_container_name <name>
-# Normalize a workspace name into a docker container name (adds CODEX_WORKSPACE_PREFIX when needed).
+# Normalize a workspace name into a docker container name (adds AGENT_WORKSPACE_PREFIX when needed).
 _codex_workspace_normalize_container_name() {
   emulate -L zsh
 
   local name="${1:-}"
   [[ -n "$name" ]] || return 1
 
-  local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+  local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
   if [[ "$name" == "${prefix}-"* ]]; then
     print -r -- "$name"
     return 0
@@ -1182,10 +1182,10 @@ _codex_workspace_container_names() {
   _codex_workspace_require_docker || return $?
 
   local -a names=()
-  names=(${(f)"$(docker ps -a --filter 'label=codex-kit.workspace=1' --format '{{.Names}}' 2>/dev/null || true)"})
+  names=(${(f)"$(docker ps -a --filter 'label=agent-kit.workspace=1' --format '{{.Names}}' 2>/dev/null || true)"})
 
   if (( ${#names[@]} == 0 )); then
-    local prefix="${CODEX_WORKSPACE_PREFIX:-codex-ws}"
+    local prefix="${AGENT_WORKSPACE_PREFIX:-codex-ws}"
     names=(${(f)"$(docker ps -a --format '{{.Names}}' 2>/dev/null || true)"})
 
     local -a filtered=()
@@ -1212,7 +1212,7 @@ _codex_workspace_resolve_launcher_for_callthrough() {
   emulate -L zsh
   setopt pipe_fail
 
-  local launcher="${CODEX_WORKSPACE_LAUNCHER-}"
+  local launcher="${AGENT_WORKSPACE_LAUNCHER-}"
   local -i launcher_explicit=0
   if [[ -n "${launcher//[[:space:]]/}" ]]; then
     launcher_explicit=1
@@ -1220,7 +1220,7 @@ _codex_workspace_resolve_launcher_for_callthrough() {
     if (( $+functions[_codex_workspace_launcher_default_path] )); then
       launcher="$(_codex_workspace_launcher_default_path)"
     else
-      launcher="$HOME/.config/codex-kit/docker/codex-env/bin/codex-workspace"
+      launcher="$HOME/.config/agent-kit/docker/agent-env/bin/agent-workspace"
     fi
   fi
 
@@ -1229,8 +1229,8 @@ _codex_workspace_resolve_launcher_for_callthrough() {
       if (( launcher_explicit )); then
         return 1
       fi
-      print -u2 -r -- "hint: set CODEX_WORKSPACE_LAUNCHER to a local launcher path"
-      print -u2 -r -- "hint: or set CODEX_WORKSPACE_LAUNCHER_URL to override the download URL"
+      print -u2 -r -- "hint: set AGENT_WORKSPACE_LAUNCHER to a local launcher path"
+      print -u2 -r -- "hint: or set AGENT_WORKSPACE_LAUNCHER_URL to override the download URL"
       return 1
     }
   else
@@ -1244,9 +1244,9 @@ _codex_workspace_resolve_launcher_for_callthrough() {
   return 0
 }
 
-# codex-workspace-list
+# agent-workspace-list
 # List workspace containers (one per line).
-codex-workspace-list() {
+agent-workspace-list() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -1263,7 +1263,7 @@ codex-workspace-list() {
 
   if [[ "$arg1" == "-h" || "$arg1" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace ls
+usage: agent-workspace ls
 
 List workspace containers (one per line).
 EOF
@@ -1301,7 +1301,7 @@ _codex_workspace_rm_one() {
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing workspace name/container"
-    print -u2 -r -- "hint: codex-workspace rm <name|container> [--yes]"
+    print -u2 -r -- "hint: agent-workspace rm <name|container> [--yes]"
     return 2
   fi
 
@@ -1328,23 +1328,23 @@ _codex_workspace_rm_one() {
   return $?
 }
 
-# codex-workspace-rm <name|container> [--keep-volumes] [--yes]
-# codex-workspace-rm --all [--keep-volumes] [--yes]
+# agent-workspace-rm <name|container> [--keep-volumes] [--yes]
+# agent-workspace-rm --all [--keep-volumes] [--yes]
 # Remove workspace container(s) and their named volumes.
-codex-workspace-rm() {
+agent-workspace-rm() {
   emulate -L zsh
   setopt pipe_fail
 
   if (( $# == 0 )); then
     cat <<'EOF'
 usage:
-  codex-workspace-rm <name|container> [--keep-volumes] [--yes]
-  codex-workspace-rm --all [--keep-volumes] [--yes]
+  agent-workspace-rm <name|container> [--keep-volumes] [--yes]
+  agent-workspace-rm --all [--keep-volumes] [--yes]
 
 Remove workspace container(s) and their named volumes.
 
 Notes:
-  - Delegates to the codex-kit launcher: <launcher> rm <container>
+  - Delegates to the agent-kit launcher: <launcher> rm <container>
   - By default, volumes are removed; pass --keep-volumes to preserve them.
   - Add --yes to skip the confirmation prompt.
 EOF
@@ -1409,8 +1409,8 @@ EOF
   if (( want_help )); then
     cat <<'EOF'
 usage:
-  codex-workspace-rm <name|container> [--keep-volumes] [--yes]
-  codex-workspace-rm --all [--keep-volumes] [--yes]
+  agent-workspace-rm <name|container> [--keep-volumes] [--yes]
+  agent-workspace-rm --all [--keep-volumes] [--yes]
 
 Remove workspace container(s) and their named volumes.
 
@@ -1478,7 +1478,7 @@ EOF
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing workspace name/container"
-    print -u2 -r -- "hint: codex-workspace rm <name|container> [--yes]"
+    print -u2 -r -- "hint: agent-workspace rm <name|container> [--yes]"
     return 2
   fi
 
@@ -1486,14 +1486,14 @@ EOF
   return $?
 }
 
-# --- END _features/codex-workspace/workspace-rm.zsh
+# --- END _features/agent-workspace/workspace-rm.zsh
 
-# --- BEGIN _features/codex-workspace/workspace-rsync.zsh
-# Host helper to rsync files between the host and a Codex workspace container (feature: codex-workspace).
+# --- BEGIN _features/agent-workspace/workspace-rsync.zsh
+# Host helper to rsync files between the host and a Codex workspace container (feature: agent-workspace).
 #
 # Usage:
-#   codex-workspace rsync push [options] [<name|container>] <host_src> <container_dest> [<rsync_args...>]
-#   codex-workspace rsync pull [options] [<name|container>] <container_src> <host_dest> [<rsync_args...>]
+#   agent-workspace rsync push [options] [<name|container>] <host_src> <container_dest> [<rsync_args...>]
+#   agent-workspace rsync pull [options] [<name|container>] <container_src> <host_dest> [<rsync_args...>]
 #
 # Notes:
 #   - The container arg is optional when only one workspace exists.
@@ -1502,24 +1502,24 @@ EOF
 #   - Uses `docker exec` as the rsync remote shell (no SSH needed).
 
 # _codex_workspace_rsync_usage
-# Print help for `codex-workspace rsync`.
+# Print help for `agent-workspace rsync`.
 _codex_workspace_rsync_usage() {
   emulate -L zsh
 
   cat <<'EOF'
 usage:
-  codex-workspace rsync push [--user <user>|--root] [--delete] [--dry-run] [<name|container>] <host_src> <container_dest> [<rsync_args...>]
-  codex-workspace rsync pull [--user <user>|--root] [--delete] [--dry-run] [<name|container>] <container_src> <host_dest> [<rsync_args...>]
+  agent-workspace rsync push [--user <user>|--root] [--delete] [--dry-run] [<name|container>] <host_src> <container_dest> [<rsync_args...>]
+  agent-workspace rsync pull [--user <user>|--root] [--delete] [--dry-run] [<name|container>] <container_src> <host_dest> [<rsync_args...>]
 
 examples:
   # push ./data -> /work/data (auto-picks the only workspace)
-  codex-workspace rsync push ./data/ /work/data/
+  agent-workspace rsync push ./data/ /work/data/
 
   # pull /work/repo -> ./repo (explicit container)
-  codex-workspace rsync pull ws-foo /work/repo/ ./repo/
+  agent-workspace rsync pull ws-foo /work/repo/ ./repo/
 
   # pass rsync filters/options (placed before paths)
-  codex-workspace rsync push ws-foo ./src/ /work/src/ --exclude '.git' --delete
+  agent-workspace rsync push ws-foo ./src/ /work/src/ --exclude '.git' --delete
 
 notes:
   - Requires `rsync` on the host and inside the container.
@@ -1535,9 +1535,9 @@ _codex_workspace_rsync_mktemp() {
   emulate -L zsh
 
   local tmp=''
-  tmp="$(mktemp "${TMPDIR:-/tmp}/codex-workspace-rsync-rsh.XXXXXX" 2>/dev/null || true)"
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-workspace-rsync-rsh.XXXXXX" 2>/dev/null || true)"
   if [[ -z "$tmp" ]]; then
-    tmp="$(mktemp -t codex-workspace-rsync-rsh.XXXXXX 2>/dev/null || true)"
+    tmp="$(mktemp -t agent-workspace-rsync-rsh.XXXXXX 2>/dev/null || true)"
   fi
   if [[ -z "$tmp" ]]; then
     print -u2 -r -- "error: mktemp failed (rsync remote shell wrapper)"
@@ -1548,9 +1548,9 @@ _codex_workspace_rsync_mktemp() {
   return 0
 }
 
-# codex-workspace-rsync <push|pull> [options] [<name|container>] <src> <dest> [rsync_args...]
+# agent-workspace-rsync <push|pull> [options] [<name|container>] <src> <dest> [rsync_args...]
 # Sync files between the host and a workspace container using rsync-over-docker-exec.
-codex-workspace-rsync() {
+agent-workspace-rsync() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -1701,8 +1701,8 @@ codex-workspace-rsync() {
 #!/bin/sh
 set -eu
 
-container="${CODEX_WORKSPACE_RSYNC_CONTAINER:?missing CODEX_WORKSPACE_RSYNC_CONTAINER}"
-user="${CODEX_WORKSPACE_RSYNC_USER:-codex}"
+container="${AGENT_WORKSPACE_RSYNC_CONTAINER:?missing AGENT_WORKSPACE_RSYNC_CONTAINER}"
+user="${AGENT_WORKSPACE_RSYNC_USER:-codex}"
 
 # rsync remote-shell invocation:
 #   <rsh> [opts...] <host> <command...>
@@ -1750,35 +1750,35 @@ EOF
 
     print -r -- "+ ${cmd[*]}"
     local rc=0
-    CODEX_WORKSPACE_RSYNC_CONTAINER="$container" CODEX_WORKSPACE_RSYNC_USER="$user" "${cmd[@]}"
+    AGENT_WORKSPACE_RSYNC_CONTAINER="$container" AGENT_WORKSPACE_RSYNC_USER="$user" "${cmd[@]}"
     rc=$?
     rm -f -- "$rsh" 2>/dev/null || true
     return $rc
   fi
 
-  print -u2 -r -- "error: codex-workspace rsync requires codex-workspace feature loaded"
+  print -u2 -r -- "error: agent-workspace rsync requires agent-workspace feature loaded"
   return 1
 }
 
-# --- END _features/codex-workspace/workspace-rsync.zsh
+# --- END _features/agent-workspace/workspace-rsync.zsh
 
-# --- BEGIN _features/codex-workspace/workspace-launcher.zsh
-# Host helper to start a Codex workspace container (Dev Containers mode) (feature: codex-workspace).
+# --- BEGIN _features/agent-workspace/workspace-launcher.zsh
+# Host helper to start a Codex workspace container (Dev Containers mode) (feature: agent-workspace).
 #
 # Usage:
-#   codex-workspace
-#   codex-workspace create [--private-repo <owner/repo|URL>] [<owner/repo|URL>...]
-#   codex-workspace auth codex [--profile <name>] [--container <name|container>]
-#   codex-workspace auth github [--host <host>] [--container <name|container>]
-#   codex-workspace auth gpg [--key <keyid|fingerprint>] [--container <name|container>]
+#   agent-workspace
+#   agent-workspace create [--private-repo <owner/repo|URL>] [<owner/repo|URL>...]
+#   agent-workspace auth codex [--profile <name>] [--container <name|container>]
+#   agent-workspace auth github [--host <host>] [--container <name|container>]
+#   agent-workspace auth gpg [--key <keyid|fingerprint>] [--container <name|container>]
 #
 # Example:
-#   codex-workspace create OWNER/REPO
-#   codex-workspace auth github
-#   codex-workspace auth codex --profile work
+#   agent-workspace create OWNER/REPO
+#   agent-workspace auth github
+#   agent-workspace auth codex --profile work
 #
 # Env:
-# - CODEX_WORKSPACE_PRIVATE_REPO: optional; clone/pull this repo into ~/.private inside the container.
+# - AGENT_WORKSPACE_PRIVATE_REPO: optional; clone/pull this repo into ~/.private inside the container.
 
 # _codex_workspace_hex_encode_ascii <input>
 # Print lowercase hex encoding of ASCII input (best-effort).
@@ -1887,85 +1887,85 @@ _codex_workspace_repo_default_from_cwd() {
 }
 
 # _codex_workspace_usage
-# Print CLI usage/help for `codex-workspace`.
+# Print CLI usage/help for `agent-workspace`.
 _codex_workspace_usage() {
   emulate -L zsh
 
   cat <<'EOF'
 usage:
-  codex-workspace
-  codex-workspace auth <provider> [options] [<name|container>]
-  codex-workspace ls
-  codex-workspace start [<name|container>]
-  codex-workspace stop [<name|container>]
-  codex-workspace create [--no-extras] [--codex-profile <name>] [--private-repo <owner/repo|URL>] [--gpg|--no-gpg] [--gpg-key <keyid|fingerprint>] [<owner/repo|URL>...]
-  codex-workspace create --no-work-repos --name <name> [--no-extras] [--codex-profile <name>] [--private-repo <owner/repo|URL>]
-  codex-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
-  codex-workspace rsync <push|pull> [options] [<name|container>] <src> <dest> [rsync_args...]
-  codex-workspace rm <name|container> [--yes]
-  codex-workspace rm --all [--yes]
-  codex-workspace reset repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
-  codex-workspace reset work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
-  codex-workspace reset opt-repos <name|container> [--yes]
-  codex-workspace reset private-repo <name|container> [--ref <remote/branch>] [--yes]
-  codex-workspace tunnel <container> [--name <tunnel_name>] [--detach]
+  agent-workspace
+  agent-workspace auth <provider> [options] [<name|container>]
+  agent-workspace ls
+  agent-workspace start [<name|container>]
+  agent-workspace stop [<name|container>]
+  agent-workspace create [--no-extras] [--codex-profile <name>] [--private-repo <owner/repo|URL>] [--gpg|--no-gpg] [--gpg-key <keyid|fingerprint>] [<owner/repo|URL>...]
+  agent-workspace create --no-work-repos --name <name> [--no-extras] [--codex-profile <name>] [--private-repo <owner/repo|URL>]
+  agent-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
+  agent-workspace rsync <push|pull> [options] [<name|container>] <src> <dest> [rsync_args...]
+  agent-workspace rm <name|container> [--yes]
+  agent-workspace rm --all [--yes]
+  agent-workspace reset repo <name|container> <repo_dir> [--ref <remote/branch>] [--yes]
+  agent-workspace reset work-repos <name|container> [--root <dir>] [--depth <N>] [--ref <remote/branch>] [--yes]
+  agent-workspace reset opt-repos <name|container> [--yes]
+  agent-workspace reset private-repo <name|container> [--ref <remote/branch>] [--yes]
+  agent-workspace tunnel <container> [--name <tunnel_name>] [--detach]
 
 example:
-  codex-workspace create OWNER/REPO
-  codex-workspace create OWNER/REPO OTHER/REPO  # clones in order
-  codex-workspace create                        # uses current git remote (origin)
-  codex-workspace create --no-extras OWNER/REPO  # skip cloning ~/.private and extra repos
-  codex-workspace create --codex-profile work OWNER/REPO
-  codex-workspace create --gpg OWNER/REPO        # import host gpg signing key into container
-  codex-workspace create --no-work-repos --name ws-foo
-  codex-workspace create --no-work-repos --name ws-foo --private-repo OWNER/PRIVATE_REPO
-  codex-workspace create --private-repo OWNER/PRIVATE_REPO OWNER/REPO
-  CODEX_WORKSPACE_PRIVATE_REPO=OWNER/PRIVATE_REPO codex-workspace create OWNER/REPO
-  codex-workspace auth github
-  codex-workspace auth codex --profile work
-  codex-workspace auth gpg --key <fingerprint>
-  codex-workspace ls
-  codex-workspace start ws-foo
-  codex-workspace stop ws-foo
-  codex-workspace exec ws-foo
-  codex-workspace rsync push ws-foo ./src/ /work/src/
-  codex-workspace reset work-repos ws-foo --yes
-  codex-workspace reset opt-repos ws-foo --yes
-  codex-workspace reset private-repo ws-foo --yes
-  codex-workspace rm --all
+  agent-workspace create OWNER/REPO
+  agent-workspace create OWNER/REPO OTHER/REPO  # clones in order
+  agent-workspace create                        # uses current git remote (origin)
+  agent-workspace create --no-extras OWNER/REPO  # skip cloning ~/.private and extra repos
+  agent-workspace create --codex-profile work OWNER/REPO
+  agent-workspace create --gpg OWNER/REPO        # import host gpg signing key into container
+  agent-workspace create --no-work-repos --name ws-foo
+  agent-workspace create --no-work-repos --name ws-foo --private-repo OWNER/PRIVATE_REPO
+  agent-workspace create --private-repo OWNER/PRIVATE_REPO OWNER/REPO
+  AGENT_WORKSPACE_PRIVATE_REPO=OWNER/PRIVATE_REPO agent-workspace create OWNER/REPO
+  agent-workspace auth github
+  agent-workspace auth codex --profile work
+  agent-workspace auth gpg --key <fingerprint>
+  agent-workspace ls
+  agent-workspace start ws-foo
+  agent-workspace stop ws-foo
+  agent-workspace exec ws-foo
+  agent-workspace rsync push ws-foo ./src/ /work/src/
+  agent-workspace reset work-repos ws-foo --yes
+  agent-workspace reset opt-repos ws-foo --yes
+  agent-workspace reset private-repo ws-foo --yes
+  agent-workspace rm --all
 
 notes:
-  - `codex-workspace` prints help; use `codex-workspace create ...` to start a workspace.
+  - `agent-workspace` prints help; use `agent-workspace create ...` to start a workspace.
   - Repo args are optional when inside a git repo (defaults to `git remote get-url origin`),
     unless `--no-work-repos` is used.
   - Use `--no-extras` to disable cloning `~/.private` and additional repos under `/work`.
   - Use `--no-work-repos` to create a workspace without cloning any repos into `/work`
     (including the default-from-CWD `origin`); requires `--name` and rejects repo args.
-  - If the codex-kit launcher script is missing, this function auto-downloads it from GitHub.
-    - Disable auto-download with: CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD=false
-    - Override the source with: CODEX_WORKSPACE_LAUNCHER_URL=<url>
-    - Override the install path with: CODEX_WORKSPACE_LAUNCHER_AUTO_PATH=<path>
-    - Or set an explicit launcher with: CODEX_WORKSPACE_LAUNCHER=<path>
+  - If the agent-kit launcher script is missing, this function auto-downloads it from GitHub.
+    - Disable auto-download with: AGENT_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD=false
+    - Override the source with: AGENT_WORKSPACE_LAUNCHER_URL=<url>
+    - Override the install path with: AGENT_WORKSPACE_LAUNCHER_AUTO_PATH=<path>
+    - Or set an explicit launcher with: AGENT_WORKSPACE_LAUNCHER=<path>
   - Auth is automatic by default:
     - If `gh` is logged in (keyring), this function prefers that token (works better across orgs).
     - Otherwise it falls back to host GH_TOKEN/GITHUB_TOKEN.
-    - Override with: CODEX_WORKSPACE_AUTH=env|gh|auto|none
+    - Override with: AGENT_WORKSPACE_AUTH=env|gh|auto|none
   - GPG signing is opt-in (imports host secret key into container):
     - Enable on create: `--gpg` (optionally `--gpg-key ...`)
-    - Or re-apply later: `codex-workspace auth gpg`
-    - Configure defaults via: CODEX_WORKSPACE_GPG=import|none and CODEX_WORKSPACE_GPG_KEY=<key>
-  - Codex profiles can be set on create with CODEX_WORKSPACE_CODEX_PROFILE or --codex-profile <name>.
-  - Use `codex-workspace auth codex|github|gpg` to re-apply auth to an existing workspace.
+    - Or re-apply later: `agent-workspace auth gpg`
+    - Configure defaults via: AGENT_WORKSPACE_GPG=import|none and AGENT_WORKSPACE_GPG_KEY=<key>
+  - Codex profiles can be set on create with AGENT_WORKSPACE_AGENT_PROFILE or --codex-profile <name>.
+  - Use `agent-workspace auth codex|github|gpg` to re-apply auth to an existing workspace.
   - If org SSO blocks access, run: `env -u GH_TOKEN -u GITHUB_TOKEN gh auth refresh -h github.com -s repo -s read:org`
   - VS Code: if you see "cannot find workspace /work/..." you likely attached from an existing window;
     open a new window, or run the printed `code --new-window --folder-uri ...` command.
-  - To auto-open VS Code after launch: `CODEX_WORKSPACE_OPEN_VSCODE_ENABLED=true codex-workspace create OWNER/REPO`
-  - On each workspace creation, it refreshes `/opt/codex-kit` + `/opt/zsh-kit` in the container.
+  - To auto-open VS Code after launch: `AGENT_WORKSPACE_OPEN_VSCODE_ENABLED=true agent-workspace create OWNER/REPO`
+  - On each workspace creation, it refreshes `/opt/agent-kit` + `/opt/zsh-kit` in the container.
   - This function snapshots host ~/.config into the container (copy, not bind-mount),
-    excluding ~/.config/codex-kit and ~/.config/zsh to avoid conflicts.
-  - Host codex secrets (~/.config/codex_secrets) are bind-mounted read-write to ~/codex_secrets.
+    excluding ~/.config/agent-kit and ~/.config/zsh to avoid conflicts.
+  - Host codex secrets (~/.config/AGENT_secrets) are bind-mounted read-write to ~/AGENT_secrets.
   - Optional: to seed container ~/.private from a dedicated repo, set:
-      - CODEX_WORKSPACE_PRIVATE_REPO=OWNER/REPO (or URL)
+      - AGENT_WORKSPACE_PRIVATE_REPO=OWNER/REPO (or URL)
       - or pass: --private-repo OWNER/REPO (or URL)
   - VS Code: Cmd+Shift+P -> "Dev Containers: Attach to Running Container..."
 EOF
@@ -1979,7 +1979,7 @@ _codex_workspace_default_gpg_signing_key() {
   emulate -L zsh
   setopt pipe_fail
 
-  local key="${CODEX_WORKSPACE_GPG_KEY-}"
+  local key="${AGENT_WORKSPACE_GPG_KEY-}"
   key="${key%%[[:space:]]#}"
   if [[ -n "$key" ]]; then
     print -r -- "$key"
@@ -2013,7 +2013,7 @@ _codex_workspace_auth_gpg() {
 
   if [[ -z "${key//[[:space:]]/}" ]]; then
     print -u2 -r -- "error: missing gpg signing key"
-    print -u2 -r -- "hint: pass --key <fingerprint> or set CODEX_WORKSPACE_GPG_KEY"
+    print -u2 -r -- "hint: pass --key <fingerprint> or set AGENT_WORKSPACE_GPG_KEY"
     print -u2 -r -- "hint: or set: git config --global user.signingkey <keyid>"
     return 1
   fi
@@ -2100,17 +2100,17 @@ _codex_workspace_parse_repo_spec() {
 }
 
 # _codex_workspace_launcher_default_path
-# Return the default codex-kit launcher path on the host.
+# Return the default agent-kit launcher path on the host.
 _codex_workspace_launcher_default_path() {
   emulate -L zsh
 
-  local primary="$HOME/.codex/docker/codex-env/bin/codex-workspace"
+  local primary="$HOME/.codex/docker/agent-env/bin/agent-workspace"
   if [[ -x "$primary" ]]; then
     print -r -- "$primary"
     return 0
   fi
 
-  print -r -- "$HOME/.config/codex-kit/docker/codex-env/bin/codex-workspace"
+  print -r -- "$HOME/.config/agent-kit/docker/agent-env/bin/agent-workspace"
   return 0
 }
 
@@ -2121,7 +2121,7 @@ _codex_workspace_launcher_auto_path() {
 
   local cache_root="${XDG_CACHE_HOME:-$HOME/.cache}"
   cache_root="${cache_root%/}"
-  print -r -- "$cache_root/codex-workspace/launcher/codex-workspace"
+  print -r -- "$cache_root/agent-workspace/launcher/agent-workspace"
   return 0
 }
 
@@ -2171,29 +2171,29 @@ _codex_workspace_ensure_launcher() {
     return 1
   fi
 
-  local auto_download="${CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD:-true}"
+  local auto_download="${AGENT_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD:-true}"
   case "$auto_download" in
     true|"")
       ;;
     false)
       print -u2 -r -- "error: launcher not found: $launcher"
-      print -u2 -r -- "hint: auto-download disabled (set CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD=true to enable)"
+      print -u2 -r -- "hint: auto-download disabled (set AGENT_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD=true to enable)"
       return 1
       ;;
     *)
-      print -u2 -r -- "error: CODEX_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD must be true or false (got: $auto_download)"
+      print -u2 -r -- "error: AGENT_WORKSPACE_LAUNCHER_AUTO_DOWNLOAD must be true or false (got: $auto_download)"
       return 1
       ;;
   esac
 
-  local auto_path="${CODEX_WORKSPACE_LAUNCHER_AUTO_PATH:-$(_codex_workspace_launcher_auto_path)}"
+  local auto_path="${AGENT_WORKSPACE_LAUNCHER_AUTO_PATH:-$(_codex_workspace_launcher_auto_path)}"
   if [[ -x "$auto_path" ]]; then
     print -r -- "$auto_path"
     return 0
   fi
 
-  local url_default="https://raw.githubusercontent.com/graysurf/codex-kit/main/docker/codex-env/bin/codex-workspace"
-  local url="${CODEX_WORKSPACE_LAUNCHER_URL:-$url_default}"
+  local url_default="https://raw.githubusercontent.com/graysurf/agent-kit/main/docker/agent-env/bin/agent-workspace"
+  local url="${AGENT_WORKSPACE_LAUNCHER_URL:-$url_default}"
   url="$(_codex_workspace_launcher_normalize_url "$url" 2>/dev/null || print -r -- "$url")"
   if [[ "$url" != https://* ]]; then
     print -u2 -r -- "error: launcher download URL must be https:// (got: $url)"
@@ -2207,9 +2207,9 @@ _codex_workspace_ensure_launcher() {
   }
 
   local tmp=''
-  tmp="$(mktemp "${TMPDIR:-/tmp}/codex-workspace-launcher.XXXXXX" 2>/dev/null || true)"
+  tmp="$(mktemp "${TMPDIR:-/tmp}/agent-workspace-launcher.XXXXXX" 2>/dev/null || true)"
   if [[ -z "$tmp" ]]; then
-    tmp="$(mktemp -t codex-workspace-launcher.XXXXXX 2>/dev/null || true)"
+    tmp="$(mktemp -t agent-workspace-launcher.XXXXXX 2>/dev/null || true)"
   fi
   if [[ -z "$tmp" ]]; then
     print -u2 -r -- "error: mktemp failed (launcher download)"
@@ -2323,8 +2323,8 @@ _codex_workspace_require_codex_use() {
   fi
 
   local source_file_path=''
-  if [[ -f "$HOME/.config/codex_secrets/codex-secret.zsh" ]]; then
-    source_file_path="$HOME/.config/codex_secrets/codex-secret.zsh"
+  if [[ -f "$HOME/.config/AGENT_secrets/codex-secret.zsh" ]]; then
+    source_file_path="$HOME/.config/AGENT_secrets/codex-secret.zsh"
   elif [[ -n "${ZSH_SCRIPT_DIR-}" && -f "${ZSH_SCRIPT_DIR}/_features/codex/codex-secret.zsh" ]]; then
     source_file_path="${ZSH_SCRIPT_DIR}/_features/codex/codex-secret.zsh"
   fi
@@ -2349,7 +2349,7 @@ _codex_workspace_auth_github() {
   local container="${1:?missing container}"
   local gh_host="${2:-${GITHUB_HOST:-github.com}}"
 
-  local auth_mode="${CODEX_WORKSPACE_AUTH:-auto}"
+  local auth_mode="${AGENT_WORKSPACE_AUTH:-auto}"
   local env_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
   local keyring_token=''
   if command -v gh >/dev/null 2>&1; then
@@ -2370,7 +2370,7 @@ _codex_workspace_auth_github() {
         chosen_token="$keyring_token"
         chosen_source="gh"
       else
-        print -u2 -r -- "warn: CODEX_WORKSPACE_AUTH=gh but no gh keyring token found; falling back to GH_TOKEN/GITHUB_TOKEN"
+        print -u2 -r -- "warn: AGENT_WORKSPACE_AUTH=gh but no gh keyring token found; falling back to GH_TOKEN/GITHUB_TOKEN"
         chosen_token="$env_token"
         chosen_source="env"
       fi
@@ -2385,14 +2385,14 @@ _codex_workspace_auth_github() {
       fi
       ;;
     *)
-      print -u2 -r -- "error: unknown CODEX_WORKSPACE_AUTH=$auth_mode (expected: auto|gh|env|none)"
+      print -u2 -r -- "error: unknown AGENT_WORKSPACE_AUTH=$auth_mode (expected: auto|gh|env|none)"
       return 2
       ;;
   esac
 
   if [[ -z "$chosen_token" ]]; then
     if [[ "$auth_mode" == "none" ]]; then
-      print -u2 -r -- "error: CODEX_WORKSPACE_AUTH=none; no token to apply"
+      print -u2 -r -- "error: AGENT_WORKSPACE_AUTH=none; no token to apply"
     else
       print -u2 -r -- "error: no GitHub token found (gh keyring or GH_TOKEN/GITHUB_TOKEN)"
     fi
@@ -2419,7 +2419,7 @@ _codex_workspace_auth_github() {
     fi
 
     if command -v git >/dev/null 2>&1; then
-      token_file="$HOME/.codex-env/gh.token"
+      token_file="$HOME/.agents-env/gh.token"
       mkdir -p "${token_file%/*}"
       printf "%s\n" "$token" >| "$token_file"
       chmod 600 "$token_file" 2>/dev/null || true
@@ -2432,7 +2432,7 @@ _codex_workspace_auth_github() {
   fi
 
   if [[ "$chosen_source" == "gh" || "$chosen_source" == "env" ]]; then
-    typeset -g CODEX_WORKSPACE_AUTH="$chosen_source"
+    typeset -g AGENT_WORKSPACE_AUTH="$chosen_source"
   fi
 
   return 0
@@ -2448,7 +2448,7 @@ _codex_workspace_auth_codex() {
   local profile="${2-}"
 
   if [[ -z "$profile" ]]; then
-    profile="${CODEX_WORKSPACE_CODEX_PROFILE:-}"
+    profile="${AGENT_WORKSPACE_AGENT_PROFILE:-}"
   fi
 
   if [[ -n "$profile" ]]; then
@@ -2457,7 +2457,7 @@ _codex_workspace_auth_codex() {
       return 2
     fi
 
-    typeset -g CODEX_WORKSPACE_CODEX_PROFILE="$profile"
+    typeset -g AGENT_WORKSPACE_AGENT_PROFILE="$profile"
     if _codex_workspace_require_codex_use; then
       codex-use "$profile" || {
         print -u2 -r -- "warn: failed to update host codex auth (codex-use $profile)"
@@ -2489,7 +2489,7 @@ _codex_workspace_auth_codex() {
   local auth_file="${CODEX_AUTH_FILE:-$HOME/.codex/auth.json}"
   if [[ ! -f "$auth_file" ]]; then
     print -u2 -r -- "error: codex auth file not found: $auth_file"
-    print -u2 -r -- "hint: set CODEX_WORKSPACE_CODEX_PROFILE or run codex-use <profile> first"
+    print -u2 -r -- "hint: set AGENT_WORKSPACE_AGENT_PROFILE or run codex-use <profile> first"
     return 1
   fi
 
@@ -2511,9 +2511,9 @@ _codex_workspace_auth_codex() {
   return 0
 }
 
-# codex-workspace-auth <provider> [options] [<name|container>]
+# agent-workspace-auth <provider> [options] [<name|container>]
 # Update auth for an existing workspace container.
-codex-workspace-auth() {
+agent-workspace-auth() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -2595,13 +2595,13 @@ codex-workspace-auth() {
   if [[ -z "$provider" || "$provider" == "-h" || "$provider" == "--help" || $want_help -eq 1 ]]; then
     cat <<'EOF'
 usage:
-  codex-workspace auth codex [--profile <name>] [--container <name|container>]
-  codex-workspace auth github [--host <host>] [--container <name|container>]
-  codex-workspace auth gpg [--key <keyid|fingerprint>] [--container <name|container>]
+  agent-workspace auth codex [--profile <name>] [--container <name|container>]
+  agent-workspace auth github [--host <host>] [--container <name|container>]
+  agent-workspace auth gpg [--key <keyid|fingerprint>] [--container <name|container>]
 
 notes:
-  - GitHub auth uses CODEX_WORKSPACE_AUTH (auto|gh|env|none) and host gh keyring or GH_TOKEN.
-  - Codex auth uses CODEX_WORKSPACE_CODEX_PROFILE when set; otherwise syncs CODEX_AUTH_FILE.
+  - GitHub auth uses AGENT_WORKSPACE_AUTH (auto|gh|env|none) and host gh keyring or GH_TOKEN.
+  - Codex auth uses AGENT_WORKSPACE_AGENT_PROFILE when set; otherwise syncs CODEX_AUTH_FILE.
   - GPG auth exports the host secret key and imports it into the container.
 EOF
     return 0
@@ -2631,15 +2631,15 @@ EOF
   esac
 }
 
-# codex-workspace-exec [--root] [--user <user>] <name|container> [--] [cmd...]
+# agent-workspace-exec [--root] [--user <user>] <name|container> [--] [cmd...]
 # Exec into a workspace container (default: zsh).
-codex-workspace-exec() {
+agent-workspace-exec() {
   emulate -L zsh
   setopt pipe_fail
 
   if (( $# == 0 )); then
     cat <<'EOF'
-usage: codex-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
+usage: agent-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
 
 Exec into a workspace container (default: zsh).
 
@@ -2696,7 +2696,7 @@ EOF
 
   if (( want_help )); then
     cat <<'EOF'
-usage: codex-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
+usage: agent-workspace exec [--root] [--user <user>] <name|container> [--] [cmd...]
 
 Exec into a workspace container (default: zsh).
 
@@ -2710,7 +2710,7 @@ EOF
   local name="${1:-}"
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing workspace name/container"
-    print -u2 -r -- "hint: codex-workspace exec <container>"
+    print -u2 -r -- "hint: agent-workspace exec <container>"
     return 2
   fi
   shift 1 2>/dev/null || true
@@ -2756,22 +2756,22 @@ EOF
   command docker "${docker_exec[@]}"
 }
 
-# codex-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
+# agent-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
 # Start a VS Code tunnel inside a workspace container.
-codex-workspace-tunnel() {
+agent-workspace-tunnel() {
   emulate -L zsh
   setopt pipe_fail
 
   if (( $# == 0 )); then
     cat <<'EOF'
-usage: codex-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
+usage: agent-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
 
 Start a VS Code tunnel inside a workspace container.
 
 Notes:
-  - Delegates to the codex-kit launcher: <launcher> tunnel <container> ...
+  - Delegates to the agent-kit launcher: <launcher> tunnel <container> ...
   - VS Code tunnel names are limited to 20 characters.
-  - Override the name with --name or CODEX_WORKSPACE_TUNNEL_NAME.
+  - Override the name with --name or AGENT_WORKSPACE_TUNNEL_NAME.
   - Options may appear before or after the container name.
 EOF
     return 0
@@ -2779,7 +2779,7 @@ EOF
 
   local name=''
   local detach=0
-  local tunnel_name="${CODEX_WORKSPACE_TUNNEL_NAME:-}"
+  local tunnel_name="${AGENT_WORKSPACE_TUNNEL_NAME:-}"
   local -a extra_args=()
   local -i want_help=0
   while (( $# > 0 )); do
@@ -2832,14 +2832,14 @@ EOF
 
   if (( want_help )); then
     cat <<'EOF'
-usage: codex-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
+usage: agent-workspace-tunnel [--name <tunnel_name>] [--detach] <name|container>
 
 Start a VS Code tunnel inside a workspace container.
 
 Notes:
-  - Delegates to the codex-kit launcher: <launcher> tunnel <container> ...
+  - Delegates to the agent-kit launcher: <launcher> tunnel <container> ...
   - VS Code tunnel names are limited to 20 characters.
-  - Override the name with --name or CODEX_WORKSPACE_TUNNEL_NAME.
+  - Override the name with --name or AGENT_WORKSPACE_TUNNEL_NAME.
   - Options may appear before or after the container name.
 EOF
     return 0
@@ -2847,7 +2847,7 @@ EOF
 
   if [[ -z "$name" ]]; then
     print -u2 -r -- "error: missing workspace name/container"
-    print -u2 -r -- "hint: codex-workspace tunnel <container> [--detach]"
+    print -u2 -r -- "hint: agent-workspace tunnel <container> [--detach]"
     return 2
   fi
 
@@ -2875,9 +2875,9 @@ EOF
   return $?
 }
 
-# codex-workspace-start [<name|container>]
-# Start a workspace container (delegates to the codex-kit launcher).
-codex-workspace-start() {
+# agent-workspace-start [<name|container>]
+# Start a workspace container (delegates to the agent-kit launcher).
+agent-workspace-start() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -2889,12 +2889,12 @@ codex-workspace-start() {
   local arg1="${1:-}"
   if [[ "$arg1" == "-h" || "$arg1" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace start [<name|container>]
+usage: agent-workspace start [<name|container>]
 
 Start a workspace container.
 
 Notes:
-  - Delegates to the codex-kit launcher: <launcher> start <container>
+  - Delegates to the agent-kit launcher: <launcher> start <container>
   - When <name|container> is omitted, auto-picks only when exactly one workspace exists.
 EOF
     return 0
@@ -2911,9 +2911,9 @@ EOF
   return $?
 }
 
-# codex-workspace-stop [<name|container>]
-# Stop a workspace container (delegates to the codex-kit launcher).
-codex-workspace-stop() {
+# agent-workspace-stop [<name|container>]
+# Stop a workspace container (delegates to the agent-kit launcher).
+agent-workspace-stop() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -2925,12 +2925,12 @@ codex-workspace-stop() {
   local arg1="${1:-}"
   if [[ "$arg1" == "-h" || "$arg1" == "--help" ]]; then
     cat <<'EOF'
-usage: codex-workspace stop [<name|container>]
+usage: agent-workspace stop [<name|container>]
 
 Stop a workspace container.
 
 Notes:
-  - Delegates to the codex-kit launcher: <launcher> stop <container>
+  - Delegates to the agent-kit launcher: <launcher> stop <container>
   - When <name|container> is omitted, auto-picks only when exactly one workspace exists.
 EOF
     return 0
@@ -2947,9 +2947,9 @@ EOF
   return $?
 }
 
-# codex-workspace <subcommand> [args...]
+# agent-workspace <subcommand> [args...]
 # Host entrypoint for creating and managing Codex workspace containers.
-codex-workspace() {
+agent-workspace() {
   emulate -L zsh
   setopt pipe_fail
 
@@ -2962,27 +2962,27 @@ codex-workspace() {
       ;;
     auth)
       shift 1 2>/dev/null || true
-      codex-workspace-auth "$@"
+      agent-workspace-auth "$@"
       return $?
       ;;
     ls)
       shift 1 2>/dev/null || true
-      codex-workspace-list "$@"
+      agent-workspace-list "$@"
       return $?
       ;;
     start)
       shift 1 2>/dev/null || true
-      codex-workspace-start "$@"
+      agent-workspace-start "$@"
       return $?
       ;;
     stop)
       shift 1 2>/dev/null || true
-      codex-workspace-stop "$@"
+      agent-workspace-stop "$@"
       return $?
       ;;
     list)
       print -u2 -r -- "error: subcommand removed: list"
-      print -u2 -r -- "hint: use: codex-workspace ls"
+      print -u2 -r -- "hint: use: agent-workspace ls"
       return 2
       ;;
     create)
@@ -2990,59 +2990,59 @@ codex-workspace() {
       ;;
     rm)
       shift 1 2>/dev/null || true
-      codex-workspace-rm "$@"
+      agent-workspace-rm "$@"
       return $?
       ;;
     remove)
       print -u2 -r -- "error: subcommand removed: remove"
-      print -u2 -r -- "hint: use: codex-workspace rm"
+      print -u2 -r -- "hint: use: agent-workspace rm"
       return 2
       ;;
     delete)
       print -u2 -r -- "error: subcommand removed: delete"
-      print -u2 -r -- "hint: use: codex-workspace rm --all"
+      print -u2 -r -- "hint: use: agent-workspace rm --all"
       return 2
       ;;
     exec)
       shift 1 2>/dev/null || true
-      codex-workspace-exec "$@"
+      agent-workspace-exec "$@"
       return $?
       ;;
     rsync)
       shift 1 2>/dev/null || true
-      codex-workspace-rsync "$@"
+      agent-workspace-rsync "$@"
       return $?
       ;;
     reset)
       shift 1 2>/dev/null || true
-      codex-workspace-reset "$@"
+      agent-workspace-reset "$@"
       return $?
       ;;
     tunnel)
       shift 1 2>/dev/null || true
-      codex-workspace-tunnel "$@"
+      agent-workspace-tunnel "$@"
       return $?
       ;;
     *)
       print -u2 -r -- "error: unknown subcommand: $arg1"
       print -u2 -r -- "hint: expected: auth|create|ls|start|stop|rm|exec|rsync|reset|tunnel"
-      print -u2 -r -- "hint: codex-workspace create [--private-repo ...] [repo...]"
+      print -u2 -r -- "hint: agent-workspace create [--private-repo ...] [repo...]"
       _codex_workspace_usage
       return 2
       ;;
   esac
 
   local -a repos=()
-  local private_repo_raw="${CODEX_WORKSPACE_PRIVATE_REPO-}"
+  local private_repo_raw="${AGENT_WORKSPACE_PRIVATE_REPO-}"
   local -i no_extras=0
   local -i no_work_repos=0
   local -i want_help=0
   local workspace_name=''
-  local codex_profile="${CODEX_WORKSPACE_CODEX_PROFILE-}"
+  local codex_profile="${AGENT_WORKSPACE_AGENT_PROFILE-}"
   local -i want_gpg_import=0
-  local gpg_key="${CODEX_WORKSPACE_GPG_KEY-}"
+  local gpg_key="${AGENT_WORKSPACE_GPG_KEY-}"
 
-  local gpg_mode="${CODEX_WORKSPACE_GPG:-none}"
+  local gpg_mode="${AGENT_WORKSPACE_GPG:-none}"
   case "$gpg_mode" in
     none|false|"")
       want_gpg_import=0
@@ -3051,7 +3051,7 @@ codex-workspace() {
       want_gpg_import=1
       ;;
     *)
-      print -u2 -r -- "error: CODEX_WORKSPACE_GPG must be import|none (got: $gpg_mode)"
+      print -u2 -r -- "error: AGENT_WORKSPACE_GPG must be import|none (got: $gpg_mode)"
       return 2
       ;;
   esac
@@ -3140,9 +3140,9 @@ codex-workspace() {
       print -u2 -r -- "error: invalid codex profile name: $codex_profile"
       return 2
     fi
-    if [[ ! -d "$HOME/.config/codex_secrets" ]]; then
-      print -u2 -r -- "error: codex secrets dir not found: $HOME/.config/codex_secrets"
-      print -u2 -r -- "hint: unset CODEX_WORKSPACE_CODEX_PROFILE or create secrets dir"
+    if [[ ! -d "$HOME/.config/AGENT_secrets" ]]; then
+      print -u2 -r -- "error: codex secrets dir not found: $HOME/.config/AGENT_secrets"
+      print -u2 -r -- "hint: unset AGENT_WORKSPACE_AGENT_PROFILE or create secrets dir"
       return 1
     fi
   else
@@ -3181,7 +3181,7 @@ codex-workspace() {
     repo="${repos[1]-}"
   fi
 
-  local launcher="${CODEX_WORKSPACE_LAUNCHER-}"
+  local launcher="${AGENT_WORKSPACE_LAUNCHER-}"
   local -i launcher_explicit=0
   if [[ -n "${launcher//[[:space:]]/}" ]]; then
     launcher_explicit=1
@@ -3192,8 +3192,8 @@ codex-workspace() {
     if (( launcher_explicit )); then
       return 1
     fi
-    print -u2 -r -- "hint: set CODEX_WORKSPACE_LAUNCHER to a local launcher path"
-    print -u2 -r -- "hint: or set CODEX_WORKSPACE_LAUNCHER_URL to override the download URL"
+    print -u2 -r -- "hint: set AGENT_WORKSPACE_LAUNCHER to a local launcher path"
+    print -u2 -r -- "hint: or set AGENT_WORKSPACE_LAUNCHER_URL to override the download URL"
     return 1
   }
 
@@ -3202,7 +3202,7 @@ codex-workspace() {
     launcher_help="$("$launcher" --help 2>/dev/null || true)"
     if [[ "$launcher_help" != *"--no-clone"* ]]; then
       print -u2 -r -- "error: launcher does not support --no-clone (required by --no-work-repos)"
-      print -u2 -r -- "hint: update the launcher script or set CODEX_WORKSPACE_LAUNCHER to a newer version"
+      print -u2 -r -- "hint: update the launcher script or set AGENT_WORKSPACE_LAUNCHER to a newer version"
       return 1
     fi
   fi
@@ -3221,7 +3221,7 @@ codex-workspace() {
   # - No host bind-mounts for workspace/config (works with remote Docker hosts),
   #   except codex secrets (local path bind-mount).
   # - Prefer host `gh` keyring auth (works across orgs) when available; else use GH_TOKEN/GITHUB_TOKEN.
-  # - Seed host ~/.config by copying (snapshot), excluding codex-kit + zsh.
+  # - Seed host ~/.config by copying (snapshot), excluding agent-kit + zsh.
   local gh_host="github.com"
   local gh_owner_repo=''
   if (( no_work_repos )); then
@@ -3257,7 +3257,7 @@ codex-workspace() {
     fi
   fi
 
-  local auth_mode="${CODEX_WORKSPACE_AUTH:-auto}"
+  local auth_mode="${AGENT_WORKSPACE_AUTH:-auto}"
   local env_token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
   local keyring_token=''
   if command -v gh >/dev/null 2>&1; then
@@ -3280,7 +3280,7 @@ codex-workspace() {
         chosen_token="$keyring_token"
         chosen_source="gh"
       else
-        print -u2 -r -- "warn: CODEX_WORKSPACE_AUTH=gh but no gh keyring token found; falling back to GH_TOKEN/GITHUB_TOKEN"
+        print -u2 -r -- "warn: AGENT_WORKSPACE_AUTH=gh but no gh keyring token found; falling back to GH_TOKEN/GITHUB_TOKEN"
         chosen_token="$env_token"
         chosen_source="env"
       fi
@@ -3303,13 +3303,13 @@ codex-workspace() {
       fi
       ;;
     *)
-      print -u2 -r -- "error: unknown CODEX_WORKSPACE_AUTH=$auth_mode (expected: auto|gh|env|none)"
+      print -u2 -r -- "error: unknown AGENT_WORKSPACE_AUTH=$auth_mode (expected: auto|gh|env|none)"
       return 2
       ;;
   esac
 
   if [[ -n "$env_token" && -n "$keyring_token" && "$chosen_source" == "gh" ]]; then
-    print -u2 -r -- "auth: using gh keyring token for $gh_host (set CODEX_WORKSPACE_AUTH=env to force GH_TOKEN)"
+    print -u2 -r -- "auth: using gh keyring token for $gh_host (set AGENT_WORKSPACE_AUTH=env to force GH_TOKEN)"
   fi
 
   local -i supports_json=0
@@ -3325,20 +3325,20 @@ codex-workspace() {
 
   if (( !supports_json )); then
     print -u2 -r -- "error: launcher does not support --output json (required)"
-    print -u2 -r -- "hint: update the launcher or point CODEX_WORKSPACE_LAUNCHER to a newer codex-kit checkout"
+    print -u2 -r -- "hint: update the launcher or point AGENT_WORKSPACE_LAUNCHER to a newer agent-kit checkout"
     return 1
   fi
 
-  local secrets_dir="$HOME/.config/codex_secrets"
+  local secrets_dir="$HOME/.config/AGENT_secrets"
   local -a secrets_args=()
   if [[ -d "$secrets_dir" ]]; then
-    secrets_args=(--secrets-dir "$secrets_dir" --secrets-mount /home/codex/codex_secrets)
+    secrets_args=(--secrets-dir "$secrets_dir" --secrets-mount /home/agent/AGENT_secrets)
   fi
 
   local tmp_json=''
-  tmp_json="$(mktemp "${TMPDIR:-/tmp}/codex-workspace.XXXXXX" 2>/dev/null || true)"
+  tmp_json="$(mktemp "${TMPDIR:-/tmp}/agent-workspace.XXXXXX" 2>/dev/null || true)"
   if [[ -z "$tmp_json" ]]; then
-    tmp_json="$(mktemp -t codex-workspace.XXXXXX 2>/dev/null || true)"
+    tmp_json="$(mktemp -t agent-workspace.XXXXXX 2>/dev/null || true)"
   fi
   if [[ -z "$tmp_json" ]]; then
     print -u2 -r -- "error: mktemp failed"
@@ -3393,17 +3393,17 @@ codex-workspace() {
       fi
     ' -- "$gh_host" >/dev/null 2>&1 || true
 
-    codex-workspace-refresh-opt-repos "$container" --yes || {
-      print -u2 -r -- "warn: failed to refresh /opt/codex-kit and /opt/zsh-kit in $container"
+    agent-workspace-refresh-opt-repos "$container" --yes || {
+      print -u2 -r -- "warn: failed to refresh /opt/agent-kit and /opt/zsh-kit in $container"
     }
 
     # Snapshot host ~/.config into the container (skip if already done).
-    local snapshot_marker="/home/codex/.codex-env/config.snapshot.ok"
+    local snapshot_marker="/home/agent/.agents-env/config.snapshot.ok"
     if docker exec -u codex "$container" bash -lc "test -f '$snapshot_marker'" >/dev/null 2>&1; then
       print -r -- "snapshot: ~/.config already copied (remove $snapshot_marker in container to re-copy)"
     else
-      if docker exec -u codex "$container" bash -lc 'mkdir -p "$HOME/.config" "$HOME/.codex-env" 2>/dev/null && test -w "$HOME/.config"' >/dev/null 2>&1; then
-        print -r -- "+ snapshot ~/.config -> $container:/home/codex/.config (excluding codex-kit, zsh)"
+      if docker exec -u codex "$container" bash -lc 'mkdir -p "$HOME/.config" "$HOME/.agents-env" 2>/dev/null && test -w "$HOME/.config"' >/dev/null 2>&1; then
+        print -r -- "+ snapshot ~/.config -> $container:/home/agent/.config (excluding agent-kit, zsh)"
 
         local -a tar_no_meta=()
         if command tar --no-acls -cf /dev/null -T /dev/null >/dev/null 2>&1; then
@@ -3418,24 +3418,24 @@ codex-workspace() {
 
         COPYFILE_DISABLE=1 tar -C "$HOME" \
           "${tar_no_meta[@]}" \
-          --exclude='.config/codex-kit' \
-          --exclude='.config/codex_secrets' \
+          --exclude='.config/agent-kit' \
+          --exclude='.config/AGENT_secrets' \
           --exclude='.config/zsh' \
           -cf - .config \
-          | docker exec -i -u codex "$container" tar -C /home/codex -xf -
+          | docker exec -i -u codex "$container" tar -C /home/agent -xf -
         if (( $? == 0 )); then
           docker exec -u codex "$container" bash -lc "date -u +%Y-%m-%dT%H:%M:%SZ >'$snapshot_marker'" >/dev/null || true
         else
           print -u2 -r -- "warn: failed to snapshot ~/.config into $container"
         fi
       else
-        print -u2 -r -- "warn: $container:/home/codex/.config is not writable (maybe created with --config-dir :ro mount)"
+        print -u2 -r -- "warn: $container:/home/agent/.config is not writable (maybe created with --config-dir :ro mount)"
         print -u2 -r -- "warn: re-create the workspace to switch to snapshot mode (rm --volumes, then re-run)"
       fi
 	    fi
 
 	    # Apply GitHub auth inside the container without persisting GH_TOKEN/GITHUB_TOKEN
-	    # as container env. This keeps auth refreshable via `codex-workspace auth github`.
+	    # as container env. This keeps auth refreshable via `agent-workspace auth github`.
 	    if [[ -n "$chosen_token" ]]; then
 	      _codex_workspace_auth_github "$container" "$gh_host" || return $?
 	    fi
@@ -3572,9 +3572,9 @@ codex-workspace() {
       print -r -- "  - VS Code: code --new-window --folder-uri \"${folder_uri}\""
       print -r -- "  - Link:   ${vscode_url}"
 
-      local open_vscode_enabled="${CODEX_WORKSPACE_OPEN_VSCODE_ENABLED:-}"
-      if [[ -z "$open_vscode_enabled" && -n "${CODEX_WORKSPACE_OPEN_VSCODE:-}" ]]; then
-        print -u2 -r -- "warn: CODEX_WORKSPACE_OPEN_VSCODE is deprecated; use CODEX_WORKSPACE_OPEN_VSCODE_ENABLED=true|false"
+      local open_vscode_enabled="${AGENT_WORKSPACE_OPEN_VSCODE_ENABLED:-}"
+      if [[ -z "$open_vscode_enabled" && -n "${AGENT_WORKSPACE_OPEN_VSCODE:-}" ]]; then
+        print -u2 -r -- "warn: AGENT_WORKSPACE_OPEN_VSCODE is deprecated; use AGENT_WORKSPACE_OPEN_VSCODE_ENABLED=true|false"
         open_vscode_enabled="true"
       fi
       case "$open_vscode_enabled" in
@@ -3588,7 +3588,7 @@ codex-workspace() {
           fi
           ;;
         *)
-          print -u2 -r -- "error: CODEX_WORKSPACE_OPEN_VSCODE_ENABLED must be true or false (got: $open_vscode_enabled)"
+          print -u2 -r -- "error: AGENT_WORKSPACE_OPEN_VSCODE_ENABLED must be true or false (got: $open_vscode_enabled)"
           return 2
           ;;
       esac
@@ -3596,11 +3596,11 @@ codex-workspace() {
   fi
 }
 
-# --- END _features/codex-workspace/workspace-launcher.zsh
+# --- END _features/agent-workspace/workspace-launcher.zsh
 
-if ! typeset -f codex-workspace >/dev/null 2>&1; then
-  print -u2 -r -- "❌ missing function: codex-workspace"
+if ! typeset -f agent-workspace >/dev/null 2>&1; then
+  print -u2 -r -- "❌ missing function: agent-workspace"
   exit 1
 fi
 
-codex-workspace "$@"
+agent-workspace "$@"

@@ -5,21 +5,21 @@ usage() {
   cat <<'EOF'
 usage:
   scripts/bump_versions.sh --from-main [--run-e2e]
-  scripts/bump_versions.sh --zsh-kit-ref <ref|sha> --codex-kit-ref <ref|sha> [--run-e2e]
+  scripts/bump_versions.sh --zsh-kit-ref <ref|sha> --agent-kit-ref <ref|sha> [--run-e2e]
 
 options:
   --from-main              Resolve upstream pins from default release branches:
-                           zsh-kit=refs/heads/nils-cli, codex-kit=refs/heads/main.
+                           zsh-kit=refs/heads/nils-cli, agent-kit=refs/heads/main.
   --zsh-kit-ref <ref|sha>  Resolve zsh-kit ref to a full 40-char commit SHA.
-  --codex-kit-ref <ref|sha> Resolve codex-kit ref to a full 40-char commit SHA.
+  --agent-kit-ref <ref|sha> Resolve agent-kit ref to a full 40-char commit SHA.
 
   --zsh-kit-repo <url>     Override zsh-kit repo URL (default: https://github.com/graysurf/zsh-kit.git).
-  --codex-kit-repo <url>   Override codex-kit repo URL (default: https://github.com/graysurf/codex-kit.git).
-  --image-tag <tag>        Docker image tag to build (default: codex-workspace-launcher:local).
+  --agent-kit-repo <url>   Override agent-kit repo URL (default: https://github.com/graysurf/agent-kit.git).
+  --image-tag <tag>        Docker image tag to build (default: agent-workspace-launcher:local).
 
   --skip-checks            Skip ruff + pytest script_smoke.
   --skip-docker            Skip docker build and /opt/*.ref verification.
-  --skip-bundle            Skip regenerating bin/codex-workspace.
+  --skip-bundle            Skip regenerating bin/agent-workspace.
   --run-e2e                Run real-Docker e2e (pytest -m e2e) against the built image.
 
 notes:
@@ -102,11 +102,11 @@ ensure_venv() {
 main() {
   local from_main=0
   local zsh_kit_ref=''
-  local codex_kit_ref=''
+  local AGENT_kit_ref=''
 
   local zsh_kit_repo='https://github.com/graysurf/zsh-kit.git'
-  local codex_kit_repo='https://github.com/graysurf/codex-kit.git'
-  local image_tag='codex-workspace-launcher:local'
+  local AGENT_kit_repo='https://github.com/graysurf/agent-kit.git'
+  local image_tag='agent-workspace-launcher:local'
 
   local skip_checks=0
   local skip_docker=0
@@ -127,16 +127,16 @@ main() {
         zsh_kit_ref="${2-}"
         shift 2
         ;;
-      --codex-kit-ref)
-        codex_kit_ref="${2-}"
+      --agent-kit-ref)
+        AGENT_kit_ref="${2-}"
         shift 2
         ;;
       --zsh-kit-repo)
         zsh_kit_repo="${2-}"
         shift 2
         ;;
-      --codex-kit-repo)
-        codex_kit_repo="${2-}"
+      --agent-kit-repo)
+        AGENT_kit_repo="${2-}"
         shift 2
         ;;
       --image-tag)
@@ -177,20 +177,20 @@ main() {
 
   if (( from_main == 1 )); then
     zsh_kit_ref="refs/heads/nils-cli"
-    codex_kit_ref="refs/heads/main"
+    AGENT_kit_ref="refs/heads/main"
   fi
 
   [[ -n "$zsh_kit_ref" ]] || die "missing --zsh-kit-ref (or use --from-main)"
-  [[ -n "$codex_kit_ref" ]] || die "missing --codex-kit-ref (or use --from-main)"
+  [[ -n "$AGENT_kit_ref" ]] || die "missing --agent-kit-ref (or use --from-main)"
 
   info "resolving refs..."
   local resolved_zsh=''
-  local resolved_codex=''
+  local resolved_agent=''
   resolved_zsh="$(resolve_ref "$zsh_kit_repo" "$zsh_kit_ref")"
-  resolved_codex="$(resolve_ref "$codex_kit_repo" "$codex_kit_ref")"
+  resolved_agent="$(resolve_ref "$AGENT_kit_repo" "$AGENT_kit_ref")"
 
   info "resolved: ZSH_KIT_REF=$resolved_zsh"
-  info "resolved: CODEX_KIT_REF=$resolved_codex"
+  info "resolved: AGENT_KIT_REF=$resolved_agent"
 
   local versions_file="${repo_root}/VERSIONS.env"
   [[ -f "$versions_file" ]] || die "missing file: VERSIONS.env"
@@ -198,19 +198,19 @@ main() {
   info "updating: VERSIONS.env"
   local tmp=''
   tmp="$(mktemp 2>/dev/null || true)"
-  [[ -n "$tmp" ]] || tmp="/tmp/codex-workspace-launcher.versions.$$"
+  [[ -n "$tmp" ]] || tmp="/tmp/agent-workspace-launcher.versions.$$"
 
   local have_zsh=0
-  local have_codex=0
+  local have_agent=0
   while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ "$line" == ZSH_KIT_REF=* ]]; then
       echo "ZSH_KIT_REF=${resolved_zsh}" >>"$tmp"
       have_zsh=1
       continue
     fi
-    if [[ "$line" == CODEX_KIT_REF=* ]]; then
-      echo "CODEX_KIT_REF=${resolved_codex}" >>"$tmp"
-      have_codex=1
+    if [[ "$line" == AGENT_KIT_REF=* ]]; then
+      echo "AGENT_KIT_REF=${resolved_agent}" >>"$tmp"
+      have_agent=1
       continue
     fi
     echo "$line" >>"$tmp"
@@ -219,15 +219,15 @@ main() {
   if (( have_zsh == 0 )); then
     echo "ZSH_KIT_REF=${resolved_zsh}" >>"$tmp"
   fi
-  if (( have_codex == 0 )); then
-    echo "CODEX_KIT_REF=${resolved_codex}" >>"$tmp"
+  if (( have_agent == 0 )); then
+    echo "AGENT_KIT_REF=${resolved_agent}" >>"$tmp"
   fi
 
   mv -f -- "$tmp" "$versions_file"
 
   if (( skip_bundle == 0 )); then
-    info "regenerating bundle: bin/codex-workspace"
-    (cd "$repo_root" && ./scripts/generate_codex_workspace_bundle.sh)
+    info "regenerating bundle: bin/agent-workspace"
+    (cd "$repo_root" && ./scripts/generate_agent_workspace_bundle.sh)
   else
     info "skipping bundle regeneration (--skip-bundle)"
   fi
@@ -251,21 +251,21 @@ main() {
       cd "$repo_root"
       docker build -t "$image_tag" \
         --build-arg ZSH_KIT_REF="$resolved_zsh" \
-        --build-arg CODEX_KIT_REF="$resolved_codex" \
+        --build-arg AGENT_KIT_REF="$resolved_agent" \
         .
     )
 
     info "verifying pins inside image..."
     local image_zsh_ref=''
-    local image_codex_ref=''
+    local image_AGENT_ref=''
     image_zsh_ref="$(docker run --rm --entrypoint cat "$image_tag" /opt/zsh-kit.ref | tr -d '\r\n')"
-    image_codex_ref="$(docker run --rm --entrypoint cat "$image_tag" /opt/codex-kit/.ref | tr -d '\r\n')"
+    image_AGENT_ref="$(docker run --rm --entrypoint cat "$image_tag" /opt/agent-kit/.ref | tr -d '\r\n')"
 
     if [[ "$image_zsh_ref" != "$resolved_zsh" ]]; then
       die "image zsh-kit ref mismatch: expected=$resolved_zsh got=$image_zsh_ref"
     fi
-    if [[ "$image_codex_ref" != "$resolved_codex" ]]; then
-      die "image codex-kit ref mismatch: expected=$resolved_codex got=$image_codex_ref"
+    if [[ "$image_AGENT_ref" != "$resolved_agent" ]]; then
+      die "image agent-kit ref mismatch: expected=$resolved_agent got=$image_AGENT_ref"
     fi
 
     docker run --rm "$image_tag" --help >/dev/null

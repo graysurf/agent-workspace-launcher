@@ -235,8 +235,8 @@ def base_cases() -> list[CwsE2ECase]:
             requires="Existing workspace container ws-e2e; valid GitHub token or `gh` login.",
         ),
         CwsE2ECase(
-            case_id="auth_codex_profile",
-            cws_args=["auth", "codex", "--profile", "CODEX_PROFILE", "ws-e2e"],
+            case_id="auth_agent_profile",
+            cws_args=["auth", "codex", "--profile", "AGENT_PROFILE", "ws-e2e"],
             purpose="Apply Codex auth (profile-based) inside the workspace.",
             requires="Existing workspace container ws-e2e; host Codex secrets must be accessible to the launcher container.",
         ),
@@ -307,7 +307,7 @@ def base_cases() -> list[CwsE2ECase]:
         CwsE2ECase(
             case_id="env_custom_image",
             cws_args=["ls"],
-            env={"CWS_IMAGE": "graysurf/codex-workspace-launcher:latest"},
+            env={"CWS_IMAGE": "graysurf/agent-workspace-launcher:latest"},
             purpose="Verify custom image selection is respected.",
         ),
         CwsE2ECase(
@@ -556,7 +556,7 @@ class _E2EConfig:
     enabled: bool
     public_repo: str | None
     private_repo: str | None
-    codex_profile: str | None
+    agent_profile: str | None
     gpg_key_id: str | None
     allow_rm_all: bool
     enable_auth: bool
@@ -593,7 +593,7 @@ def _load_e2e_config() -> _E2EConfig:
         enabled=_env_flag("CWS_E2E"),
         public_repo=os.environ.get("CWS_E2E_PUBLIC_REPO"),
         private_repo=os.environ.get("CWS_E2E_PRIVATE_REPO"),
-        codex_profile=os.environ.get("CWS_E2E_CODEX_PROFILE"),
+        agent_profile=os.environ.get("CWS_E2E_AGENT_PROFILE"),
         gpg_key_id=os.environ.get("CWS_E2E_GPG_KEY_ID"),
         allow_rm_all=_env_flag("CWS_E2E_ALLOW_RM_ALL"),
         enable_auth=_env_flag("CWS_E2E_ENABLE_AUTH"),
@@ -649,8 +649,8 @@ def _replace_placeholders(
             updated = updated.replace("OWNER/REPO", config.public_repo)
         if "OWNER/PRIVATE_REPO" in updated and config.private_repo:
             updated = updated.replace("OWNER/PRIVATE_REPO", config.private_repo)
-        if updated == "CODEX_PROFILE" and config.codex_profile:
-            updated = config.codex_profile
+        if updated == "AGENT_PROFILE" and config.agent_profile:
+            updated = config.agent_profile
         if updated == "GPG_KEY_ID" and config.gpg_key_id:
             updated = config.gpg_key_id
         replaced.append(updated)
@@ -682,10 +682,10 @@ def _skip_reason(plan_case: CwsE2EPlanCase, config: _E2EConfig) -> str | None:
 
     if (
         _is_codex_auth_case(args)
-        and "CODEX_PROFILE" in args
-        and not config.codex_profile
+        and "AGENT_PROFILE" in args
+        and not config.agent_profile
     ):
-        return "Codex profile not configured (set CWS_E2E_CODEX_PROFILE)."
+        return "Codex profile not configured (set CWS_E2E_AGENT_PROFILE)."
 
     if _is_gpg_auth_case(args) and not config.enable_gpg:
         return "GPG auth disabled (set CWS_E2E_ENABLE_GPG=1)."
@@ -844,8 +844,8 @@ def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str,
     gh_token = env.get("CWS_E2E_GH_TOKEN", "")
     if gh_token and not env.get("GH_TOKEN") and not env.get("GITHUB_TOKEN"):
         env["GH_TOKEN"] = gh_token
-    env["CODEX_HOME"] = str(repo_root())
-    env["CODEX_WORKSPACE_OPEN_VSCODE_ENABLED"] = "false"
+    env["AGENT_HOME"] = str(repo_root())
+    env["AGENT_WORKSPACE_OPEN_VSCODE_ENABLED"] = "false"
     env["NO_COLOR"] = "1"
     env["CLICOLOR"] = "0"
     env["CLICOLOR_FORCE"] = "0"
@@ -854,8 +854,8 @@ def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str,
     env["GIT_PAGER"] = "cat"
     env["PAGER"] = "cat"
     if not config.enable_gpg:
-        env["CODEX_WORKSPACE_GPG"] = "none"
-        env["CODEX_WORKSPACE_GPG_KEY"] = ""
+        env["AGENT_WORKSPACE_GPG"] = "none"
+        env["AGENT_WORKSPACE_GPG_KEY"] = ""
 
     if config.image:
         env["CWS_IMAGE"] = config.image

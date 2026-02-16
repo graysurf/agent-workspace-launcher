@@ -14,7 +14,7 @@ usage:
 behavior:
   - Extracts the matching "## <version> ..." section from a changelog until the next "## " heading.
   - Writes the extracted notes to --output.
-  - Default output (when CODEX_HOME is set): $CODEX_HOME/out/release-notes-<version>.md
+  - Default output (when AGENT_HOME is set): $AGENT_HOME/out/release-notes-<version>.md
 
 notes:
   - Default changelog path: CHANGELOG.md
@@ -53,8 +53,8 @@ done
 [[ -f "$changelog" ]] || die "changelog not found: $changelog"
 
 if [[ -z "$output" ]]; then
-  if [[ -n "${CODEX_HOME:-}" ]]; then
-    output="${CODEX_HOME%/}/out/release-notes-${version}.md"
+  if [[ -n "${AGENT_HOME:-}" ]]; then
+    output="${AGENT_HOME%/}/out/release-notes-${version}.md"
   else
     output="./release-notes-${version}.md"
   fi
@@ -76,4 +76,3 @@ if [[ ! -s "$output" ]]; then
 fi
 
 echo "$output"
-

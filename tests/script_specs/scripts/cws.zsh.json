@@ -6,7 +6,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bls\\b"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\bls\\b"
       }
     },
     {
@@ -15,7 +15,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bcreate\\b.*octo/demo"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\bcreate\\b.*octo/demo"
       }
     },
     {
@@ -24,7 +24,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\bexec\\b.*\\bws-smoke\\b.*\\bls\\b"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\bexec\\b.*\\bws-smoke\\b.*\\bls\\b"
       }
     },
     {
@@ -33,7 +33,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\brm\\b.*\\bws-smoke\\b.*--yes"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\brm\\b.*\\bws-smoke\\b.*--yes"
       }
     },
     {
@@ -42,7 +42,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\breset\\b.*\\brepo\\b.*\\bws-smoke\\b"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\breset\\b.*\\brepo\\b.*\\bws-smoke\\b"
       }
     },
     {
@@ -51,7 +51,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/codex-workspace-launcher:latest.*\\btunnel\\b.*\\bws-smoke\\b.*--detach"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*graysurf/agent-workspace-launcher:latest.*\\btunnel\\b.*\\bws-smoke\\b.*--detach"
       }
     },
     {
@@ -60,7 +60,7 @@
       "timeout_sec": 10,
       "expect": {
         "exit_codes": [0],
-        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*-e\\nCODEX_WORKSPACE_GPG_KEY.*graysurf/codex-workspace-launcher:latest.*\\bauth\\b.*\\bgpg\\b.*--key.*DEADBEEF.*\\bws-smoke\\b"
+        "stdout_regex": "(?s)\\bdocker\\b.*\\brun\\b.*--rm.*-v\\n/var/run/docker.sock:/var/run/docker.sock.*-e\\nGH_TOKEN.*-e\\nGITHUB_TOKEN.*-e\\nAGENT_WORKSPACE_GPG_KEY.*graysurf/agent-workspace-launcher:latest.*\\bauth\\b.*\\bgpg\\b.*--key.*DEADBEEF.*\\bws-smoke\\b"
       }
     }
   ]

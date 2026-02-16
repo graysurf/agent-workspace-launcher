@@ -49,7 +49,7 @@ jobs:
             git ls-files \
               'scripts/*.zsh' \
               'scripts/bundles/*.zsh' \
-              'bin/codex-workspace'
+              'bin/agent-workspace'
           )
           if (( ${#zsh_files[@]} )); then
             zsh -n "${zsh_files[@]}"

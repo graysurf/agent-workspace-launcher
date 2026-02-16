@@ -9,14 +9,14 @@ Guidelines:
 
 - Keep entries short and date-stamped.
 - Prefer links to PRs, progress files, and docs.
-- Do not commit large logs or temporary artifacts; store them under `$CODEX_HOME/out/` and link to the paths.
-- `$CODEX_HOME/out/` is for short-term local verification and may be cleaned; for durable evidence, prefer PR
+- Do not commit large logs or temporary artifacts; store them under `$AGENT_HOME/out/` and link to the paths.
+- `$AGENT_HOME/out/` is for short-term local verification and may be cleaned; for durable evidence, prefer PR
   comments and GitHub Actions run URLs.
 
 ## 2026-01-20
 
 - Integration testing runbook: `docs/runbooks/INTEGRATION_TEST.md`
-- Evidence logs (stored locally under `$CODEX_HOME/out/`):
+- Evidence logs (stored locally under `$AGENT_HOME/out/`):
   - `macos-quickstart-smoke-20260120-080236.log`
   - `ci-publish-verification-20260120-081548.log`
   - `ghcr-verification-20260120-084948.log`

@@ -12,4 +12,4 @@ Related docs:
 
 ## Index
 
-- [docs/guides/cws/README.md](cws/README.md) — using `cws` / `codex-workspace` (launcher)
+- [docs/guides/cws/README.md](cws/README.md) — using `cws` / `agent-workspace` (launcher)

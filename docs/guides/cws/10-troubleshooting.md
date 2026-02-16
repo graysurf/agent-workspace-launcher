@@ -14,7 +14,7 @@ Some Linux setups require running the launcher as root or adding the socket grou
 docker run --rm -it \
   --user 0:0 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/codex-workspace-launcher:latest \
+  graysurf/agent-workspace-launcher:latest \
   ls
 ```
 
@@ -23,7 +23,7 @@ docker run --rm -it \
 Workspaces are labeled:
 
 ```sh
-docker ps -a --filter label=codex-kit.workspace=1
+docker ps -a --filter label=agent-kit.workspace=1
 ```
 
 ## If `cws` completion is not working (zsh)

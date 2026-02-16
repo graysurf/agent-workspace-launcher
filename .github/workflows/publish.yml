@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: publish-codex-workspace-launcher
+  group: publish-agent-workspace-launcher
   cancel-in-progress: false
 
 jobs:
@@ -51,7 +51,7 @@ jobs:
 
             if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
               {
-                echo "## Docker Hub publish: codex-workspace-launcher"
+                echo "## Docker Hub publish: agent-workspace-launcher"
                 echo ""
                 echo "_Skipped: missing repo secrets `DOCKERHUB_USERNAME` and/or `DOCKERHUB_TOKEN`._"
                 echo ""
@@ -71,8 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      DOCKERHUB_IMAGE: graysurf/codex-workspace-launcher
-      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/codex-workspace-launcher
+      DOCKERHUB_IMAGE: graysurf/agent-workspace-launcher
+      GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/agent-workspace-launcher
 
     steps:
       - name: Checkout
@@ -113,13 +113,13 @@ jobs:
           # shellcheck disable=SC1091
           source VERSIONS.env
 
-          if [[ -z "${ZSH_KIT_REF:-}" || -z "${CODEX_KIT_REF:-}" ]]; then
-            echo "error: VERSIONS.env must set ZSH_KIT_REF and CODEX_KIT_REF" >&2
+          if [[ -z "${ZSH_KIT_REF:-}" || -z "${AGENT_KIT_REF:-}" ]]; then
+            echo "error: VERSIONS.env must set ZSH_KIT_REF and AGENT_KIT_REF" >&2
             exit 1
           fi
 
           echo "zsh_kit_ref=${ZSH_KIT_REF}" >>"$GITHUB_OUTPUT"
-          echo "codex_kit_ref=${CODEX_KIT_REF}" >>"$GITHUB_OUTPUT"
+          echo "AGENT_kit_ref=${AGENT_KIT_REF}" >>"$GITHUB_OUTPUT"
 
       - name: Compute tags
         id: tags
@@ -159,6 +159,6 @@ jobs:
           tags: ${{ steps.tags.outputs.tags }}
           build-args: |
             ZSH_KIT_REF=${{ steps.refs.outputs.zsh_kit_ref }}
-            CODEX_KIT_REF=${{ steps.refs.outputs.codex_kit_ref }}
+            AGENT_KIT_REF=${{ steps.refs.outputs.AGENT_kit_ref }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

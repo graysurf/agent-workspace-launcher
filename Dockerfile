@@ -8,15 +8,15 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG ZSH_KIT_REPO="https://github.com/graysurf/zsh-kit.git"
 ARG ZSH_KIT_REF="main"
 
-ARG CODEX_KIT_REPO="https://github.com/graysurf/codex-kit.git"
-ARG CODEX_KIT_REF="main"
+ARG AGENT_KIT_REPO="https://github.com/graysurf/agent-kit.git"
+ARG AGENT_KIT_REF="main"
 
-LABEL org.opencontainers.image.source="https://github.com/graysurf/codex-workspace-launcher" \
-  org.opencontainers.image.title="codex-workspace-launcher" \
+LABEL org.opencontainers.image.source="https://github.com/graysurf/agent-workspace-launcher" \
+  org.opencontainers.image.title="agent-workspace-launcher" \
   org.graysurf.zsh-kit.repo="$ZSH_KIT_REPO" \
   org.graysurf.zsh-kit.ref="$ZSH_KIT_REF" \
-  org.graysurf.codex-kit.repo="$CODEX_KIT_REPO" \
-  org.graysurf.codex-kit.ref="$CODEX_KIT_REF"
+  org.graysurf.agent-kit.repo="$AGENT_KIT_REPO" \
+  org.graysurf.agent-kit.ref="$AGENT_KIT_REF"
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -32,19 +32,19 @@ RUN apt-get update \
 
 COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
-COPY bin/codex-workspace /usr/local/bin/codex-workspace
-RUN chmod +x /usr/local/bin/codex-workspace
+COPY bin/agent-workspace /usr/local/bin/agent-workspace
+RUN chmod +x /usr/local/bin/agent-workspace
 
 RUN mkdir -p /opt \
   && printf "%s\n" "$ZSH_KIT_REF" > /opt/zsh-kit.ref
 
-RUN git init -b main /opt/codex-kit \
-  && git -C /opt/codex-kit remote add origin "$CODEX_KIT_REPO" \
-  && git -C /opt/codex-kit fetch --depth 1 origin "$CODEX_KIT_REF" \
-  && git -C /opt/codex-kit checkout --detach FETCH_HEAD \
-  && git -C /opt/codex-kit rev-parse HEAD >/opt/codex-kit/.ref \
-  && rm -rf /opt/codex-kit/.git
+RUN git init -b main /opt/agent-kit \
+  && git -C /opt/agent-kit remote add origin "$AGENT_KIT_REPO" \
+  && git -C /opt/agent-kit fetch --depth 1 origin "$AGENT_KIT_REF" \
+  && git -C /opt/agent-kit checkout --detach FETCH_HEAD \
+  && git -C /opt/agent-kit rev-parse HEAD >/opt/agent-kit/.ref \
+  && rm -rf /opt/agent-kit/.git
 
-ENV CODEX_WORKSPACE_LAUNCHER="/opt/codex-kit/docker/codex-env/bin/codex-workspace"
+ENV AGENT_WORKSPACE_LAUNCHER="/opt/agent-kit/docker/agent-env/bin/agent-workspace"
 
-ENTRYPOINT ["codex-workspace"]
+ENTRYPOINT ["agent-workspace"]

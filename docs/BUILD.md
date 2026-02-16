@@ -17,16 +17,16 @@ Notes:
 Clone and build a local tag:
 
 ```sh
-git clone https://github.com/graysurf/codex-workspace-launcher.git
-cd codex-workspace-launcher
+git clone https://github.com/graysurf/agent-workspace-launcher.git
+cd agent-workspace-launcher
 
-docker build -t codex-workspace-launcher:local .
+docker build -t agent-workspace-launcher:local .
 ```
 
 Verify the image works:
 
 ```sh
-docker run --rm -it codex-workspace-launcher:local --help
+docker run --rm -it agent-workspace-launcher:local --help
 ```
 
 ## Use with `cws`
@@ -37,7 +37,7 @@ zsh:
 
 ```sh
 source ./scripts/cws.zsh
-export CWS_IMAGE="codex-workspace-launcher:local"
+export CWS_IMAGE="agent-workspace-launcher:local"
 
 cws --help
 cws create OWNER/REPO
@@ -47,7 +47,7 @@ bash:
 
 ```sh
 source ./scripts/cws.bash
-export CWS_IMAGE="codex-workspace-launcher:local"
+export CWS_IMAGE="agent-workspace-launcher:local"
 
 cws --help
 cws create OWNER/REPO
@@ -56,7 +56,7 @@ cws create OWNER/REPO
 Executable (any shell; no completion):
 
 ```sh
-export CWS_IMAGE="codex-workspace-launcher:local"
+export CWS_IMAGE="agent-workspace-launcher:local"
 ./scripts/cws.bash --help
 ./scripts/cws.bash create OWNER/REPO
 ```
@@ -64,31 +64,31 @@ export CWS_IMAGE="codex-workspace-launcher:local"
 You can also override the image per-command:
 
 ```sh
-CWS_IMAGE="codex-workspace-launcher:local" cws ls
+CWS_IMAGE="agent-workspace-launcher:local" cws ls
 ```
 
 ## Pin upstream refs (recommended for reproducibility)
 
 This repo pins the upstream pair in `VERSIONS.env`:
 
-- `ZSH_KIT_REF`: source ref for generating the bundled `bin/codex-workspace` (run `scripts/generate_codex_workspace_bundle.sh`)
-- `CODEX_KIT_REF`: build-time ref for vendoring `codex-kit` into the launcher image (low-level launcher)
+- `ZSH_KIT_REF`: source ref for generating the bundled `bin/agent-workspace` (run `scripts/generate_agent_workspace_bundle.sh`)
+- `AGENT_KIT_REF`: build-time ref for vendoring `agent-kit` into the launcher image (low-level launcher)
 
 You can also override the build args to a branch/tag/SHA:
 
 ```sh
-docker build -t codex-workspace-launcher:local \
+docker build -t agent-workspace-launcher:local \
   --build-arg ZSH_KIT_REF=main \
-  --build-arg CODEX_KIT_REF=main \
+  --build-arg AGENT_KIT_REF=main \
   .
 ```
 
 For reproducible builds, prefer commit SHAs:
 
 ```sh
-docker build -t codex-workspace-launcher:local \
+docker build -t agent-workspace-launcher:local \
   --build-arg ZSH_KIT_REF=<zsh-kit-sha> \
-  --build-arg CODEX_KIT_REF=<codex-kit-sha> \
+  --build-arg AGENT_KIT_REF=<agent-kit-sha> \
   .
 ```
 
@@ -100,9 +100,9 @@ set -a
 source ./VERSIONS.env
 set +a
 
-docker build -t codex-workspace-launcher:local \
+docker build -t agent-workspace-launcher:local \
   --build-arg ZSH_KIT_REF="$ZSH_KIT_REF" \
-  --build-arg CODEX_KIT_REF="$CODEX_KIT_REF" \
+  --build-arg AGENT_KIT_REF="$AGENT_KIT_REF" \
   .
 ```
 
@@ -112,15 +112,15 @@ You can build against a fork by overriding the repo URLs.
 
 Notes:
 
-- `CODEX_KIT_*` affects the image contents (Dockerfile vendors codex-kit at build time).
-- `ZSH_KIT_*` does not affect the bundled wrapper code by itself; to change the wrapper behavior, regenerate `bin/codex-workspace`.
+- `AGENT_KIT_*` affects the image contents (Dockerfile vendors agent-kit at build time).
+- `ZSH_KIT_*` does not affect the bundled wrapper code by itself; to change the wrapper behavior, regenerate `bin/agent-workspace`.
 
 ```sh
-docker build -t codex-workspace-launcher:local \
+docker build -t agent-workspace-launcher:local \
   --build-arg ZSH_KIT_REPO="https://github.com/<you>/zsh-kit.git" \
   --build-arg ZSH_KIT_REF="main" \
-  --build-arg CODEX_KIT_REPO="https://github.com/<you>/codex-kit.git" \
-  --build-arg CODEX_KIT_REF="main" \
+  --build-arg AGENT_KIT_REPO="https://github.com/<you>/agent-kit.git" \
+  --build-arg AGENT_KIT_REF="main" \
   .
 ```
 
@@ -138,7 +138,7 @@ Example: build an amd64 image on Apple Silicon and load it locally:
 ```sh
 docker buildx build \
   --platform linux/amd64 \
-  -t codex-workspace-launcher:local-amd64 \
+  -t agent-workspace-launcher:local-amd64 \
   --load \
   .
 ```
@@ -148,7 +148,7 @@ Example: build both amd64+arm64 and push to a registry (requires login):
 ```sh
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
-  -t <your-registry>/codex-workspace-launcher:local \
+  -t <your-registry>/agent-workspace-launcher:local \
   --push \
   .
 ```

@@ -1,4 +1,4 @@
-# Release Guide (codex-workspace-launcher)
+# Release Guide (agent-workspace-launcher)
 
 This repo publishes the launcher image from the `docker` branch (see `.github/workflows/publish.yml`).
 
@@ -27,7 +27,7 @@ This repo publishes the launcher image from the `docker` branch (see `.github/wo
 
    direnv exec . ./scripts/bump_versions.sh \
      --zsh-kit-ref "$ZSH_KIT_REF" \
-     --codex-kit-ref "$CODEX_KIT_REF" \
+     --agent-kit-ref "$AGENT_KIT_REF" \
      --image-tag cws-launcher:e2e \
      --run-e2e
    ```
@@ -57,9 +57,9 @@ This repo publishes the launcher image from the `docker` branch (see `.github/wo
 
 8. Publish the GitHub Release from `CHANGELOG.md`
    - Extract notes:
-     - `./scripts/release_notes_from_changelog.sh --version vX.Y.Z --output \"$CODEX_HOME/out/release-notes-vX.Y.Z.md\"`
+     - `./scripts/release_notes_from_changelog.sh --version vX.Y.Z --output \"$AGENT_HOME/out/release-notes-vX.Y.Z.md\"`
    - Create:
-     - `gh release create vX.Y.Z -F \"$CODEX_HOME/out/release-notes-vX.Y.Z.md\" --title \"vX.Y.Z\"`
+     - `gh release create vX.Y.Z -F \"$AGENT_HOME/out/release-notes-vX.Y.Z.md\" --title \"vX.Y.Z\"`
    - Verify:
      - `gh release view vX.Y.Z`
 
