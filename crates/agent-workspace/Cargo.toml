@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
-description = "Rust front controller that forwards workspace commands to the low-level launcher."
+description = "Host-native workspace lifecycle CLI runtime."
 repository = "https://github.com/graysurf/agent-workspace-launcher"
 
 [lib]
@@ -12,7 +12,7 @@ name = "agent_workspace"
 path = "src/lib.rs"
 
 [[bin]]
-name = "agent-workspace"
+name = "agent-workspace-launcher"
 path = "src/main.rs"
 
 [dependencies]

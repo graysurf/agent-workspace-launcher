@@ -1,26 +1,29 @@
 # Agent Workspace Parity Matrix
 
 ## Areas
-- Command forwarding parity: `auth/create/ls/rm/exec/reset/tunnel`
-- Host wrapper docker argv parity (`aws.bash` vs `aws.zsh`)
-- Auth behavior parity (`GH_TOKEN`/`GITHUB_TOKEN` forwarding, `AWS_AUTH` policy)
-- E2E gating parity (`AWS_E2E_*` matrix)
+
+- Command behavior parity between `agent-workspace-launcher` and `awl` alias
+- Wrapper parity (`scripts/awl.bash` vs `scripts/awl.zsh`)
+- Auth behavior parity (`AGENT_WORKSPACE_AUTH`, `GH_TOKEN`/`GITHUB_TOKEN`)
+- Codex env compatibility (`CODEX_SECRET_DIR`, `CODEX_AUTH_FILE`)
 
 ## Validation set
+
 - Rust unit/integration:
   - `cargo test -p agent-workspace`
 - Script smoke:
   - `.venv/bin/python -m pytest -m script_smoke`
 - Wrapper equivalence:
   - `.venv/bin/python -m pytest tests/test_wrapper_equivalence.py`
-- E2E (smoke case):
-  - `AWS_E2E=1 AWS_E2E_CASE=help .venv/bin/python -m pytest -m e2e tests/e2e/test_aws_cli_cases.py`
 
-## Agent-env integration checks
-- Launcher path resolution auto-detects `/opt/agent-kit/docker/agent-env/bin/agent-workspace`.
-- `create` emits expected workspace/path outputs through low-level launcher.
-- `exec/reset/rm` round-trips through wrapper and low-level launcher contract.
+## Release payload parity checks
 
-## Codex env compatibility checks
-- `CODEX_SECRET_DIR` is passed through unchanged.
-- `CODEX_AUTH_FILE` is passed through unchanged.
+- `release-brew.yml` assets contain:
+  - `bin/agent-workspace-launcher`
+  - `bin/awl`
+- Homebrew install exposes both command names and both return help output.
+
+## Out of scope for parity gate
+
+- Container-backend behavior (`docker run`, `AWL_IMAGE`, `AWL_DOCKER_ARGS`)
+- Legacy `cws` compatibility paths

@@ -1,0 +1,67 @@
+{
+  "smoke": [
+    {
+      "name": "ls",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nls\\n?$"
+      }
+    },
+    {
+      "name": "create",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl create octo/demo"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\ncreate\\nocto/demo\\n?$"
+      }
+    },
+    {
+      "name": "exec",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl exec ws-smoke ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nexec\\nws-smoke\\nls\\n?$"
+      }
+    },
+    {
+      "name": "rm",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl rm ws-smoke --yes"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nrm\\nws-smoke\\n--yes\\n?$"
+      }
+    },
+    {
+      "name": "reset",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl reset repo ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nreset\\nrepo\\nws-smoke\\n?$"
+      }
+    },
+    {
+      "name": "tunnel",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl tunnel ws-smoke --detach"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\ntunnel\\nws-smoke\\n--detach\\n?$"
+      }
+    },
+    {
+      "name": "auth-gpg",
+      "command": ["zsh", "-f", "-c", "source scripts/awl.zsh; awl auth gpg --key DEADBEEF ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nauth\\ngpg\\n--key\\nDEADBEEF\\nws-smoke\\n?$"
+      }
+    }
+  ]
+}

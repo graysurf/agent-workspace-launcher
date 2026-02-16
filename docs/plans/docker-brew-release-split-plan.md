@@ -15,7 +15,7 @@ This plan separates release delivery into two independent tracks: container publ
 ## Assumptions (if any)
 1. Release versioning remains semver tags in this repo (`vX.Y.Z`).
 2. Docker release and Brew release should share the same git tag but run in separate workflows/jobs.
-3. Homebrew installs wrapper assets (`scripts/aws.bash`, `scripts/aws.zsh`) rather than Docker image binaries.
+3. Homebrew installs wrapper assets (`scripts/awl.bash`, `scripts/awl.zsh`) rather than Docker image binaries.
 4. First delivery can be semi-automated (generate assets + manual tap PR), then evolve to automated tap PR later.
 
 ## Sprint 1: Release Contract and Trigger Redesign
@@ -163,7 +163,7 @@ This plan separates release delivery into two independent tracks: container publ
 ### Task 4.1: Introduce formula in tap repo
 - **Location**:
   - `~/Project/graysurf/homebrew-tap/Formula/agent-workspace-launcher.rb`
-- **Description**: Add formula using release asset URLs/sha256 for macOS + Linux targets, with a minimal smoke test (`aws --help`).
+- **Description**: Add formula using release asset URLs/sha256 for macOS + Linux targets, with a minimal smoke test (`awl --help`).
 - **Dependencies**:
   - Task 3.2
 - **Complexity**: 5
@@ -205,7 +205,7 @@ This plan separates release delivery into two independent tracks: container publ
   - Run both workflows on a dry-run tag in a staging branch/repo; verify release assets and container manifests.
 - E2E/manual:
   - Docker: pull tagged images from Docker Hub/GHCR and run `--help` + one create/list smoke case.
-  - Brew: install from tap and run `aws --help`, wrapper source check for bash/zsh.
+  - Brew: install from tap and run `awl --help`, wrapper source check for bash/zsh.
 
 ## Risks & gotchas
 - One-tag-two-channels can cause partial release states (Docker succeeded, Brew failed). Mitigation: explicit channel status checklist and retry-safe workflows.

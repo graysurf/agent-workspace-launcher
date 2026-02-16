@@ -21,8 +21,8 @@ options:
 notes:
   - Always writes a resolved full commit SHA into VERSIONS.env.
   - Rust cutover removed zsh bundle generation and ZSH_KIT_REF pinning.
-  - E2E forces AWS_E2E=1, AWS_E2E_FULL=1, and sets AWS_E2E_IMAGE=<image-tag>.
-  - rm --all coverage is still gated by AWS_E2E_ALLOW_RM_ALL=1.
+  - E2E forces AWL_E2E=1, AWL_E2E_FULL=1, and sets AWL_E2E_IMAGE=<image-tag>.
+  - rm --all coverage is still gated by AWL_E2E_ALLOW_RM_ALL=1.
 USAGE
 }
 
@@ -246,20 +246,20 @@ main() {
       fi
     fi
 
-    local allow_rm_all="${AWS_E2E_ALLOW_RM_ALL:-}"
+    local allow_rm_all="${AWL_E2E_ALLOW_RM_ALL:-}"
     local allow_rm_all_lc=''
     allow_rm_all_lc="$(printf '%s' "$allow_rm_all" | tr '[:upper:]' '[:lower:]')"
     if [[ "$allow_rm_all_lc" != "1" && "$allow_rm_all_lc" != "true" && "$allow_rm_all_lc" != "yes" && "$allow_rm_all_lc" != "on" ]]; then
-      info "e2e note: rm --all coverage excluded unless AWS_E2E_ALLOW_RM_ALL=1"
+      info "e2e note: rm --all coverage excluded unless AWL_E2E_ALLOW_RM_ALL=1"
     fi
 
     info "running real Docker e2e (full matrix) against: ${image_tag}"
     (
       cd "$repo_root"
-      export AWS_E2E=1
-      export AWS_E2E_FULL=1
-      export AWS_E2E_IMAGE="$image_tag"
-      unset AWS_E2E_CASE 2>/dev/null || true
+      export AWL_E2E=1
+      export AWL_E2E_FULL=1
+      export AWL_E2E_IMAGE="$image_tag"
+      unset AWL_E2E_CASE 2>/dev/null || true
       "${repo_root}/.venv/bin/python" -m pytest -m e2e -q -ra
     )
   fi

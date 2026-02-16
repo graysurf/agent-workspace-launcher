@@ -1,73 +1,45 @@
 ---
 name: release-agent-workspace-launcher
-description: "Release agent-workspace-launcher: record pinned agent-kit ref in CHANGELOG, run local real-Docker e2e, and publish split Docker/Brew channels from release tags."
+description: "Release agent-workspace-launcher: enforce native CLI checks, keep name contract (agent-workspace-launcher primary / awl alias), and publish tag-based CLI archives."
 ---
 
 # Release Workflow (agent-workspace-launcher)
 
-This repo releases from semver tags (`vX.Y.Z`) with split publish channels: Docker images and Brew artifacts.
+This repo releases from semver tags (`vX.Y.Z`).
+Primary release output is native CLI archives for Homebrew/manual install.
 
-This project-specific workflow extends the base `release-workflow` with three non-negotiables:
+## Project-specific non-negotiables
 
-1) Record the active upstream pin (`AGENT_KIT_REF` from `VERSIONS.env`) in the release entry in `CHANGELOG.md`.
-2) Run local real-Docker E2E (full matrix) and **abort** if it fails.
-3) Treat Docker and Brew as separate publish channels that must both be verified from the same release tag.
+1) `agent-workspace-launcher` is the canonical command identity in release assets/docs.
+2) `awl` is compatibility alias only (same binary behavior).
+3) Release readiness is gated by required repo checks (`DEVELOPMENT.md`) and CLI archive verification.
 
 ## Contract
 
 Prereqs:
 
-- Run in this repo root.
-- Working tree is clean before running the E2E gate.
-- Docker is available (E2E is real Docker): `docker info` succeeds.
-- E2E environment is configured (via `direnv`/`.envrc` + `.env`, or equivalent).
-  - At minimum, repo-backed cases require `AWS_E2E_PUBLIC_REPO`.
-  - Auth-heavy cases require additional secrets/mounts (see `DEVELOPMENT.md`).
+- Run in repo root.
+- Working tree clean before tagging.
 - `git` available on `PATH`.
-- Optional (recommended): `gh` available + `gh auth status` succeeds (for tagging / releases / branch ops).
+- Recommended: `gh auth status` succeeds.
 
 Inputs:
 
 - Release version: `vX.Y.Z`
-- Optional: release date (`YYYY-MM-DD`; defaults to today)
-- Optional: E2E image tag (defaults to `aws-launcher:e2e`)
+- Optional release date: `YYYY-MM-DD`
 
 Outputs:
 
-- `CHANGELOG.md` updated with a `## vX.Y.Z - YYYY-MM-DD` entry that includes:
-  - `### Upstream pins`
-    - `- agent-kit: <AGENT_KIT_REF>`
-- Local E2E run result (pass required; artifacts under `out/tests/e2e/`)
-- Optionally:
-  - Git tag `vX.Y.Z` pushed
-  - Docker channel publish completed for `vX.Y.Z`
-  - Brew channel publish completed for `vX.Y.Z` (assets + checksums)
+- `CHANGELOG.md` updated for `vX.Y.Z`
+- Required checks passed
+- Tag `vX.Y.Z` pushed
+- `release-brew.yml` published assets + checksums for all targets
 
 Stop conditions:
 
-- Local E2E fails: stop immediately; do not publish; report the failure output and ask how to proceed.
-- Changelog audit fails (missing pins / bad version heading / placeholders): stop; fix before publishing.
-- Docker or Brew publish fails: stop and report channel-specific failure evidence; do not declare release complete.
-
-## Key rule: E2E gate is mandatory
-
-Run E2E before publishing and before any irreversible actions.
-
-Recommended: run via `direnv exec .` so your `.env` is applied:
-
-```sh
-set -euo pipefail
-
-direnv exec . ./scripts/bump_versions.sh \
-  --from-main \
-  --image-tag aws-launcher:e2e \
-  --run-e2e
-```
-
-Notes:
-
-- `--run-e2e` forces `AWS_E2E=1`, `AWS_E2E_FULL=1`, and sets `AWS_E2E_IMAGE=<image-tag>`.
-- Destructive `rm --all --yes` coverage remains gated by `AWS_E2E_ALLOW_RM_ALL=1`.
+- Any required check fails.
+- Changelog audit fails.
+- Release asset verification fails (missing targets, checksum mismatch, missing alias payload).
 
 ## Workflow
 
@@ -75,16 +47,7 @@ Notes:
    - Version: `vX.Y.Z`
    - Date: `YYYY-MM-DD` (default: `date +%Y-%m-%d`)
 
-2. Run mandatory local E2E gate (real Docker)
-   - Use the command in “Key rule: E2E gate is mandatory” above.
-   - If it fails: stop and report (use `.agents/skills/release-workflow/references/OUTPUT_TEMPLATE_BLOCKED.md`).
-
-3. Prepare the changelog (records upstream pins)
-   - Use the helper that moves `## Unreleased` into a new release entry and injects pins from `VERSIONS.env`:
-     - `./scripts/release_prepare_changelog.sh --version vX.Y.Z`
-   - Review `CHANGELOG.md` (fill out wording; remove `- None` if you added real bullets).
-
-4. Run required repo checks (per `DEVELOPMENT.md`)
+2. Run required repo checks (per `DEVELOPMENT.md`)
    - `bash -n $(git ls-files 'scripts/*.sh' 'scripts/*.bash')`
    - `zsh -n $(git ls-files 'scripts/*.zsh')`
    - `shellcheck $(git ls-files 'scripts/*.sh' 'scripts/*.bash')`
@@ -96,39 +59,38 @@ Notes:
    - `cargo clippy --workspace --all-targets -- -D warnings`
    - `cargo test -p agent-workspace`
 
-5. Commit the release notes
+3. Local binary smoke
+   - `cargo build --release -p agent-workspace --bin agent-workspace-launcher`
+   - `./target/release/agent-workspace-launcher --help`
+   - `tmp="$(mktemp -d)"; ln -sf "$(pwd)/target/release/agent-workspace-launcher" "$tmp/awl"; "$tmp/awl" --help`
+
+4. Prepare changelog
+   - `./scripts/release_prepare_changelog.sh --version vX.Y.Z`
+
+5. Commit release notes
    - Suggested message: `chore(release): vX.Y.Z`
-   - Do not run `git commit` directly; use the repo’s Semantic Commit helper (see `AGENTS.md`).
+   - Use semantic commit helper (do not call `git commit` directly).
 
 6. Audit (strict)
-   - Run after committing (audit requires a clean working tree):
-     - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`
+   - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`
 
-7. Tag the release (required for split channel publish)
-   - Create: `git tag vX.Y.Z`
-   - Push: `git push origin vX.Y.Z`
-   - Optional GitHub Release:
-     - Extract notes from `CHANGELOG.md` and publish with `gh release create`.
+7. Tag and push
+   - `git -c tag.gpgSign=false tag vX.Y.Z`
+   - `git push origin vX.Y.Z`
 
-8. Publish Docker channel (tag-driven)
-   - Confirm Docker release workflow ran for `vX.Y.Z` (for example: `release-docker.yml`).
-   - If Docker uses manual dispatch, run it against the tag and record the run URL.
-   - Transition note: if a temporary legacy workflow still exists (for example `publish.yml`), treat it as compatibility only, not the primary release contract.
-
-9. Publish Brew channel (tag-driven)
-   - Confirm Brew release workflow ran for `vX.Y.Z` (for example: `release-brew.yml`).
-   - Verify release assets are present for each supported target (`*.tar.gz` + matching `*.sha256`).
-   - If one channel fails, retry only that channel after fixing the issue.
-
-10. Verify channel outcomes
-   - Docker: follow `docs/runbooks/INTEGRATION_TEST.md` and capture run URL + image tag evidence.
-   - Brew: verify GitHub Release assets and checksums for `vX.Y.Z` are complete before tap update work.
+8. Verify CLI channel
+   - Confirm `release-brew.yml` ran for `vX.Y.Z`
+   - Confirm release assets include all target tarballs + checksums
+   - Confirm tarball payload includes both `bin/agent-workspace-launcher` and `bin/awl`
 
 ## Helper scripts (project)
 
-- Prepare changelog + inject upstream pins: `scripts/release_prepare_changelog.sh`
-- Audit changelog entry (pins + basic release checks): `scripts/release_audit.sh`
-- Build + verify + local E2E (full matrix): `scripts/bump_versions.sh --run-e2e`
+- Prepare changelog: `scripts/release_prepare_changelog.sh`
+- Audit release entry: `scripts/release_audit.sh`
+
+## Optional compatibility channel
+
+Container-image publishing may remain as optional compatibility work, but it must not gate native CLI release completion.
 
 ## Output templates
 

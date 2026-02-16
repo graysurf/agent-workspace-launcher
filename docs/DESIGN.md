@@ -2,102 +2,48 @@
 
 ## Goal
 
-Ship a Docker image that exposes `agent-workspace` commands (`auth/create/ls/rm/exec/reset/tunnel`) and can create
-Codex-ready workspace containers on the host through Docker-outside-of-Docker (DooD).
+Provide a host-native workspace lifecycle CLI that does not depend on a container backend for normal operation.
 
-## Architecture (Rust cutover)
+## Runtime architecture
 
-The runtime has two layers:
+Primary command path:
 
-1. Host entry: `aws` wrapper (`scripts/aws.zsh` / `scripts/aws.bash`) for ergonomic local usage.
-2. Container entry: Rust `agent-workspace` CLI inside `graysurf/agent-workspace-launcher`.
-
-The launcher container talks to the host daemon via `/var/run/docker.sock` and creates/manages workspace containers
-(running `graysurf/agent-env:linuxbrew` by default).
-
-Legacy zsh bundle-generation paths are treated as historical context, not active architecture.
+1. User invokes `agent-workspace-launcher` (or alias `awl`).
+2. Rust CLI parses subcommands and executes host-native handlers.
+3. Workspace state is represented on host filesystem (no Docker workspace container lifecycle).
 
 ## Command surface
-
-Primary user command:
-
-```sh
-aws <subcommand> [...args]
-```
-
-Equivalent direct container command:
-
-```sh
-docker run --rm -it \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  graysurf/agent-workspace-launcher:latest \
-  <subcommand> [...args]
-```
-
-Supported subcommands:
 
 - `auth`
 - `create`
 - `ls`
-- `exec`
 - `rm`
+- `exec`
 - `reset`
 - `tunnel`
 
-## Env model
+## Storage model
 
-### Host wrapper env (`aws`)
+Workspace root resolution order:
 
-- `AWS_IMAGE`: launcher image tag
-- `AWS_DOCKER_ARGS`: extra launcher `docker run` args
-- `AWS_AUTH`: auth source mode (`auto|env|none`)
+1. `AGENT_WORKSPACE_HOME`
+2. `XDG_STATE_HOME/agent-workspace-launcher/workspaces`
+3. `$HOME/.local/state/agent-workspace-launcher/workspaces`
 
-### Launcher/runtime env (`agent-workspace` + agent runtime)
+Each workspace is a directory with subpaths such as `work/`, `private/`, `opt/`, `auth/`, `.codex/`.
 
-- `AGENT_WORKSPACE_*` variables configure workspace behavior inside the launcher
-- `GH_TOKEN` / `GITHUB_TOKEN` drive private GitHub auth flows
-- `AGENT_ENV_IMAGE` controls runtime image selection
+## Auth model
 
-### Naming exception (intentional)
+- GitHub auth prefers host `gh` keyring or `GH_TOKEN` / `GITHUB_TOKEN` (policy via `AGENT_WORKSPACE_AUTH`).
+- Codex auth keeps compatibility names: `CODEX_SECRET_DIR`, `CODEX_AUTH_FILE`.
+- GPG auth stores selected key metadata in workspace auth state.
 
-Codex auth compatibility inputs remain unchanged:
+## Compatibility
 
-- `CODEX_SECRET_DIR`
-- `CODEX_AUTH_FILE`
+- `awl` is an alias compatibility layer only.
+- `agent-workspace-launcher` is the canonical command identity for release assets and docs.
 
-These are not migrated to `AWS_*`.
+## Packaging direction
 
-## DooD invariants
-
-- Mounting `docker.sock` is root-equivalent host access.
-- Any `-v <src>:<dst>` executed by the launcher resolves `<src>` on the host.
-- For host-dependent auth/materials, use same-path binds and pass `HOME` through.
-
-Example:
-
-```sh
-AWS_DOCKER_ARGS=(
-  -e HOME="$HOME"
-  -v "$HOME/.config:$HOME/.config:ro"
-)
-```
-
-## Build and packaging
-
-- Build output: `graysurf/agent-workspace-launcher` image
-- CI publish target branch: `docker`
-- Multi-arch target: `linux/amd64`, `linux/arm64`
-- Upstream pin source: `VERSIONS.env`
-
-## Verification focus
-
-- `aws --help` and `docker run ... --help` parity
-- `create` -> workspace provision on host
-- `auth` / `reset` / `tunnel` behavior parity
-- Published image tag + manifest correctness
-
-See:
-
-- [README.md](../README.md)
-- [docs/BUILD.md](BUILD.md)
-- [docs/runbooks/INTEGRATION_TEST.md](runbooks/INTEGRATION_TEST.md)
+- CLI assets are primary distribution artifacts.
+- Docker packaging may exist as a compatibility channel but is not the required runtime backend.

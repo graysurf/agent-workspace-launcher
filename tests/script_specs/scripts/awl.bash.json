@@ -1,0 +1,67 @@
+{
+  "smoke": [
+    {
+      "name": "ls",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nls\\n?$"
+      }
+    },
+    {
+      "name": "create",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl create octo/demo"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\ncreate\\nocto/demo\\n?$"
+      }
+    },
+    {
+      "name": "exec",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl exec ws-smoke ls"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nexec\\nws-smoke\\nls\\n?$"
+      }
+    },
+    {
+      "name": "rm",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl rm ws-smoke --yes"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nrm\\nws-smoke\\n--yes\\n?$"
+      }
+    },
+    {
+      "name": "reset",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl reset repo ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nreset\\nrepo\\nws-smoke\\n?$"
+      }
+    },
+    {
+      "name": "tunnel",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl tunnel ws-smoke --detach"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\ntunnel\\nws-smoke\\n--detach\\n?$"
+      }
+    },
+    {
+      "name": "auth-gpg",
+      "command": ["bash", "-c", "source scripts/awl.bash; awl auth gpg --key DEADBEEF ws-smoke"],
+      "timeout_sec": 10,
+      "expect": {
+        "exit_codes": [0],
+        "stdout_regex": "(?s)^agent-workspace-launcher\\nauth\\ngpg\\n--key\\nDEADBEEF\\nws-smoke\\n?$"
+      }
+    }
+  ]
+}

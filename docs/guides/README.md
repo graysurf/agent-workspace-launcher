@@ -12,4 +12,4 @@ Related docs:
 
 ## Index
 
-- [docs/guides/aws/README.md](aws/README.md) — using `aws` / `agent-workspace` (launcher)
+- [docs/guides/awl/README.md](awl/README.md) — using `awl` / `agent-workspace` (launcher)

@@ -4,11 +4,11 @@ import os
 
 import pytest
 
-from .plan import AwsE2EPlanCase, plan_cases, run_aws_e2e
+from .plan import AwlE2EPlanCase, plan_cases, run_awl_e2e
 
 
 def _selected_case_ids() -> set[str]:
-    raw = os.environ.get("AWS_E2E_CASE", "").strip()
+    raw = os.environ.get("AWL_E2E_CASE", "").strip()
     if not raw:
         return set()
     tokens = [t.strip() for t in raw.split(",") if t.strip()]
@@ -21,9 +21,9 @@ def _selected_case_ids() -> set[str]:
     return selected
 
 
-def _selected_plan_cases() -> list[AwsE2EPlanCase]:
-    full = os.environ.get("AWS_E2E_FULL", "").lower() in {"1", "true", "yes", "on"}
-    allow_rm_all = os.environ.get("AWS_E2E_ALLOW_RM_ALL", "").lower() in {
+def _selected_plan_cases() -> list[AwlE2EPlanCase]:
+    full = os.environ.get("AWL_E2E_FULL", "").lower() in {"1", "true", "yes", "on"}
+    allow_rm_all = os.environ.get("AWL_E2E_ALLOW_RM_ALL", "").lower() in {
         "1",
         "true",
         "yes",
@@ -41,7 +41,7 @@ def _selected_plan_cases() -> list[AwsE2EPlanCase]:
     filtered = [c for c in cases if c.case.case_id in selected]
     if not filtered:
         raise ValueError(
-            f"AWS_E2E_CASE did not match any cli plan cases: {sorted(selected)}"
+            f"AWL_E2E_CASE did not match any cli plan cases: {sorted(selected)}"
         )
     return filtered
 
@@ -50,5 +50,5 @@ def _selected_plan_cases() -> list[AwsE2EPlanCase]:
 @pytest.mark.parametrize(
     "plan_case", _selected_plan_cases(), ids=lambda c: c.case.case_id
 )
-def test_aws_cli_e2e_case(plan_case: AwsE2EPlanCase) -> None:
-    run_aws_e2e(plan_case)
+def test_awl_cli_e2e_case(plan_case: AwlE2EPlanCase) -> None:
+    run_awl_e2e(plan_case)

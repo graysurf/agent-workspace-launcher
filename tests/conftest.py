@@ -87,8 +87,8 @@ def default_smoke_env(repo: Path) -> dict[str, str]:
             "PY_COLORS": "0",
             "GIT_PAGER": "cat",
             "PAGER": "cat",
-            "AWS_AUTH": "env",
-            "AWS_IMAGE": "graysurf/agent-workspace-launcher:latest",
+            "AWL_AUTH": "env",
+            "AWL_IMAGE": "graysurf/agent-workspace-launcher:latest",
         }
     )
 
@@ -128,8 +128,8 @@ def default_env(repo: Path) -> dict[str, str]:
             "PY_COLORS": "0",
             "GIT_PAGER": "cat",
             "PAGER": "cat",
-            "AWS_AUTH": "env",
-            "AWS_IMAGE": "graysurf/agent-workspace-launcher:latest",
+            "AWL_AUTH": "env",
+            "AWL_IMAGE": "graysurf/agent-workspace-launcher:latest",
         }
     )
 

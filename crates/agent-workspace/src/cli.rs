@@ -1,12 +1,15 @@
 use std::ffi::OsString;
 
-use clap::{Args, Parser, Subcommand};
+use clap::{Args, CommandFactory, FromArgMatches, Parser, Subcommand};
+
+pub const PRIMARY_BIN_NAME: &str = "agent-workspace-launcher";
+pub const AWL_ALIAS_NAME: &str = "awl";
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "agent-workspace",
+    name = "agent-workspace-launcher",
     version,
-    about = "Rust CLI that forwards workspace commands to the low-level launcher",
+    about = "Host-native workspace lifecycle CLI",
     disable_help_subcommand = true
 )]
 pub struct Cli {
@@ -84,11 +87,36 @@ impl CliCommand {
     }
 }
 
+impl Cli {
+    pub fn try_parse_from_with_invocation<I, T>(
+        args: I,
+        invocation_name: Option<&str>,
+    ) -> Result<Self, clap::Error>
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<OsString>,
+    {
+        let args_vec: Vec<OsString> = args.into_iter().map(Into::into).collect();
+
+        let mut command = Self::command();
+        if let Some(name) = invocation_name.filter(|name| !name.is_empty()) {
+            command = if name == AWL_ALIAS_NAME {
+                command.name(AWL_ALIAS_NAME)
+            } else {
+                command.name(PRIMARY_BIN_NAME)
+            };
+        }
+
+        let matches = command.clone().try_get_matches_from(args_vec)?;
+        Self::from_arg_matches(&matches).map_err(|err| err.format(&mut command))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use clap::{CommandFactory, Parser};
 
-    use super::{Cli, CliCommand};
+    use super::{AWL_ALIAS_NAME, Cli, CliCommand, PRIMARY_BIN_NAME};
 
     #[test]
     fn help_lists_core_subcommands() {
@@ -108,7 +136,7 @@ mod tests {
     #[test]
     fn parse_reset_keeps_trailing_args() {
         let cli = Cli::try_parse_from([
-            "agent-workspace",
+            PRIMARY_BIN_NAME,
             "reset",
             "repo",
             "ws-test",
@@ -130,5 +158,24 @@ mod tests {
             collected,
             vec!["repo", "ws-test", "--yes", "--ref", "origin/main"]
         );
+    }
+
+    #[test]
+    fn parse_from_awl_alias_uses_same_command_tree() {
+        let cli = Cli::try_parse_from_with_invocation(
+            [AWL_ALIAS_NAME, "ls", "--output", "json"],
+            Some(AWL_ALIAS_NAME),
+        )
+        .expect("parse alias args");
+
+        let CliCommand::Ls(args) = cli.command else {
+            panic!("expected ls command");
+        };
+        let collected: Vec<String> = args
+            .args
+            .into_iter()
+            .map(|item| item.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(collected, vec!["--output", "json"]);
     }
 }

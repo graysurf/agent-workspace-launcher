@@ -21,5 +21,5 @@ Guidelines:
   - `ci-publish-verification-20260120-081548.log`
   - `ghcr-verification-20260120-084948.log`
   - `linux-exploratory-smoke-orbstack-20260120-085812.log`
-  - `aws-guide-smoke-20260120-093536.log`
-  - `aws-guide-create-20260120-093536.log`
+  - `awl-guide-smoke-20260120-093536.log`
+  - `awl-guide-create-20260120-093536.log`

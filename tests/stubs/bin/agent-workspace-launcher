@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+log_dir="${AGENT_STUB_LOG_DIR:-}"
+if [[ -n "$log_dir" ]]; then
+  mkdir -p "$log_dir"
+  printf "%s\n" "agent-workspace-launcher $*" >>"${log_dir%/}/agent-workspace-launcher.calls.txt"
+fi
+
+printf '%s\n' "agent-workspace-launcher"
+for arg in "$@"; do
+  printf '%s\n' "$arg"
+done

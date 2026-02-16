@@ -22,9 +22,9 @@ from tests.conftest import repo_root
 
 
 @dataclass(frozen=True)
-class AwsE2ECase:
+class AwlE2ECase:
     case_id: str
-    aws_args: list[str]
+    awl_args: list[str]
     purpose: str
     requires: str | None = None
     env: dict[str, str] | None = None
@@ -32,9 +32,9 @@ class AwsE2ECase:
 
 
 @dataclass(frozen=True)
-class AwsE2EPlanCase:
+class AwlE2EPlanCase:
     wrapper: str  # cli|bash|zsh
-    case: AwsE2ECase
+    case: AwlE2ECase
     command_argv: list[str]
     command_display: str
 
@@ -53,297 +53,297 @@ def _repo_rel(path: Path) -> str:
     return path.relative_to(repo_root()).as_posix()
 
 
-def _build_cli(case: AwsE2ECase) -> AwsE2EPlanCase:
-    script = repo_root() / "scripts" / "aws.bash"
-    argv = [str(script), *case.aws_args]
-    display = f"{_env_prefix(case.env)}{_repo_rel(script)} {_shell_join(case.aws_args)}".rstrip()
-    return AwsE2EPlanCase(
+def _build_cli(case: AwlE2ECase) -> AwlE2EPlanCase:
+    script = repo_root() / "scripts" / "awl.bash"
+    argv = [str(script), *case.awl_args]
+    display = f"{_env_prefix(case.env)}{_repo_rel(script)} {_shell_join(case.awl_args)}".rstrip()
+    return AwlE2EPlanCase(
         wrapper="cli", case=case, command_argv=argv, command_display=display
     )
 
 
-def _build_bash(case: AwsE2ECase) -> AwsE2EPlanCase:
-    script = repo_root() / "scripts" / "aws.bash"
-    joined = _shell_join(case.aws_args)
+def _build_bash(case: AwlE2ECase) -> AwlE2EPlanCase:
+    script = repo_root() / "scripts" / "awl.bash"
+    joined = _shell_join(case.awl_args)
 
     lines: list[str] = []
     if case.prelude:
         lines.append(case.prelude)
     lines.append(f"source {shlex.quote(_repo_rel(script))}")
-    lines.append(f"aws {joined}".rstrip())
+    lines.append(f"awl {joined}".rstrip())
     command = "\n".join(lines).rstrip() + "\n"
 
     argv = ["bash", "-lc", command]
     display = f"{_env_prefix(case.env)}bash -lc {shlex.quote(command.strip())}"
-    return AwsE2EPlanCase(
+    return AwlE2EPlanCase(
         wrapper="bash", case=case, command_argv=argv, command_display=display
     )
 
 
-def _build_zsh(case: AwsE2ECase) -> AwsE2EPlanCase:
-    script = repo_root() / "scripts" / "aws.zsh"
-    joined = _shell_join(case.aws_args)
+def _build_zsh(case: AwlE2ECase) -> AwlE2EPlanCase:
+    script = repo_root() / "scripts" / "awl.zsh"
+    joined = _shell_join(case.awl_args)
 
     lines: list[str] = []
     if case.prelude:
         lines.append(case.prelude)
     lines.append(f"source {shlex.quote(_repo_rel(script))}")
-    lines.append(f"aws {joined}".rstrip())
+    lines.append(f"awl {joined}".rstrip())
     command = "\n".join(lines).rstrip() + "\n"
 
     argv = ["zsh", "-f", "-c", command]
     display = f"{_env_prefix(case.env)}zsh -f -c {shlex.quote(command.strip())}"
-    return AwsE2EPlanCase(
+    return AwlE2EPlanCase(
         wrapper="zsh", case=case, command_argv=argv, command_display=display
     )
 
 
-def base_cases() -> list[AwsE2ECase]:
+def base_cases() -> list[AwlE2ECase]:
     return [
         # help
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help",
-            aws_args=["--help"],
+            awl_args=["--help"],
             purpose="Show top-level help and usage.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help_auth",
-            aws_args=["auth", "--help"],
+            awl_args=["auth", "--help"],
             purpose="Show help for auth.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help_create",
-            aws_args=["create", "--help"],
+            awl_args=["create", "--help"],
             purpose="Show help for create.",
         ),
-        AwsE2ECase(
-            case_id="help_ls", aws_args=["ls", "--help"], purpose="Show help for ls."
+        AwlE2ECase(
+            case_id="help_ls", awl_args=["ls", "--help"], purpose="Show help for ls."
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help_exec",
-            aws_args=["exec", "--help"],
+            awl_args=["exec", "--help"],
             purpose="Show help for exec.",
         ),
-        AwsE2ECase(
-            case_id="help_rm", aws_args=["rm", "--help"], purpose="Show help for rm."
+        AwlE2ECase(
+            case_id="help_rm", awl_args=["rm", "--help"], purpose="Show help for rm."
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help_reset",
-            aws_args=["reset", "--help"],
+            awl_args=["reset", "--help"],
             purpose="Show help for reset.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="help_tunnel",
-            aws_args=["tunnel", "--help"],
+            awl_args=["tunnel", "--help"],
             purpose="Show help for tunnel.",
         ),
         # create
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_public_owner_repo",
-            aws_args=["create", "OWNER/REPO"],
+            awl_args=["create", "OWNER/REPO"],
             purpose="Create a workspace from a public repo in OWNER/REPO form.",
             requires="Docker daemon running; network access.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_public_https",
-            aws_args=["create", "https://github.com/OWNER/REPO"],
+            awl_args=["create", "https://github.com/OWNER/REPO"],
             purpose="Create a workspace from a public repo via https URL.",
             requires="Docker daemon running; network access.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_public_https_git_suffix",
-            aws_args=["create", "https://github.com/OWNER/REPO.git"],
+            awl_args=["create", "https://github.com/OWNER/REPO.git"],
             purpose="Create a workspace from a public repo via https URL (with .git).",
             requires="Docker daemon running; network access.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_public_ssh_scp_style",
-            aws_args=["create", "git@github.com:OWNER/REPO.git"],
+            awl_args=["create", "git@github.com:OWNER/REPO.git"],
             purpose="Create a workspace from a public repo via SSH scp-style URL.",
             requires="Docker daemon running; network access (or SSH configured).",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_public_ssh_url_style",
-            aws_args=["create", "ssh://git@github.com/OWNER/REPO.git"],
+            awl_args=["create", "ssh://git@github.com/OWNER/REPO.git"],
             purpose="Create a workspace from a public repo via SSH URL form.",
             requires="Docker daemon running; network access (or SSH configured).",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_no_extras",
-            aws_args=["create", "--no-extras", "OWNER/REPO"],
+            awl_args=["create", "--no-extras", "OWNER/REPO"],
             purpose="Create workspace while skipping ~/.private and extra repos.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_seed_private_repo",
-            aws_args=["create", "--private-repo", "OWNER/PRIVATE_REPO", "OWNER/REPO"],
+            awl_args=["create", "--private-repo", "OWNER/PRIVATE_REPO", "OWNER/REPO"],
             purpose="Seed ~/.private from a repo during create.",
             requires="Valid GitHub token; access to the private repo.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_no_work_repos_with_name",
-            aws_args=["create", "--no-work-repos", "--name", "ws-e2e"],
+            awl_args=["create", "--no-work-repos", "--name", "ws-e2e"],
             purpose="Create workspace without cloning repos, using an explicit name.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="create_multiple_repos",
-            aws_args=["create", "OWNER/REPO", "OWNER/REPO"],
+            awl_args=["create", "OWNER/REPO", "OWNER/REPO"],
             purpose="Create workspace by cloning multiple repos in order.",
             requires="Docker daemon running; network access.",
         ),
         # list
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="ls",
-            aws_args=["ls"],
+            awl_args=["ls"],
             purpose="List workspaces.",
         ),
         # exec
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="exec_command",
-            aws_args=["exec", "ws-e2e", "git", "-C", "REPO_PATH", "status"],
+            awl_args=["exec", "ws-e2e", "git", "-C", "REPO_PATH", "status"],
             purpose="Run a non-interactive command in the workspace container.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="exec_shell",
-            aws_args=["exec", "ws-e2e"],
+            awl_args=["exec", "ws-e2e"],
             purpose="Open an interactive shell in the workspace container.",
             requires="Existing workspace container ws-e2e; interactive TTY support.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="exec_root",
-            aws_args=["exec", "--root", "ws-e2e", "id", "-u"],
+            awl_args=["exec", "--root", "ws-e2e", "id", "-u"],
             purpose="Exec as root and verify uid=0.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="exec_user",
-            aws_args=["exec", "--user", "agent", "ws-e2e", "id", "-u"],
+            awl_args=["exec", "--user", "agent", "ws-e2e", "id", "-u"],
             purpose="Exec as a specific user and verify expected uid.",
             requires="Existing workspace container ws-e2e.",
         ),
         # auth
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="auth_github",
-            aws_args=["auth", "github", "ws-e2e"],
+            awl_args=["auth", "github", "ws-e2e"],
             purpose="Update GitHub auth inside the workspace.",
             requires="Existing workspace container ws-e2e; valid GitHub token or `gh` login.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="auth_github_host",
-            aws_args=["auth", "github", "--host", "github.com", "ws-e2e"],
+            awl_args=["auth", "github", "--host", "github.com", "ws-e2e"],
             purpose="Update GitHub auth with an explicit host override.",
             requires="Existing workspace container ws-e2e; valid GitHub token or `gh` login.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="auth_agent_profile",
-            aws_args=["auth", "codex", "--profile", "AGENT_PROFILE", "ws-e2e"],
+            awl_args=["auth", "codex", "--profile", "AGENT_PROFILE", "ws-e2e"],
             purpose="Apply Codex auth (profile-based) inside the workspace.",
             requires="Existing workspace container ws-e2e; host Codex secrets must be accessible to the launcher container.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="auth_gpg_key",
-            aws_args=["auth", "gpg", "--key", "GPG_KEY_ID", "ws-e2e"],
+            awl_args=["auth", "gpg", "--key", "GPG_KEY_ID", "ws-e2e"],
             purpose="Import a GPG signing key into the workspace.",
             requires="Existing workspace container ws-e2e; host GPG keyring accessible; keyid exists.",
         ),
         # reset
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="reset_repo",
-            aws_args=["reset", "repo", "ws-e2e", "REPO_PATH", "--yes"],
+            awl_args=["reset", "repo", "ws-e2e", "REPO_PATH", "--yes"],
             purpose="Reset the primary repo inside the workspace.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="reset_work_repos",
-            aws_args=["reset", "work-repos", "ws-e2e", "--yes"],
+            awl_args=["reset", "work-repos", "ws-e2e", "--yes"],
             purpose="Reset work repos inside the workspace.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="reset_opt_repos",
-            aws_args=["reset", "opt-repos", "ws-e2e", "--yes"],
+            awl_args=["reset", "opt-repos", "ws-e2e", "--yes"],
             purpose="Reset optional repos inside the workspace.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="reset_private_repo",
-            aws_args=["reset", "private-repo", "ws-e2e", "--yes"],
+            awl_args=["reset", "private-repo", "ws-e2e", "--yes"],
             purpose="Reset the private repo inside the workspace.",
             requires="Existing workspace container ws-e2e.",
         ),
         # tunnel
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="tunnel_foreground",
-            aws_args=["tunnel", "ws-e2e"],
+            awl_args=["tunnel", "ws-e2e"],
             purpose="Start a VS Code tunnel (foreground).",
             requires="Existing workspace container ws-e2e; VS Code tunnel prerequisites.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="tunnel_detach",
-            aws_args=["tunnel", "ws-e2e", "--detach"],
+            awl_args=["tunnel", "ws-e2e", "--detach"],
             purpose="Start a VS Code tunnel in the background.",
             requires="Existing workspace container ws-e2e; VS Code tunnel prerequisites.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="tunnel_named",
-            aws_args=["tunnel", "ws-e2e", "--name", "ws-e2e-tunnel"],
+            awl_args=["tunnel", "ws-e2e", "--name", "ws-e2e-tunnel"],
             purpose="Start a tunnel with an explicit name.",
             requires="Existing workspace container ws-e2e; VS Code tunnel prerequisites.",
         ),
         # rm
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="rm_workspace_yes",
-            aws_args=["rm", "ws-e2e", "--yes"],
+            awl_args=["rm", "ws-e2e", "--yes"],
             purpose="Remove a specific workspace without confirmation.",
             requires="Existing workspace container ws-e2e.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="rm_all_yes",
-            aws_args=["rm", "--all", "--yes"],
+            awl_args=["rm", "--all", "--yes"],
             purpose="Remove all workspaces without confirmation.",
             requires="At least one existing workspace container.",
         ),
         # env/config
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="env_custom_image",
-            aws_args=["ls"],
-            env={"AWS_IMAGE": "graysurf/agent-workspace-launcher:latest"},
+            awl_args=["ls"],
+            env={"AWL_IMAGE": "graysurf/agent-workspace-launcher:latest"},
             purpose="Verify custom image selection is respected.",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="env_auth_env",
-            aws_args=["ls"],
-            env={"AWS_AUTH": "env"},
+            awl_args=["ls"],
+            env={"AWL_AUTH": "env"},
             purpose="Force env-based auth mode (no gh keyring lookup).",
         ),
-        AwsE2ECase(
+        AwlE2ECase(
             case_id="env_auth_none",
-            aws_args=["ls"],
-            env={"AWS_AUTH": "none"},
+            awl_args=["ls"],
+            env={"AWL_AUTH": "none"},
             purpose="Disable auth-related behavior entirely.",
         ),
     ]
 
 
-def wrapper_extra_cases(wrapper: str) -> list[AwsE2ECase]:
-    cases: list[AwsE2ECase] = []
+def wrapper_extra_cases(wrapper: str) -> list[AwlE2ECase]:
+    cases: list[AwlE2ECase] = []
 
     if wrapper in {"cli", "bash", "zsh"}:
         cases.append(
-            AwsE2ECase(
+            AwlE2ECase(
                 case_id="env_docker_args_string",
-                aws_args=["ls"],
-                env={"AWS_DOCKER_ARGS": "-e FOO=bar -e BAZ=qux"},
+                awl_args=["ls"],
+                env={"AWL_DOCKER_ARGS": "-e FOO=bar -e BAZ=qux"},
                 purpose="Verify extra docker args are passed through (string form).",
             )
         )
 
     if wrapper in {"bash", "zsh"}:
         cases.append(
-            AwsE2ECase(
+            AwlE2ECase(
                 case_id="env_docker_args_array",
-                aws_args=["ls"],
-                prelude="AWS_DOCKER_ARGS=(-e FOO=bar -e BAZ=qux)",
+                awl_args=["ls"],
+                prelude="AWL_DOCKER_ARGS=(-e FOO=bar -e BAZ=qux)",
                 purpose="Verify extra docker args are passed through (array form).",
             )
         )
@@ -351,7 +351,7 @@ def wrapper_extra_cases(wrapper: str) -> list[AwsE2ECase]:
     return cases
 
 
-def plan_cases(wrapper: str) -> list[AwsE2EPlanCase]:
+def plan_cases(wrapper: str) -> list[AwlE2EPlanCase]:
     if wrapper not in {"cli", "bash", "zsh"}:
         raise ValueError(f"unknown wrapper: {wrapper}")
 
@@ -363,14 +363,14 @@ def plan_cases(wrapper: str) -> list[AwsE2EPlanCase]:
     return [_build_zsh(c) for c in cases]
 
 
-def case_id(plan_case: AwsE2EPlanCase) -> str:
+def case_id(plan_case: AwlE2EPlanCase) -> str:
     return f"{plan_case.wrapper}:{plan_case.case.case_id}"
 
 
-def run_aws_e2e(_case: AwsE2EPlanCase) -> None:
+def run_awl_e2e(_case: AwlE2EPlanCase) -> None:
     config = _load_e2e_config()
     if not config.enabled:
-        pytest.skip("AWS_E2E is not enabled (set AWS_E2E=1 to run real Docker e2e).")
+        pytest.skip("AWL_E2E is not enabled (set AWL_E2E=1 to run real Docker e2e).")
 
     with _e2e_lock():
         plan_case = _materialize_case(_case, config)
@@ -379,18 +379,18 @@ def run_aws_e2e(_case: AwsE2EPlanCase) -> None:
             pytest.skip(skip_reason)
 
         env = _build_env(plan_case.case.env, config)
-        workspace = _workspace_name(plan_case.case.aws_args)
+        workspace = _workspace_name(plan_case.case.awl_args)
         created_workspace: str | None = None
         created_repo_path: str | None = None
 
         try:
-            if _needs_existing_workspace(plan_case.case.aws_args) and workspace:
-                if _needs_repo_workspace(plan_case.case.aws_args):
+            if _needs_existing_workspace(plan_case.case.awl_args) and workspace:
+                if _needs_repo_workspace(plan_case.case.awl_args):
                     created_workspace, created_repo_path = _create_repo_workspace(
                         plan_case.wrapper,
                         env,
                         config,
-                        include_private=_needs_private_repo(plan_case.case.aws_args),
+                        include_private=_needs_private_repo(plan_case.case.awl_args),
                     )
                     plan_case = _replace_workspace_for_case(
                         plan_case, created_workspace, created_repo_path
@@ -400,7 +400,7 @@ def run_aws_e2e(_case: AwsE2EPlanCase) -> None:
                     created_workspace = workspace
 
             accept_exit_codes = {0}
-            if _is_exec_shell(plan_case.case.aws_args):
+            if _is_exec_shell(plan_case.case.awl_args):
                 result = _run_case_interactive(
                     plan_case, env, input_text="exit\n", send_after_sec=0.5
                 )
@@ -420,13 +420,13 @@ def run_aws_e2e(_case: AwsE2EPlanCase) -> None:
                 )
 
             if (
-                plan_case.case.aws_args[:1] == ["rm"]
+                plan_case.case.awl_args[:1] == ["rm"]
                 and created_workspace
                 and created_workspace == workspace
             ):
                 created_workspace = None
 
-            if _is_create_case(plan_case.case.aws_args):
+            if _is_create_case(plan_case.case.awl_args):
                 created_name = _parse_created_workspace(result.stdout)
                 if created_name and not config.keep_workspaces:
                     _remove_workspace(plan_case.wrapper, env, created_name)
@@ -435,10 +435,10 @@ def run_aws_e2e(_case: AwsE2EPlanCase) -> None:
                 _remove_workspace(plan_case.wrapper, env, created_workspace)
 
 
-def run_aws_e2e_flow(wrapper: str) -> None:
+def run_awl_e2e_flow(wrapper: str) -> None:
     config = _load_e2e_config()
     if not config.enabled:
-        pytest.skip("AWS_E2E is not enabled (set AWS_E2E=1 to run real Docker e2e).")
+        pytest.skip("AWL_E2E is not enabled (set AWL_E2E=1 to run real Docker e2e).")
 
     if wrapper not in {"cli", "bash", "zsh"}:
         raise ValueError(f"unknown wrapper: {wrapper}")
@@ -451,10 +451,10 @@ def run_aws_e2e_flow(wrapper: str) -> None:
         run_id = time.strftime("%Y%m%d-%H%M%S")
         named = f"ws-e2e-{wrapper}-{run_id}"
 
-        def run(case_id: str, aws_args: list[str], purpose: str) -> _E2ERunResult:
+        def run(case_id: str, awl_args: list[str], purpose: str) -> _E2ERunResult:
             plan_case = _build_case(
                 wrapper,
-                AwsE2ECase(case_id=case_id, aws_args=aws_args, purpose=purpose),
+                AwlE2ECase(case_id=case_id, awl_args=awl_args, purpose=purpose),
             )
             result = _run_case(plan_case, env)
             _write_e2e_record(plan_case, result)
@@ -501,7 +501,7 @@ def run_aws_e2e_flow(wrapper: str) -> None:
             if wrapper == "cli" or config.full:
                 if not config.public_repo:
                     pytest.skip(
-                        "AWS_E2E_PUBLIC_REPO is required for repo-backed e2e flow."
+                        "AWL_E2E_PUBLIC_REPO is required for repo-backed e2e flow."
                     )
 
                 create_repo = run(
@@ -591,34 +591,34 @@ def _env_flag(name: str) -> bool:
 
 def _load_e2e_config() -> _E2EConfig:
     return _E2EConfig(
-        enabled=_env_flag("AWS_E2E"),
-        public_repo=os.environ.get("AWS_E2E_PUBLIC_REPO"),
-        private_repo=os.environ.get("AWS_E2E_PRIVATE_REPO"),
-        agent_profile=os.environ.get("AWS_E2E_AGENT_PROFILE"),
-        gpg_key_id=os.environ.get("AWS_E2E_GPG_KEY_ID"),
-        allow_rm_all=_env_flag("AWS_E2E_ALLOW_RM_ALL"),
-        enable_auth=_env_flag("AWS_E2E_ENABLE_AUTH"),
-        enable_codex=_env_flag("AWS_E2E_ENABLE_CODEX"),
-        enable_gpg=_env_flag("AWS_E2E_ENABLE_GPG"),
-        enable_ssh=_env_flag("AWS_E2E_ENABLE_SSH"),
-        enable_tunnel=_env_flag("AWS_E2E_ENABLE_TUNNEL"),
-        enable_exec_shell=_env_flag("AWS_E2E_ENABLE_EXEC_SHELL"),
-        keep_workspaces=_env_flag("AWS_E2E_KEEP_WORKSPACES"),
-        use_host_home=_env_flag("AWS_E2E_USE_HOST_HOME"),
-        image=os.environ.get("AWS_E2E_IMAGE"),
-        full=_env_flag("AWS_E2E_FULL"),
+        enabled=_env_flag("AWL_E2E"),
+        public_repo=os.environ.get("AWL_E2E_PUBLIC_REPO"),
+        private_repo=os.environ.get("AWL_E2E_PRIVATE_REPO"),
+        agent_profile=os.environ.get("AWL_E2E_AGENT_PROFILE"),
+        gpg_key_id=os.environ.get("AWL_E2E_GPG_KEY_ID"),
+        allow_rm_all=_env_flag("AWL_E2E_ALLOW_RM_ALL"),
+        enable_auth=_env_flag("AWL_E2E_ENABLE_AUTH"),
+        enable_codex=_env_flag("AWL_E2E_ENABLE_CODEX"),
+        enable_gpg=_env_flag("AWL_E2E_ENABLE_GPG"),
+        enable_ssh=_env_flag("AWL_E2E_ENABLE_SSH"),
+        enable_tunnel=_env_flag("AWL_E2E_ENABLE_TUNNEL"),
+        enable_exec_shell=_env_flag("AWL_E2E_ENABLE_EXEC_SHELL"),
+        keep_workspaces=_env_flag("AWL_E2E_KEEP_WORKSPACES"),
+        use_host_home=_env_flag("AWL_E2E_USE_HOST_HOME"),
+        image=os.environ.get("AWL_E2E_IMAGE"),
+        full=_env_flag("AWL_E2E_FULL"),
     )
 
 
-def _materialize_case(plan_case: AwsE2EPlanCase, config: _E2EConfig) -> AwsE2EPlanCase:
+def _materialize_case(plan_case: AwlE2EPlanCase, config: _E2EConfig) -> AwlE2EPlanCase:
     case = plan_case.case
-    aws_args = _replace_placeholders(case.aws_args, plan_case.wrapper, config)
+    awl_args = _replace_placeholders(case.awl_args, plan_case.wrapper, config)
     env = dict(case.env or {})
     if case.case_id == "env_custom_image" and config.image:
-        env["AWS_IMAGE"] = config.image
-    updated_case = AwsE2ECase(
+        env["AWL_IMAGE"] = config.image
+    updated_case = AwlE2ECase(
         case_id=case.case_id,
-        aws_args=aws_args,
+        awl_args=awl_args,
         purpose=case.purpose,
         requires=case.requires,
         env=(env or None),
@@ -627,7 +627,7 @@ def _materialize_case(plan_case: AwsE2EPlanCase, config: _E2EConfig) -> AwsE2EPl
     return _build_case(plan_case.wrapper, updated_case)
 
 
-def _build_case(wrapper: str, case: AwsE2ECase) -> AwsE2EPlanCase:
+def _build_case(wrapper: str, case: AwlE2ECase) -> AwlE2EPlanCase:
     if wrapper == "cli":
         return _build_cli(case)
     if wrapper == "bash":
@@ -643,7 +643,7 @@ def _replace_placeholders(
 
     replaced: list[str] = []
     for arg in args:
-        sentinel = "__AWS_E2E_TUNNEL__"
+        sentinel = "__AWL_E2E_TUNNEL__"
         updated = (
             arg.replace("ws-e2e-tunnel", sentinel)
             .replace("ws-e2e", workspace)
@@ -670,47 +670,47 @@ def _workspace_label(wrapper: str, args: list[str]) -> str:
     return base
 
 
-def _skip_reason(plan_case: AwsE2EPlanCase, config: _E2EConfig) -> str | None:
+def _skip_reason(plan_case: AwlE2EPlanCase, config: _E2EConfig) -> str | None:
     if not _docker_available():
         return "Docker is not available (required for e2e)."
 
-    args = plan_case.case.aws_args
+    args = plan_case.case.awl_args
     if _is_exec_shell(args) and not config.enable_exec_shell:
-        return "Interactive exec shell disabled (set AWS_E2E_ENABLE_EXEC_SHELL=1)."
+        return "Interactive exec shell disabled (set AWL_E2E_ENABLE_EXEC_SHELL=1)."
 
     if _is_auth_case(args) and not config.enable_auth:
-        return "Auth cases disabled (set AWS_E2E_ENABLE_AUTH=1)."
+        return "Auth cases disabled (set AWL_E2E_ENABLE_AUTH=1)."
 
     if _is_codex_auth_case(args) and not config.enable_codex:
-        return "Codex auth disabled (set AWS_E2E_ENABLE_CODEX=1)."
+        return "Codex auth disabled (set AWL_E2E_ENABLE_CODEX=1)."
 
     if (
         _is_codex_auth_case(args)
         and "AGENT_PROFILE" in args
         and not config.agent_profile
     ):
-        return "Codex profile not configured (set AWS_E2E_AGENT_PROFILE)."
+        return "Codex profile not configured (set AWL_E2E_AGENT_PROFILE)."
 
     if _is_gpg_auth_case(args) and not config.enable_gpg:
-        return "GPG auth disabled (set AWS_E2E_ENABLE_GPG=1)."
+        return "GPG auth disabled (set AWL_E2E_ENABLE_GPG=1)."
 
     if _is_gpg_auth_case(args) and "GPG_KEY_ID" in args and not config.gpg_key_id:
-        return "GPG key id not configured (set AWS_E2E_GPG_KEY_ID)."
+        return "GPG key id not configured (set AWL_E2E_GPG_KEY_ID)."
 
     if _is_tunnel_case(args) and not config.enable_tunnel:
-        return "Tunnel cases disabled (set AWS_E2E_ENABLE_TUNNEL=1)."
+        return "Tunnel cases disabled (set AWL_E2E_ENABLE_TUNNEL=1)."
 
     if _is_rm_all_case(args) and not config.allow_rm_all:
-        return "rm --all disabled (set AWS_E2E_ALLOW_RM_ALL=1)."
+        return "rm --all disabled (set AWL_E2E_ALLOW_RM_ALL=1)."
 
     if _is_ssh_create_case(args) and not config.enable_ssh:
-        return "SSH create cases disabled (set AWS_E2E_ENABLE_SSH=1)."
+        return "SSH create cases disabled (set AWL_E2E_ENABLE_SSH=1)."
 
     if _needs_private_repo(args) and not config.private_repo:
-        return "Private repo not configured (set AWS_E2E_PRIVATE_REPO)."
+        return "Private repo not configured (set AWL_E2E_PRIVATE_REPO)."
 
     if _needs_public_repo(args) and not config.public_repo:
-        return "Public repo not configured (set AWS_E2E_PUBLIC_REPO)."
+        return "Public repo not configured (set AWL_E2E_PUBLIC_REPO)."
 
     return None
 
@@ -844,8 +844,8 @@ def _first_non_option(args: list[str], options_with_values: set[str]) -> str | N
 def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str, str]:
     env = os.environ.copy()
     if not config.use_host_home:
-        env.pop("AWS_DOCKER_ARGS", None)
-    gh_token = env.get("AWS_E2E_GH_TOKEN", "")
+        env.pop("AWL_DOCKER_ARGS", None)
+    gh_token = env.get("AWL_E2E_GH_TOKEN", "")
     if gh_token and not env.get("GH_TOKEN") and not env.get("GITHUB_TOKEN"):
         env["GH_TOKEN"] = gh_token
     env["AGENT_HOME"] = str(repo_root())
@@ -862,7 +862,7 @@ def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str,
         env["AGENT_WORKSPACE_GPG_KEY"] = ""
 
     if config.image:
-        env["AWS_IMAGE"] = config.image
+        env["AWL_IMAGE"] = config.image
 
     if not config.use_host_home:
         out_base = _e2e_out_dir()
@@ -892,9 +892,9 @@ def _build_env(case_env: dict[str, str] | None, config: _E2EConfig) -> dict[str,
     return env
 
 
-def _run_case(plan_case: AwsE2EPlanCase, env: dict[str, str]) -> _E2ERunResult:
+def _run_case(plan_case: AwlE2EPlanCase, env: dict[str, str]) -> _E2ERunResult:
     start = time.monotonic()
-    input_text = "y\n" if plan_case.case.aws_args[:1] == ["reset"] else None
+    input_text = "y\n" if plan_case.case.awl_args[:1] == ["reset"] else None
     completed = subprocess.run(
         plan_case.command_argv,
         cwd=repo_root(),
@@ -924,7 +924,7 @@ def _run_case(plan_case: AwsE2EPlanCase, env: dict[str, str]) -> _E2ERunResult:
     )
 
 
-def _case_out_dir(plan_case: AwsE2EPlanCase) -> Path:
+def _case_out_dir(plan_case: AwlE2EPlanCase) -> Path:
     safe_case = re.sub(r"[^a-zA-Z0-9._-]+", "_", plan_case.case.case_id)
     return _e2e_out_dir() / plan_case.wrapper / safe_case
 
@@ -935,7 +935,7 @@ def _e2e_out_dir() -> Path:
     return base
 
 
-def _write_e2e_record(plan_case: AwsE2EPlanCase, result: _E2ERunResult) -> None:
+def _write_e2e_record(plan_case: AwlE2EPlanCase, result: _E2ERunResult) -> None:
     record: dict[str, object] = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "case_id": plan_case.case.case_id,
@@ -984,11 +984,11 @@ def _create_repo_workspace(
 ) -> tuple[str, str]:
     if not config.public_repo:
         raise AssertionError(
-            "AWS_E2E_PUBLIC_REPO is required for repo-backed e2e cases."
+            "AWL_E2E_PUBLIC_REPO is required for repo-backed e2e cases."
         )
-    create_case = AwsE2ECase(
+    create_case = AwlE2ECase(
         case_id=f"e2e_setup_create_repo_{wrapper}",
-        aws_args=(
+        awl_args=(
             ["create", "--private-repo", config.private_repo, config.public_repo]
             if include_private and config.private_repo
             else ["create", config.public_repo]
@@ -1010,9 +1010,9 @@ def _create_repo_workspace(
 
 
 def _create_named_workspace(wrapper: str, env: dict[str, str], workspace: str) -> None:
-    create_case = AwsE2ECase(
+    create_case = AwlE2ECase(
         case_id=f"e2e_setup_create_{workspace}",
-        aws_args=["create", "--no-work-repos", "--name", workspace],
+        awl_args=["create", "--no-work-repos", "--name", workspace],
         purpose="Create workspace for dependent e2e cases.",
     )
     plan_case = _build_case(wrapper, create_case)
@@ -1027,9 +1027,9 @@ def _create_named_workspace(wrapper: str, env: dict[str, str], workspace: str) -
 def _remove_workspace(wrapper: str, env: dict[str, str], workspace: str | None) -> None:
     if not workspace:
         return
-    rm_case = AwsE2ECase(
+    rm_case = AwlE2ECase(
         case_id=f"e2e_cleanup_rm_{workspace}",
-        aws_args=["rm", workspace, "--yes"],
+        awl_args=["rm", workspace, "--yes"],
         purpose="Remove workspace created for e2e tests.",
     )
     plan_case = _build_case(wrapper, rm_case)
@@ -1038,9 +1038,9 @@ def _remove_workspace(wrapper: str, env: dict[str, str], workspace: str | None) 
 
 
 def _workspace_exists(wrapper: str, env: dict[str, str], workspace: str) -> bool:
-    ls_case = AwsE2ECase(
+    ls_case = AwlE2ECase(
         case_id=f"e2e_probe_ls_{workspace}",
-        aws_args=["ls"],
+        awl_args=["ls"],
         purpose="Check for existing workspaces.",
     )
     plan_case = _build_case(wrapper, ls_case)
@@ -1061,20 +1061,20 @@ def _workspace_exists(wrapper: str, env: dict[str, str], workspace: str) -> bool
 
 
 def _replace_workspace_for_case(
-    plan_case: AwsE2EPlanCase,
+    plan_case: AwlE2EPlanCase,
     workspace: str,
     repo_path: str | None,
-) -> AwsE2EPlanCase:
-    args = list(plan_case.case.aws_args)
+) -> AwlE2EPlanCase:
+    args = list(plan_case.case.awl_args)
     current = _workspace_name(args)
     if current:
         args = [workspace if arg == current else arg for arg in args]
 
     args = _replace_repo_path(args, repo_path)
     args = _ensure_reset_args(args, repo_path)
-    updated_case = AwsE2ECase(
+    updated_case = AwlE2ECase(
         case_id=plan_case.case.case_id,
-        aws_args=args,
+        awl_args=args,
         purpose=plan_case.case.purpose,
         requires=plan_case.case.requires,
         env=plan_case.case.env,
@@ -1117,7 +1117,7 @@ def _e2e_lock() -> Iterator[None]:
 
 
 def _run_case_interactive(
-    plan_case: AwsE2EPlanCase,
+    plan_case: AwlE2EPlanCase,
     env: dict[str, str],
     *,
     input_text: str,
