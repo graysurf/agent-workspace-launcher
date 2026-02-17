@@ -79,7 +79,7 @@ All notable changes to this project will be documented in this file.
 ## v1.0.1 - 2026-01-21
 
 ### Added
-- Docker-backed e2e suite for `cws` (CLI plan matrix + wrapper flow tests), gated behind `CWS_E2E=1`.
+- Docker-backed e2e suite for `cws` (CLI plan matrix + wrapper flow tests), gated behind `AWL_E2E=1`.
 - Script smoke testing infrastructure with stubbed `docker`, plus wrapper equivalence tests for `scripts/cws.bash` and `scripts/cws.zsh`.
 - `cws auth` command for refreshing GitHub/Codex/GPG credentials inside a workspace.
 - Optional GPG signing key injection support (`AGENT_WORKSPACE_GPG` / `AGENT_WORKSPACE_GPG_KEY`).

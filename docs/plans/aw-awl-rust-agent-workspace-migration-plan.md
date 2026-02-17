@@ -263,7 +263,7 @@ This plan replaces the current zsh-bundled `bin/agent-workspace` with a Rust cra
   - Publish workflow passes required build args and metadata for Rust cutover.
 - **Validation**:
   - `rg -n "cargo fmt|cargo clippy|cargo test|AWL_E2E" .github/workflows/ci.yml .github/workflows/publish.yml`
-  - `! rg -n "generate_agent_workspace_bundle|agent-workspace.wrapper.zsh|CWS_E2E" .github/workflows/ci.yml .github/workflows/publish.yml`
+  - `! rg -n "generate_agent_workspace_bundle|agent-workspace.wrapper.zsh" .github/workflows/ci.yml .github/workflows/publish.yml`
 
 ## Sprint 5: Host `cws` -> `awl` Naming Migration (env + tests)
 **Goal**: Complete naming migration on host wrappers, env vars, and automated tests.
@@ -296,7 +296,7 @@ This plan replaces the current zsh-bundled `bin/agent-workspace` with a Rust cra
   - `tests/conftest.py`
   - `tests/e2e/plan.py`
   - `DEVELOPMENT.md`
-- **Description**: Rename environment variables used by host wrappers and tests (`CWS_IMAGE`, `CWS_AUTH`, `CWS_DOCKER_ARGS`, `CWS_E2E*`) to `AWL_*` equivalents with hard cutover semantics (no `CWS_*` runtime fallback).
+- **Description**: Rename environment variables used by host wrappers and tests (legacy `IMAGE`, `AUTH`, `DOCKER_ARGS`, `E2E*` prefixes) to `AWL_*` equivalents with hard cutover semantics (no legacy runtime fallback).
 - **Dependencies**:
   - Task 5.1
 - **Complexity**: 7
@@ -431,7 +431,7 @@ This plan replaces the current zsh-bundled `bin/agent-workspace` with a Rust cra
   - Development guide commands are executable on the new toolchain.
   - Release docs no longer reference zsh bundle regeneration.
 - **Validation**:
-  - `rg -n "generate_agent_workspace_bundle|ZSH_KIT_REF|CWS_E2E|AWL_E2E|cargo" DEVELOPMENT.md docs/runbooks/VERSION_BUMPS.md docs/RELEASE_GUIDE.md`
+  - `rg -n "generate_agent_workspace_bundle|ZSH_KIT_REF|AWL_E2E|cargo" DEVELOPMENT.md docs/runbooks/VERSION_BUMPS.md docs/RELEASE_GUIDE.md`
 
 ### Task 7.3: Perform cutover dry-run and CI publish verification
 - **Location**:

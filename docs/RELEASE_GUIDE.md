@@ -133,4 +133,30 @@ tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/bin/(
 
 ## Optional compatibility channel
 
-Container-image publishing can remain as a separate compatibility channel, but CLI release correctness must not depend on container backend availability.
+Container-image publishing remains a separate compatibility channel, and must not gate CLI archive release correctness.
+
+Use the project skill entrypoint:
+
+```sh
+.agents/skills/release-docker-image/scripts/release-docker-image.sh --version vX.Y.Z
+```
+
+Supported env contract (can be loaded from `.env`):
+
+- `AWL_DOCKER_RELEASE_DOCKERHUB_USERNAME`
+- `AWL_DOCKER_RELEASE_DOCKERHUB_TOKEN`
+- `AWL_DOCKER_RELEASE_GHCR_USERNAME`
+- `AWL_DOCKER_RELEASE_GHCR_TOKEN`
+- Optional overrides:
+  - `AWL_DOCKER_RELEASE_DOCKERHUB_IMAGE`
+  - `AWL_DOCKER_RELEASE_GHCR_IMAGE`
+  - `AWL_DOCKER_RELEASE_PLATFORMS`
+  - `AWL_DOCKER_RELEASE_PUSH_LATEST`
+  - `AWL_DOCKER_RELEASE_PUSH_SHA`
+  - `AWL_DOCKER_RELEASE_PUSH_VERSION`
+
+Preflight without pushing:
+
+```sh
+.agents/skills/release-docker-image/scripts/release-docker-image.sh --version vX.Y.Z --dry-run
+```

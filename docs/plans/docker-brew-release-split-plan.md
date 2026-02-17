@@ -21,7 +21,7 @@ This plan separates release delivery into two independent tracks: container publ
 ## Sprint 1: Release Contract and Trigger Redesign
 **Goal**: Finalize the release event model and channel ownership before workflow changes.
 **Demo/Validation**:
-- Command(s): `rg -n "docker branch|publish.yml|release" docs/RELEASE_GUIDE.md docs/runbooks/VERSION_BUMPS.md .agents/skills/release-workflow/SKILL.md`
+- Command(s): `rg -n "docker branch|publish.yml|release" docs/RELEASE_GUIDE.md docs/runbooks/VERSION_BUMPS.md .agents/skills/release-homebrew/SKILL.md`
 - Verify: Docs clearly define one tag-based release with two downstream channels (Docker + Brew).
 
 ### Task 1.1: Define split-release contract
@@ -54,7 +54,7 @@ This plan separates release delivery into two independent tracks: container publ
 
 ### Task 1.3: Update release skill contract (operational)
 - **Location**:
-  - `.agents/skills/release-workflow/SKILL.md`
+  - `.agents/skills/release-homebrew/SKILL.md`
 - **Description**: Align skill language with the split pipeline model so release operators stop treating Docker branch push as the only publish path.
 - **Dependencies**:
   - Task 1.1
@@ -63,7 +63,7 @@ This plan separates release delivery into two independent tracks: container publ
   - Skill workflow includes channel-aware publish steps.
   - Legacy wording about zsh-kit pins and branch-only publish is removed.
 - **Validation**:
-  - `rg -n "zsh-kit|docker branch|Brew|homebrew|tag" .agents/skills/release-workflow/SKILL.md`
+  - `rg -n "zsh-kit|docker branch|Brew|homebrew|tag" .agents/skills/release-homebrew/SKILL.md`
 
 ## Sprint 2: Docker Release Workflow Decoupling
 **Goal**: Make Docker publish independently triggerable from release tags and manual dispatch.
