@@ -305,7 +305,7 @@ This plan replaces the current zsh-bundled `bin/agent-workspace` with a Rust cra
   - `CWS_*` runtime fallback is not implemented.
 - **Validation**:
   - `rg -n "\bAWL_[A-Z0-9_]+\b" scripts tests DEVELOPMENT.md`
-  - `! rg -n "\bCWS_[A-Z0-9_]+\b" scripts/awl.bash scripts/awl.zsh tests/conftest.py tests/e2e/plan.py README.md DEVELOPMENT.md docs/guides/awl`
+  - `! rg -n "\bCWS_[A-Z0-9_]+\b" scripts/awl.bash scripts/awl.zsh tests/conftest.py tests/e2e/plan.py README.md DEVELOPMENT.md docs/guides`
 
 ### Task 5.3: Rename e2e/smoke test files and symbols to `awl`
 - **Location**:
@@ -404,14 +404,14 @@ This plan replaces the current zsh-bundled `bin/agent-workspace` with a Rust cra
   - `docs/DESIGN.md`
   - `docs/guides/README.md`
   - `docs/guides/cws/README.md`
-  - `docs/guides/awl/README.md`
+  - `docs/guides/README.md`
 - **Description**: Rewrite installation/quickstart/reference docs to use `awl`/`aw*` commands and Rust architecture details.
 - **Dependencies**:
   - Task 5.2
   - Task 4.2
 - **Complexity**: 6
 - **Acceptance criteria**:
-  - Primary guide path is `docs/guides/awl/`.
+  - Primary guide path is `docs/guides/`.
   - README and BUILD examples use `AWL_*` env variables.
 - **Validation**:
   - `rg -n "\bcws\b|\bCWS_" README.md docs/BUILD.md docs/guides docs/DESIGN.md`

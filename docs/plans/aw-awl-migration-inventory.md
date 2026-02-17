@@ -23,6 +23,6 @@
 - Release scripts and version bumping remove zsh bundle assumptions
 
 ## Docs
-- `docs/guides/cws/*` moved to `docs/guides/awl/*`
+- `docs/guides/cws/*` moved to `docs/guides/*`
 - User docs switched to `awl` and `AWL_*`
 - Codex naming exception documented: `CODEX_SECRET_DIR`, `CODEX_AUTH_FILE`
