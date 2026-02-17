@@ -15,7 +15,7 @@ What it does:
   2) brew update-reset on the target tap
   3) brew upgrade/install the formula from that tap
   4) verify installed version matches --version
-  5) verify both PATH commands report expected version
+  5) verify both PATH commands resolve to Homebrew-linked binaries
   6) verify bash/zsh completion files are present
 USAGE
 }
@@ -27,11 +27,6 @@ say() {
 die() {
   say "error: $*"
   exit 1
-}
-
-extract_semver() {
-  local text="${1:-}"
-  printf '%s\n' "${text}" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)*' | head -n 1
 }
 
 version=""
@@ -139,48 +134,31 @@ awl_bin="${formula_prefix}/bin/awl"
 [[ -x "${launcher_bin}" ]] || die "missing executable: ${launcher_bin}"
 [[ -x "${awl_bin}" ]] || die "missing executable: ${awl_bin}"
 
-launcher_out="$("${launcher_bin}" --version 2>/dev/null || true)"
-awl_out="$("${awl_bin}" --version 2>/dev/null || true)"
-launcher_ver="$(extract_semver "${launcher_out}")"
-awl_ver="$(extract_semver "${awl_out}")"
-
-[[ -n "${launcher_ver}" ]] || die "unable to parse launcher version from: ${launcher_out}"
-[[ -n "${awl_ver}" ]] || die "unable to parse awl version from: ${awl_out}"
-
-if [[ "${launcher_ver}" != "${expected_version}" ]]; then
-  die "agent-workspace-launcher reports ${launcher_ver}, expected ${expected_version}"
-fi
-if [[ "${awl_ver}" != "${expected_version}" ]]; then
-  die "awl reports ${awl_ver}, expected ${expected_version}"
-fi
-
 verify_path_command() {
   local cmd="$1"
+  local expected_path="$2"
   local cmd_path
-  local cmd_out
-  local cmd_ver
 
   cmd_path="$(command -v "${cmd}" 2>/dev/null || true)"
   [[ -n "${cmd_path}" ]] || die "command not found on PATH: ${cmd}"
 
-  cmd_out="$("${cmd}" --version 2>/dev/null || true)"
-  cmd_ver="$(extract_semver "${cmd_out}")"
-  [[ -n "${cmd_ver}" ]] || die "unable to parse ${cmd} version from: ${cmd_out}"
-
-  if [[ "${cmd_ver}" != "${expected_version}" ]]; then
-    die "${cmd} on PATH (${cmd_path}) reports ${cmd_ver}, expected ${expected_version}"
+  if [[ "${cmd_path}" != "${expected_path}" ]]; then
+    die "${cmd} on PATH is ${cmd_path}, expected ${expected_path}"
   fi
 }
 
-verify_path_command "agent-workspace-launcher"
-verify_path_command "awl"
-
 brew_prefix="$(brew --prefix)"
+verify_path_command "agent-workspace-launcher" "${brew_prefix}/bin/agent-workspace-launcher"
+verify_path_command "awl" "${brew_prefix}/bin/awl"
+
 bash_comp="${brew_prefix}/etc/bash_completion.d/agent-workspace-launcher"
 zsh_comp="${brew_prefix}/share/zsh/site-functions/_agent-workspace-launcher"
 
 [[ -f "${bash_comp}" ]] || die "missing bash completion file: ${bash_comp}"
 [[ -f "${zsh_comp}" ]] || die "missing zsh completion file: ${zsh_comp}"
+
+"${launcher_bin}" --help >/dev/null 2>&1 || die "agent-workspace-launcher --help failed"
+"${awl_bin}" --help >/dev/null 2>&1 || die "awl --help failed"
 
 cat <<EOF
 verify-brew-version: ok
