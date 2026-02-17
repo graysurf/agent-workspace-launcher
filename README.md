@@ -59,7 +59,7 @@ Default root:
 | --- | --- | --- |
 | `AGENT_WORKSPACE_HOME` | auto | Workspace root override |
 | `AGENT_WORKSPACE_PREFIX` | `agent-ws` | Prefix normalization for workspace names |
-| `AGENT_WORKSPACE_AUTH` | `auto` | GitHub auth token policy: `auto|gh|env|none` |
+| `AGENT_WORKSPACE_AUTH` | `auto` | GitHub auth token policy: `auto\|gh\|env\|none` |
 | `AGENT_WORKSPACE_GPG_KEY` | (empty) | Default key for `auth gpg` |
 | `CODEX_SECRET_DIR` | (empty) | Codex profile directory (compatibility name) |
 | `CODEX_AUTH_FILE` | `~/.codex/auth.json` | Codex auth file path (compatibility name) |
