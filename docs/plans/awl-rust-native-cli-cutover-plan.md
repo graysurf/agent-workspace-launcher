@@ -170,7 +170,7 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
   - `crates/agent-workspace/src/cli.rs`
   - `crates/agent-workspace/src/env.rs`
   - `README.md`
-  - `docs/guides/awl/11-reference.md`
+  - `docs/guides/11-reference.md`
 - **Description**: Remove or deprecate `AWL_IMAGE` and `AWL_DOCKER_ARGS` from active runtime path and replace with native CLI config contract.
 - **Dependencies**:
   - Task 3.1
@@ -181,7 +181,7 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
   - User docs clearly explain native invocation and any deprecation warnings.
 - **Validation**:
   - `! rg -n "AWL_IMAGE|AWL_DOCKER_ARGS" crates/agent-workspace/src`
-  - `rg -n "AWL_IMAGE|AWL_DOCKER_ARGS|deprecated" README.md docs/guides/awl/11-reference.md`
+  - `rg -n "AWL_IMAGE|AWL_DOCKER_ARGS|deprecated" README.md docs/guides/11-reference.md`
 
 ### Task 3.4: Rebase e2e/smoke harness on native binary execution
 - **Location**:
@@ -262,9 +262,9 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
 
 ### Task 5.1: Rewrite user guides to binary-first usage
 - **Location**:
-  - `docs/guides/awl/README.md`
-  - `docs/guides/awl/01-install.md`
-  - `docs/guides/awl/12-agent-workspace.md`
+  - `docs/guides/README.md`
+  - `docs/guides/01-install.md`
+  - `docs/guides/12-agent-workspace.md`
   - `docs/BUILD.md`
 - **Description**: Replace wrapper-first and direct `docker run` guidance with `agent-workspace-launcher` primary usage and `awl` alias examples.
 - **Dependencies**:
@@ -275,8 +275,8 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
   - Quickstart flow succeeds with direct binary invocation.
   - `awl` examples are clearly marked as alias ergonomics, not core runtime dependency.
 - **Validation**:
-  - `rg -n "docker run --rm -it graysurf/agent-workspace-launcher:latest|AWL_IMAGE" docs/guides/awl docs/BUILD.md`
-  - `rg -n "agent-workspace-launcher|alias" docs/guides/awl/README.md docs/guides/awl/01-install.md`
+  - `rg -n "docker run --rm -it graysurf/agent-workspace-launcher:latest|AWL_IMAGE" docs/guides docs/BUILD.md`
+  - `rg -n "agent-workspace-launcher|alias" docs/guides/README.md docs/guides/01-install.md`
   - `agent-workspace-launcher --help && awl --help`
 
 ### Task 5.2: Update CI/pre-submit checks for native launcher path
@@ -300,7 +300,7 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
 - **Location**:
   - `CHANGELOG.md`
   - `README.md`
-  - `docs/guides/awl/10-troubleshooting.md`
+  - `docs/guides/10-troubleshooting.md`
 - **Description**: Add migration notes for removed wrapper-image behavior, alias expectations, and fallback/compat windows.
 - **Dependencies**:
   - Task 5.1
@@ -310,7 +310,7 @@ This plan migrates host-side `awl` behavior from shell-based `docker run` wrappe
   - Users can map old env/config usage to new behavior with explicit examples.
   - Troubleshooting covers missing binary, alias setup, and runtime backend expectations.
 - **Validation**:
-  - `rg -n "migration|deprecated|alias|agent-workspace-launcher" CHANGELOG.md README.md docs/guides/awl/10-troubleshooting.md`
+  - `rg -n "migration|deprecated|alias|agent-workspace-launcher" CHANGELOG.md README.md docs/guides/10-troubleshooting.md`
 
 ## Sprint 6: Release Readiness and Cutover Verification
 **Goal**: Execute final validation and publish with reversible rollout safeguards.
