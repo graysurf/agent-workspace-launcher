@@ -10,3 +10,4 @@
 - Required repo checks (`DEVELOPMENT.md`): pass
 - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`: pass
 - Asset payload contract (`bin/agent-workspace-launcher`, `bin/awl`): pass
+- `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z`: pass

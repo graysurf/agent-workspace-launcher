@@ -39,12 +39,14 @@ Failure modes:
 
 - Any required check fails.
 - Changelog audit fails.
-- Release asset verification fails (missing targets, checksum mismatch, missing alias payload).
+- Release asset verification fails (missing targets, checksum mismatch, missing alias/completion payload).
+- Local Homebrew validation fails (formula still old, PATH still resolving old `awl`, or completion files missing).
 - Missing/invalid release version input.
 
 ## Scripts (only entrypoints)
 
 - `<PROJECT_ROOT>/.agents/skills/release-homebrew/scripts/release-homebrew.sh`
+- `<PROJECT_ROOT>/.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh`
 
 ## Workflow
 
@@ -89,7 +91,17 @@ Failure modes:
 9. Verify CLI channel
    - Confirm `release-brew.yml` ran for `vX.Y.Z`
    - Confirm release assets include all target tarballs + checksums
-   - Confirm tarball payload includes both `bin/agent-workspace-launcher` and `bin/awl`
+   - Confirm tarball payload includes:
+     - `bin/agent-workspace-launcher`
+     - `bin/awl`
+     - `completions/agent-workspace-launcher.bash`
+     - `completions/_agent-workspace-launcher`
+
+10. Verify local Homebrew is upgraded to the same version
+   - Run after `homebrew-tap` formula update/merge:
+   - `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z`
+   - If validating against a local tap checkout:
+   - `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo ~/Project/graysurf/homebrew-tap`
 
 ## Project-specific non-negotiables
 

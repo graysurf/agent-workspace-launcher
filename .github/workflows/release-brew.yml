@@ -121,13 +121,15 @@ jobs:
           out_name="agent-workspace-launcher-${RELEASE_TAG}-${TARGET}"
           out_dir="dist/${out_name}"
           binary_path="target/${TARGET}/release/agent-workspace-launcher"
-          mkdir -p "${out_dir}/bin" "${out_dir}/scripts"
+          mkdir -p "${out_dir}/bin" "${out_dir}/scripts" "${out_dir}/completions"
 
           install -m 0755 "${binary_path}" "${out_dir}/bin/agent-workspace-launcher"
           ln -s "agent-workspace-launcher" "${out_dir}/bin/awl"
 
           install -m 0755 scripts/awl.bash "${out_dir}/scripts/awl.bash"
           install -m 0644 scripts/awl.zsh "${out_dir}/scripts/awl.zsh"
+          install -m 0644 completions/agent-workspace-launcher.bash "${out_dir}/completions/agent-workspace-launcher.bash"
+          install -m 0644 completions/_agent-workspace-launcher "${out_dir}/completions/_agent-workspace-launcher"
           install -m 0644 README.md "${out_dir}/README.md"
           install -m 0644 LICENSE "${out_dir}/LICENSE"
 

@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v1.1.2 - 2026-02-17
+
+### Upstream pins
+- agent-kit: 0ae695f18f672bf1f418c068a5e3124a26ecfb1a
+
+### Changed
+- Package bash/zsh completion files in `release-brew` archives for Homebrew formula installs.
+- Add a release-homebrew post-tap verification script to ensure local `agent-workspace-launcher` and `awl`
+  are upgraded to the target version.
+
+### Docs
+- Document the required post-release local Homebrew verification flow and version checks.
+
 ## v1.1.1 - 2026-02-16
 
 ### Upstream pins

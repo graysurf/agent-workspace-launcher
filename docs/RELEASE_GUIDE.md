@@ -28,6 +28,8 @@ Archive payload contract (minimum):
 - `bin/awl` (symlink to `agent-workspace-launcher`)
 - `scripts/awl.bash`
 - `scripts/awl.zsh`
+- `completions/agent-workspace-launcher.bash`
+- `completions/_agent-workspace-launcher`
 - `README.md`
 - `LICENSE`
 
@@ -112,6 +114,7 @@ version="vX.Y.Z"
 archive="${AGENTS_HOME:-$HOME/.agents}/out/release-${version}/agent-workspace-launcher-${version}-x86_64-apple-darwin.tar.gz"
 
 tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/bin/(agent-workspace-launcher|awl)$'
+tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/completions/(agent-workspace-launcher\.bash|_agent-workspace-launcher)$'
 ```
 
 ## Release-to-tap checklist
@@ -120,16 +123,17 @@ tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/bin/(
 2. Formula install contract:
    - install `bin/agent-workspace-launcher`
    - create `bin/awl` alias to same executable
+   - install bash completion: `completions/agent-workspace-launcher.bash`
+   - install zsh completion: `completions/_agent-workspace-launcher`
 3. Validate in tap repo:
    - `ruby -c Formula/agent-workspace-launcher.rb`
    - `HOMEBREW_NO_AUTO_UPDATE=1 brew style Formula/agent-workspace-launcher.rb`
    - `brew tap graysurf/tap "$(pwd)" --custom-remote`
    - `brew update-reset "$(brew --repo graysurf/tap)"`
-   - `HOMEBREW_NO_AUTO_UPDATE=1 brew reinstall agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install agent-workspace-launcher`
+   - `HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade graysurf/tap/agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install graysurf/tap/agent-workspace-launcher`
    - `HOMEBREW_NO_AUTO_UPDATE=1 brew test agent-workspace-launcher`
-4. Verify end-user commands:
-   - `agent-workspace-launcher --help`
-   - `awl --help`
+4. Verify local machine actually moved to target version:
+   - `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo ~/Project/graysurf/homebrew-tap`
 
 ## Optional compatibility channel
 

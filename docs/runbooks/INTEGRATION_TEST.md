@@ -7,9 +7,10 @@ This checklist validates the released host-native CLI behavior after cutting a t
 - [ ] `release-brew.yml` succeeded for `vX.Y.Z`
 - [ ] GitHub Release has all target archives + checksums
 - [ ] Archive payload contains both command names (`agent-workspace-launcher`, `awl`)
+- [ ] Archive payload contains completion files for bash/zsh
 - [ ] Local install smoke passes with direct binary name
 - [ ] Local install smoke passes with `awl` alias
-- [ ] Homebrew formula installs both commands and test passes
+- [ ] Homebrew formula installs commands and completion files
 
 ## Release asset verification
 
@@ -42,6 +43,7 @@ out_dir="${AGENTS_HOME:-$HOME/.agents}/out/release-${version}"
 archive="${out_dir}/agent-workspace-launcher-${version}-x86_64-apple-darwin.tar.gz"
 
 tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/bin/(agent-workspace-launcher|awl)$'
+tar -tzf "$archive" | rg '^agent-workspace-launcher-.*-x86_64-apple-darwin/completions/(agent-workspace-launcher\.bash|_agent-workspace-launcher)$'
 ```
 
 ## Local smoke from downloaded archive
@@ -88,11 +90,10 @@ ruby -c Formula/agent-workspace-launcher.rb
 HOMEBREW_NO_AUTO_UPDATE=1 brew style Formula/agent-workspace-launcher.rb
 brew tap graysurf/tap "$(pwd)" --custom-remote
 brew update-reset "$(brew --repo graysurf/tap)"
-HOMEBREW_NO_AUTO_UPDATE=1 brew reinstall agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install agent-workspace-launcher
+HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade graysurf/tap/agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install graysurf/tap/agent-workspace-launcher
 HOMEBREW_NO_AUTO_UPDATE=1 brew test agent-workspace-launcher
 
-agent-workspace-launcher --help
-awl --help
+.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo "$(pwd)"
 ```
 
 ## Notes

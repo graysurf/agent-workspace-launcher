@@ -26,6 +26,22 @@ agent-workspace-launcher --help
 awl --help
 ```
 
+Homebrew completion (default via formula):
+
+```sh
+agent-workspace-launcher <TAB>
+awl <TAB>
+```
+
+Upgrade to latest tap release and verify both commands:
+
+```sh
+brew update-reset "$(brew --repo graysurf/tap)"
+brew upgrade graysurf/tap/agent-workspace-launcher || brew install graysurf/tap/agent-workspace-launcher
+agent-workspace-launcher --version
+awl --version
+```
+
 ### Docker Hub (DooD, no brew required)
 
 This mode is Docker-outside-of-Docker (DooD): `awl_docker` runs inside a launcher container

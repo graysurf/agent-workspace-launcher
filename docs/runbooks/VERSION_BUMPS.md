@@ -80,6 +80,8 @@ gh release view vX.Y.Z || gh release create vX.Y.Z --title "vX.Y.Z" --notes ""
   - `cd "${AGENTS_HOME:-$HOME/.agents}/out/release-vX.Y.Z" && for f in *.sha256; do shasum -a 256 -c "$f"; done`
 - Verify payload includes both command names:
   - `tar -tzf agent-workspace-launcher-vX.Y.Z-x86_64-apple-darwin.tar.gz | rg 'bin/(agent-workspace-launcher|awl)$'`
+- Verify payload includes completion files:
+  - `tar -tzf agent-workspace-launcher-vX.Y.Z-x86_64-apple-darwin.tar.gz | rg 'completions/(agent-workspace-launcher\.bash|_agent-workspace-launcher)$'`
 
 ## Update `homebrew-tap` formula
 
@@ -87,6 +89,8 @@ After checks pass, update the tap formula with exact URL + checksum pairs and ke
 
 - installs `agent-workspace-launcher` as primary binary
 - installs `awl` as alias/symlink
+- installs bash completion from `completions/agent-workspace-launcher.bash`
+- installs zsh completion from `completions/_agent-workspace-launcher`
 
 Validate in `homebrew-tap`:
 
@@ -95,8 +99,9 @@ ruby -c Formula/agent-workspace-launcher.rb
 HOMEBREW_NO_AUTO_UPDATE=1 brew style Formula/agent-workspace-launcher.rb
 brew tap graysurf/tap "$(pwd)" --custom-remote
 brew update-reset "$(brew --repo graysurf/tap)"
-HOMEBREW_NO_AUTO_UPDATE=1 brew reinstall agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install agent-workspace-launcher
+HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade graysurf/tap/agent-workspace-launcher || HOMEBREW_NO_AUTO_UPDATE=1 brew install graysurf/tap/agent-workspace-launcher
 HOMEBREW_NO_AUTO_UPDATE=1 brew test agent-workspace-launcher
+.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo "$(pwd)"
 ```
 
 ## Optional compatibility Docker checks

@@ -183,4 +183,5 @@ next:
   2) git -c tag.gpgSign=false tag ${version}
   3) git push origin ${version}
   4) verify release-brew workflow/assets
+  5) after tap formula merge: .agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version ${version}
 EOF

@@ -1,0 +1,69 @@
+#compdef agent-workspace-launcher awl
+
+_agent-workspace-launcher_workspace_names() {
+  command agent-workspace-launcher ls 2>/dev/null | awk '{print $1}'
+}
+
+_agent-workspace-launcher() {
+  local state
+  local -a subcommands auth_commands reset_commands workspace_names rm_targets
+
+  subcommands=(
+    "auth"
+    "create"
+    "ls"
+    "rm"
+    "exec"
+    "reset"
+    "tunnel"
+    "--help"
+    "--version"
+    "-h"
+    "-V"
+  )
+  auth_commands=("github" "codex" "gpg" "--help" "-h")
+  reset_commands=("repo" "work-repos" "opt-repos" "private-repo" "--help" "-h")
+  workspace_names=(${(f)"$(_agent-workspace-launcher_workspace_names)"})
+  rm_targets=("${workspace_names[@]}" "--all" "--yes")
+
+  _arguments -C \
+    "1:subcommand:->subcommand" \
+    "*::arg:->args"
+
+  case "${state}" in
+    subcommand)
+      _describe -t awl-subcommands "subcommand" subcommands
+      return 0
+      ;;
+    args)
+      case "${words[2]}" in
+        auth)
+          if (( CURRENT == 3 )); then
+            _describe -t awl-auth-commands "auth command" auth_commands
+          elif (( CURRENT >= 4 )); then
+            _describe -t awl-workspaces "workspace" workspace_names
+          fi
+          ;;
+        reset)
+          if (( CURRENT == 3 )); then
+            _describe -t awl-reset-commands "reset command" reset_commands
+          elif (( CURRENT == 4 )); then
+            _describe -t awl-workspaces "workspace" workspace_names
+          fi
+          ;;
+        rm)
+          if (( CURRENT == 3 )); then
+            _describe -t awl-rm-targets "rm target" rm_targets
+          fi
+          ;;
+        exec|tunnel)
+          if (( CURRENT == 3 )); then
+            _describe -t awl-workspaces "workspace" workspace_names
+          fi
+          ;;
+      esac
+      ;;
+  esac
+}
+
+compdef _agent-workspace-launcher agent-workspace-launcher awl

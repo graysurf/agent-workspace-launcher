@@ -17,4 +17,12 @@ fi
 
 "${entrypoint}" --help >/dev/null
 
+verify_entrypoint="${skill_root}/scripts/verify-brew-installed-version.sh"
+if [[ ! -x "${verify_entrypoint}" ]]; then
+  echo "error: missing executable ${verify_entrypoint}" >&2
+  exit 1
+fi
+
+"${verify_entrypoint}" --help >/dev/null
+
 echo "ok: release-homebrew skill smoke checks passed"
