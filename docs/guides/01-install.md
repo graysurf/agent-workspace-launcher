@@ -4,6 +4,12 @@ Primary command: `agent-workspace-launcher`
 
 Compatibility alias: `awl`
 
+Runtime model:
+
+- Supports `container` and `host`
+- Default runtime is `container`
+- Select runtime with `--runtime container|host` or `AGENT_WORKSPACE_RUNTIME`
+
 ## Homebrew (recommended)
 
 ```sh
@@ -29,10 +35,12 @@ agent-workspace-launcher --version
 awl --version
 ```
 
-## Docker Hub (optional DooD mode)
+## Docker Hub (optional launcher-in-container / DooD mode)
 
-This mode is Docker-outside-of-Docker (DooD): `awl_docker` runs inside a launcher
-container that talks to your host Docker daemon via `/var/run/docker.sock`.
+This mode is Docker-outside-of-Docker (DooD): `awl_docker` runs the launcher inside
+a container that talks to your host Docker daemon via `/var/run/docker.sock`.
+It is optional and separate from the built-in `container` runtime (the default for
+`agent-workspace-launcher` itself).
 
 ```sh
 docker pull graysurf/agent-workspace-launcher:latest
@@ -129,3 +137,4 @@ awl --help
 
 - `awl` is alias compatibility only.
 - `agent-workspace-launcher` is the canonical command name.
+- If Docker is unavailable on your host, use `--runtime host` (or set `AGENT_WORKSPACE_RUNTIME=host`).

@@ -5,12 +5,12 @@ use crate::EXIT_RUNTIME;
 use super::{PRIMARY_COMMAND_NAME, Workspace, json_escape, list_workspaces_on_disk};
 
 #[derive(Debug, Default, Clone)]
-struct ParsedLs {
-    show_help: bool,
-    json: bool,
+pub(super) struct ParsedLs {
+    pub(super) show_help: bool,
+    pub(super) json: bool,
 }
 
-fn parse_ls_args(args: &[OsString]) -> Result<ParsedLs, String> {
+pub(super) fn parse_ls_args(args: &[OsString]) -> Result<ParsedLs, String> {
     let mut parsed = ParsedLs::default();
     let mut idx = 0usize;
 

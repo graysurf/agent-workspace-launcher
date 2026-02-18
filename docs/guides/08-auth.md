@@ -2,6 +2,9 @@
 
 Updates auth material for an existing workspace.
 
+Runtime defaults to `container`. Use `--runtime host` or
+`AGENT_WORKSPACE_RUNTIME=host` when Docker is unavailable.
+
 Providers:
 
 - `github`
@@ -12,6 +15,12 @@ Providers:
 
 ```sh
 agent-workspace-launcher auth github <workspace>
+```
+
+Host runtime example:
+
+```sh
+agent-workspace-launcher --runtime host auth github <workspace>
 ```
 
 Policy (`AGENT_WORKSPACE_AUTH`):

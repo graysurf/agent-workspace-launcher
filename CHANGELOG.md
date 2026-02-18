@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Changed
+- Add dual runtime support to the Rust CLI (`container` default, explicit `host` fallback) with unified runtime resolution:
+  `--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default `container`.
+- Add container backend handlers for `create`, `ls`, `exec`, `rm`, `reset`, `auth`, and `tunnel`.
+- Keep host backend behavior available via explicit runtime selection.
+
+### Docs
+- Update architecture/spec/guide contracts from host-only wording to dual runtime (`container` default, `host` fallback) while keeping subcommand surface unchanged.
+- Document runtime selectors and related env/flags: `--runtime`, `AGENT_WORKSPACE_RUNTIME`, `AWL_RUNTIME`, `AGENT_ENV_IMAGE`, `CODEX_ENV_IMAGE`.
+- Expand parity and integration runbooks to require both default-container smoke and explicit host-fallback smoke.
+
 ## v1.1.3 - 2026-02-17
 
 ### Upstream pins

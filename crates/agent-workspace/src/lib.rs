@@ -1,5 +1,6 @@
 mod cli;
 mod launcher;
+mod runtime;
 
 use std::path::Path;
 
@@ -28,7 +29,7 @@ where
         }
     };
 
-    let request = cli.command.into_forward_request();
+    let request = cli.into_forward_request();
     launcher::dispatch(request.subcommand, &request.args)
 }
 
@@ -39,6 +40,14 @@ fn detect_invocation_name(argv0: Option<&std::ffi::OsString>) -> Option<String> 
         return Some(AWL_ALIAS_NAME.to_string());
     }
     Some(PRIMARY_BIN_NAME.to_string())
+}
+
+#[cfg(test)]
+pub(crate) fn env_lock() -> &'static std::sync::Mutex<()> {
+    use std::sync::{Mutex, OnceLock};
+
+    static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
+    LOCK.get_or_init(|| Mutex::new(()))
 }
 
 #[cfg(test)]

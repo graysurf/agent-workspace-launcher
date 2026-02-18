@@ -1,6 +1,9 @@
 # `reset`
 
-Resets git repos on host inside a workspace.
+Resets git repos in a workspace for the selected runtime.
+
+Runtime defaults to `container`. Use `--runtime host` (or
+`AGENT_WORKSPACE_RUNTIME=host`) when Docker is unavailable.
 
 ## Reset one repo path
 
@@ -24,4 +27,10 @@ agent-workspace-launcher reset opt-repos <workspace> --yes
 
 ```sh
 agent-workspace-launcher reset private-repo <workspace> --yes
+```
+
+Host runtime example:
+
+```sh
+agent-workspace-launcher --runtime host reset work-repos <workspace> --yes
 ```

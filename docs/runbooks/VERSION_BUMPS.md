@@ -1,6 +1,6 @@
 # Version bumps (upstream pin)
 
-Primary runtime is now the host-native Rust binary in this repo.
+Primary runtime is the Rust binary in this repo with dual backends (`container` default, `host` fallback).
 `AGENT_KIT_REF` remains only for optional compatibility image builds.
 
 ## Current release focus

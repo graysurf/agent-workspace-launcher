@@ -23,6 +23,7 @@ _awl_completion() {
     "exec"
     "reset"
     "tunnel"
+    "--runtime"
     "--help"
     "--version"
     "-h"
@@ -44,6 +45,11 @@ _awl_completion() {
       ;;
     args)
       case "${words[2]}" in
+        --runtime)
+          if (( CURRENT == 3 )); then
+            _describe -t awl-runtime-values "runtime" "container host"
+          fi
+          ;;
         auth)
           if (( CURRENT == 3 )); then
             _describe -t awl-auth-commands "auth command" auth_commands

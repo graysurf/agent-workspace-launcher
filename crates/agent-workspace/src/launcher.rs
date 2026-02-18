@@ -1,4 +1,5 @@
 mod auth;
+mod container;
 mod create;
 mod exec;
 mod ls;
@@ -14,11 +15,36 @@ use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::EXIT_RUNTIME;
+use crate::runtime::{Runtime, resolve_runtime};
 
 const PRIMARY_COMMAND_NAME: &str = "agent-workspace-launcher";
 const WORKSPACE_META_FILE: &str = ".workspace-meta";
 
 pub fn dispatch(subcommand: &str, args: &[OsString]) -> i32 {
+    let (runtime, filtered_args) = match resolve_runtime(args) {
+        Ok(value) => value,
+        Err(err) => {
+            eprintln!("error: {err}");
+            eprintln!("hint: use --runtime container or --runtime host");
+            return EXIT_RUNTIME;
+        }
+    };
+
+    let status = match runtime {
+        Runtime::Host => dispatch_host(subcommand, &filtered_args),
+        Runtime::Container => dispatch_container(subcommand, &filtered_args),
+    };
+
+    if status != 0 && runtime == Runtime::Container && !command_exists("docker") {
+        eprintln!(
+            "hint: install/start Docker or retry with '--runtime host' (or AGENT_WORKSPACE_RUNTIME=host)"
+        );
+    }
+
+    status
+}
+
+fn dispatch_host(subcommand: &str, args: &[OsString]) -> i32 {
     match subcommand {
         "auth" => auth::run(args),
         "create" => create::run(args),
@@ -32,6 +58,10 @@ pub fn dispatch(subcommand: &str, args: &[OsString]) -> i32 {
             EXIT_RUNTIME
         }
     }
+}
+
+fn dispatch_container(subcommand: &str, args: &[OsString]) -> i32 {
+    container::dispatch(subcommand, args)
 }
 
 #[derive(Debug, Clone)]
@@ -486,7 +516,6 @@ fn json_escape(input: &str) -> String {
 #[cfg(test)]
 mod tests {
     use std::ffi::OsString;
-    use std::sync::{Mutex, OnceLock};
 
     use tempfile::TempDir;
 
@@ -503,19 +532,15 @@ mod tests {
         workspace_name_variants, workspace_prefixes, workspace_storage_root,
     };
 
-    fn env_lock() -> &'static Mutex<()> {
-        static LOCK: OnceLock<Mutex<()>> = OnceLock::new();
-        LOCK.get_or_init(|| Mutex::new(()))
-    }
-
     fn with_workspace_env<T>(f: impl FnOnce(&TempDir) -> T) -> T {
-        let _guard = env_lock()
+        let _guard = crate::env_lock()
             .lock()
             .unwrap_or_else(|poison| poison.into_inner());
         let temp = tempfile::tempdir().expect("tempdir");
 
         unsafe {
             std::env::set_var("AGENT_WORKSPACE_HOME", temp.path());
+            std::env::set_var("AGENT_WORKSPACE_RUNTIME", "host");
             std::env::remove_var("AGENT_WORKSPACE_PREFIX");
             std::env::remove_var("CODEX_WORKSPACE_PREFIX");
         }
@@ -524,6 +549,7 @@ mod tests {
 
         unsafe {
             std::env::remove_var("AGENT_WORKSPACE_HOME");
+            std::env::remove_var("AGENT_WORKSPACE_RUNTIME");
             std::env::remove_var("AGENT_WORKSPACE_PREFIX");
             std::env::remove_var("CODEX_WORKSPACE_PREFIX");
             std::env::remove_var("CODEX_AUTH_FILE");
@@ -705,7 +731,7 @@ mod tests {
 
     #[test]
     fn resolve_codex_auth_file_prefers_env() {
-        let _guard = env_lock()
+        let _guard = crate::env_lock()
             .lock()
             .unwrap_or_else(|poison| poison.into_inner());
         unsafe {
@@ -719,7 +745,7 @@ mod tests {
 
     #[test]
     fn resolve_codex_profile_auth_files_prefers_secret_dir() {
-        let _guard = env_lock()
+        let _guard = crate::env_lock()
             .lock()
             .unwrap_or_else(|poison| poison.into_inner());
         unsafe {

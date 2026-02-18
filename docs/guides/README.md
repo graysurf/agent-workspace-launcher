@@ -12,11 +12,13 @@ Related docs:
 
 ## awl / agent-workspace-launcher guide
 
-`agent-workspace-launcher` is the primary host-native CLI.
+`agent-workspace-launcher` is the canonical CLI with dual runtime support.
 
 `awl` is a compatibility alias that calls the same binary.
 
-This guide covers install, workspace lifecycle commands, and troubleshooting.
+Default runtime is `container`; `host` runtime remains available via `--runtime host`.
+
+This guide covers install, runtime selection, workspace lifecycle commands, and troubleshooting.
 
 ## Start here
 
@@ -34,7 +36,7 @@ This guide covers install, workspace lifecycle commands, and troubleshooting.
 
 ## Concepts and reference
 
-- Host runtime rules: `09-dood-rules.md`
+- Dual runtime rules: `09-dood-rules.md`
 - Troubleshooting: `10-troubleshooting.md`
 - Reference: `11-reference.md`
 - Without `awl` alias: `12-agent-workspace.md`

@@ -1,6 +1,6 @@
 # Build guide
 
-This guide builds and runs the host-native `agent-workspace-launcher` binary.
+This guide builds and runs `agent-workspace-launcher` (dual runtime: `container` default, `host` fallback).
 
 ## Requirements
 
@@ -44,6 +44,11 @@ awl --help
 agent-workspace-launcher create --no-work-repos --name ws-local
 agent-workspace-launcher ls
 agent-workspace-launcher rm ws-local --yes
+
+# Host fallback smoke (no Docker dependency)
+agent-workspace-launcher --runtime host create --no-work-repos --name ws-local-host
+agent-workspace-launcher --runtime host ls
+agent-workspace-launcher --runtime host rm ws-local-host --yes
 ```
 
 ## Tests

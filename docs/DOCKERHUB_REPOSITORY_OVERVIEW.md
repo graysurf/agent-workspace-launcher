@@ -1,18 +1,25 @@
-# agent-workspace-launcher (Docker Compatibility Image)
+# agent-workspace-launcher (Docker Hub runtime image)
 
-`graysurf/agent-workspace-launcher` is the Docker compatibility channel for the
-host-native `agent-workspace-launcher` CLI.
+`graysurf/agent-workspace-launcher` publishes the same Rust CLI used by Homebrew/source installs.
 
-The primary project path is host-native install (Homebrew or source build). This
-image is for optional Docker-outside-of-Docker (DooD) workflows where the
-launcher runs in a container and controls your host Docker daemon.
+Runtime behavior is dual-backend:
+
+- default: `container`
+- fallback: `host` (via `--runtime host` or env override)
 
 ## What this image does
 
-- Runs workspace lifecycle commands: `create`, `ls`, `exec`, `rm`, `reset`,
-  `auth`, `tunnel`.
-- Talks to host Docker via `/var/run/docker.sock`.
-- Works together with `graysurf/agent-env` (the workspace runtime image).
+- Runs the standard command surface: `create`, `ls`, `exec`, `rm`, `reset`, `auth`, `tunnel`.
+- Uses container runtime by default, so it needs host Docker access when executing lifecycle commands.
+- Creates workspace containers from `graysurf/agent-env` (override with `--image`, `AGENT_ENV_IMAGE`, or `CODEX_ENV_IMAGE`).
+
+## Runtime selectors and env contract
+
+- Runtime flag: `--runtime container|host`
+- Runtime env: `AGENT_WORKSPACE_RUNTIME` (primary), `AWL_RUNTIME` (compat)
+- Container image env: `AGENT_ENV_IMAGE` (primary), `CODEX_ENV_IMAGE` (compat)
+
+Selection precedence: `--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default `container`.
 
 ## Quick start
 
@@ -21,7 +28,7 @@ docker pull graysurf/agent-workspace-launcher:latest
 docker pull graysurf/agent-env:latest
 ```
 
-Run directly with Docker:
+Run with default runtime (`container`) using host Docker daemon:
 
 ```sh
 docker run --rm -it \
@@ -31,12 +38,23 @@ docker run --rm -it \
   create OWNER/REPO
 ```
 
-For day-to-day usage, prefer the repo-provided wrapper scripts:
+Force host fallback runtime (for troubleshooting contract behavior):
+
+```sh
+docker run --rm -it \
+  -e AGENT_WORKSPACE_RUNTIME=host \
+  graysurf/agent-workspace-launcher:latest \
+  ls
+```
+
+## Wrapper compatibility
+
+Wrapper scripts remain available as compatibility helpers:
 
 - `scripts/awl_docker.zsh`
 - `scripts/awl_docker.bash`
 
-These wrappers provide `awl_docker` and convenient defaults.
+These wrappers expose `awl_docker` and pass through `AWL_DOCKER_*` options.
 
 ## Tags
 
@@ -46,12 +64,10 @@ These wrappers provide `awl_docker` and convenient defaults.
 
 ## Security note
 
-Mounting `/var/run/docker.sock` gives root-equivalent control of the host Docker
-daemon. Use only on trusted hosts and with trusted images/configuration.
+Mounting `/var/run/docker.sock` gives root-equivalent control of the host Docker daemon. Use only on trusted hosts and with trusted images/configuration.
 
 ## Canonical docs
 
 - Repository: <https://github.com/graysurf/agent-workspace-launcher>
 - Install guide: `docs/guides/01-install.md`
 - Full user guide: `docs/guides/README.md`
-

@@ -13,10 +13,18 @@ pub const CLI_VERSION: &str = match option_env!("AWL_RELEASE_VERSION") {
 #[command(
     name = "agent-workspace-launcher",
     version,
-    about = "Host-native workspace lifecycle CLI",
+    about = "Workspace lifecycle CLI (container + host runtimes)",
     disable_help_subcommand = true
 )]
 pub struct Cli {
+    #[arg(
+        long,
+        global = true,
+        value_name = "container|host",
+        help = "Select runtime backend (default: container)"
+    )]
+    pub runtime: Option<String>,
+
     #[command(subcommand)]
     pub command: CliCommand,
 }
@@ -118,6 +126,16 @@ impl Cli {
         let matches = command.clone().try_get_matches_from(args_vec)?;
         Self::from_arg_matches(&matches).map_err(|err| err.format(&mut command))
     }
+
+    pub fn into_forward_request(self) -> ForwardRequest {
+        let mut request = self.command.into_forward_request();
+        if let Some(runtime) = self.runtime {
+            request
+                .args
+                .insert(0, OsString::from(format!("--runtime={runtime}")));
+        }
+        request
+    }
 }
 
 #[cfg(test)]
@@ -191,5 +209,27 @@ mod tests {
     fn command_version_uses_release_override_when_available() {
         let cmd = Cli::command_with_invocation_name(None);
         assert_eq!(cmd.get_version(), Some(CLI_VERSION));
+    }
+
+    #[test]
+    fn parse_runtime_global_after_subcommand() {
+        let cli = Cli::try_parse_from([
+            PRIMARY_BIN_NAME,
+            "ls",
+            "--runtime",
+            "host",
+            "--output",
+            "json",
+        ])
+        .expect("parse runtime after subcommand");
+
+        assert_eq!(cli.runtime.as_deref(), Some("host"));
+        let request = cli.into_forward_request();
+        let collected: Vec<String> = request
+            .args
+            .iter()
+            .map(|item| item.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(collected, vec!["--runtime=host", "--output", "json"]);
     }
 }

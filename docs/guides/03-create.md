@@ -1,11 +1,23 @@
 # `create`
 
-Creates a host workspace directory and optionally clones repositories.
+Creates a workspace in the selected runtime and optionally clones repositories.
+
+Runtime selection:
+
+- Default: `container`
+- Override per command: `--runtime container|host`
+- Override via env: `AGENT_WORKSPACE_RUNTIME=container|host`
 
 ## Basic usage
 
 ```sh
 agent-workspace-launcher create OWNER/REPO
+```
+
+Host fallback (for Docker-unavailable hosts):
+
+```sh
+agent-workspace-launcher --runtime host create OWNER/REPO
 ```
 
 ## Multiple repos

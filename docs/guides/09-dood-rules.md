@@ -1,16 +1,35 @@
-# Host runtime rules
+# Dual runtime rules
 
-This CLI now runs host-native workspace lifecycle logic.
+This CLI supports two runtime backends with container as the default.
 
-## Rule 1: workspace state is host filesystem state
+## Rule 1: runtime selection is explicit and deterministic
 
-Workspace creation/removal/reset acts on host directories under the resolved workspace root.
+Selection precedence:
 
-## Rule 2: auth artifacts are workspace-local files
+1. `--runtime <container|host>`
+2. `AGENT_WORKSPACE_RUNTIME`
+3. `AWL_RUNTIME`
+4. default `container`
 
-`auth github/codex/gpg` writes auth metadata under workspace paths.
+## Rule 2: command surface stays the same
 
-## Rule 3: keep compatibility env names where documented
+Subcommands do not change by runtime: `auth`, `create`, `ls`, `rm`, `exec`, `reset`, `tunnel`.
+
+## Rule 3: workspace state is runtime-scoped
+
+- `container` runtime: workspace state is Docker containers + volumes.
+- `host` runtime: workspace state is host filesystem under resolved workspace root.
+
+## Rule 4: container image selection for `create` is stable
+
+When runtime is `container`, image precedence is:
+
+1. `create --image <image>`
+2. `AGENT_ENV_IMAGE`
+3. `CODEX_ENV_IMAGE`
+4. `graysurf/agent-env:latest`
+
+## Rule 5: keep compatibility env names where documented
 
 Codex compatibility names remain:
 

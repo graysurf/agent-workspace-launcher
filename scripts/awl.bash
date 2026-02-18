@@ -41,8 +41,15 @@ _awl_complete() {
   workspaces="$(_awl_workspace_names)"
 
   if [[ "${COMP_CWORD}" -eq 1 ]]; then
-    _awl_set_compreply "auth create ls rm exec reset tunnel --help --version -h -V" "${cur}"
+    _awl_set_compreply "auth create ls rm exec reset tunnel --runtime --help --version -h -V" "${cur}"
     return 0
+  fi
+
+  if [[ "${subcmd}" == "--runtime" ]]; then
+    if [[ "${COMP_CWORD}" -eq 2 ]]; then
+      _awl_set_compreply "container host" "${cur}"
+      return 0
+    fi
   fi
 
   case "${subcmd}" in

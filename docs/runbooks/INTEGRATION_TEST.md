@@ -1,6 +1,9 @@
-# Integration test checklist (native CLI)
+# Integration test checklist (dual runtime CLI)
 
-This checklist validates the released host-native CLI behavior after cutting a tag (`vX.Y.Z`).
+This checklist validates released `agent-workspace-launcher` behavior after cutting a tag (`vX.Y.Z`) across both supported runtimes:
+
+- default `container` runtime
+- explicit `host` fallback runtime
 
 ## What to verify
 
@@ -10,6 +13,8 @@ This checklist validates the released host-native CLI behavior after cutting a t
 - [ ] Archive payload contains completion files for bash/zsh
 - [ ] Local install smoke passes with direct binary name
 - [ ] Local install smoke passes with `awl` alias
+- [ ] Default runtime smoke (`container`) passes on Docker-enabled host
+- [ ] Host fallback smoke (`--runtime host`) passes without Docker dependency
 - [ ] Homebrew formula installs commands and completion files
 
 ## Release asset verification
@@ -67,18 +72,38 @@ root_dir="$(find "$work_dir" -maxdepth 1 -type d -name "agent-workspace-launcher
 
 "$root_dir/bin/agent-workspace-launcher" --help
 "$root_dir/bin/awl" --help
+"$root_dir/bin/agent-workspace-launcher" --help | rg -- '--runtime'
 ```
 
-## Host behavior smoke
+## Default container runtime smoke
+
+```sh
+# Assumes root_dir is set from "Local smoke from downloaded archive".
+
+# Requires Docker for default runtime
+docker info >/dev/null
+
+# Optional: pin runtime image explicitly for deterministic smoke
+export AGENT_ENV_IMAGE="graysurf/agent-env:latest"
+
+"$root_dir/bin/agent-workspace-launcher" create --no-work-repos --name ws-container-smoke
+"$root_dir/bin/agent-workspace-launcher" ls
+"$root_dir/bin/awl" ls
+"$root_dir/bin/agent-workspace-launcher" exec ws-container-smoke pwd
+"$root_dir/bin/agent-workspace-launcher" rm ws-container-smoke --yes
+```
+
+## Host fallback smoke
 
 ```sh
 tmp_home="$(mktemp -d)"
 export AGENT_WORKSPACE_HOME="$tmp_home/workspaces"
 
-"$root_dir/bin/agent-workspace-launcher" create --no-work-repos --name ws-smoke
-"$root_dir/bin/agent-workspace-launcher" ls
-"$root_dir/bin/awl" ls
-"$root_dir/bin/agent-workspace-launcher" rm ws-smoke --yes
+"$root_dir/bin/agent-workspace-launcher" --runtime host create --no-work-repos --name ws-host-smoke
+"$root_dir/bin/agent-workspace-launcher" --runtime host ls
+AGENT_WORKSPACE_RUNTIME=host "$root_dir/bin/agent-workspace-launcher" ls
+AWL_RUNTIME=host "$root_dir/bin/awl" ls
+"$root_dir/bin/agent-workspace-launcher" --runtime host rm ws-host-smoke --yes
 ```
 
 ## Homebrew tap smoke
@@ -98,5 +123,5 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew test agent-workspace-launcher
 
 ## Notes
 
-- Container backend checks are optional compatibility validation only.
-- Release readiness for this repo is defined by the native CLI contract above.
+- Release readiness requires both runtime checks: default container and host fallback.
+- `awl_docker` wrapper validation is optional compatibility coverage and is not part of the required release gate.
