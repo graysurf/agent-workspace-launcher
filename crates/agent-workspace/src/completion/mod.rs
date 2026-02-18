@@ -235,7 +235,9 @@ mod engine_tests {
             .map(|candidate| candidate.value)
             .collect();
 
-        for expected in ["auth", "create", "ls", "rm", "exec", "reset", "tunnel"] {
+        for expected in [
+            "auth", "create", "rsync", "ls", "rm", "exec", "reset", "tunnel",
+        ] {
             assert!(values.iter().any(|value| value == expected));
         }
     }

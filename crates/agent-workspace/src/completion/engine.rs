@@ -33,6 +33,7 @@ pub(crate) fn complete<P: WorkspaceProvider>(
         match subcommand {
             "auth" => complete_auth(current, &args_before, &mut workspace_ctx),
             "create" => complete_create(current, &args_before),
+            "rsync" => complete_rsync(current, &args_before, &mut workspace_ctx),
             "ls" => complete_ls(current, &args_before),
             "rm" => complete_rm(&args_before, &mut workspace_ctx),
             "exec" => complete_exec(current, &args_before, &mut workspace_ctx),
@@ -57,6 +58,7 @@ fn complete_top_level(_current: &str) -> Vec<Candidate> {
         &[
             ("auth", "Update auth material in workspace"),
             ("create", "Create a new workspace"),
+            ("rsync", "Sync files between host and container"),
             ("ls", "List workspaces"),
             ("rm", "Remove workspace(s)"),
             ("exec", "Run command in workspace"),
@@ -65,6 +67,89 @@ fn complete_top_level(_current: &str) -> Vec<Candidate> {
         ],
     );
     push_global_options(&mut out);
+    out
+}
+
+fn complete_rsync<P: WorkspaceProvider>(
+    current: &str,
+    args_before: &[String],
+    workspace_ctx: &mut WorkspaceContext<'_, P>,
+) -> Vec<Candidate> {
+    if let Some((option, inline)) = value_option(args_before, current, &["--user"]) {
+        return value_suggestions_described(
+            &option,
+            inline,
+            &[
+                ("0", "UID 0 (root)"),
+                ("root", "Root user"),
+                ("agent", "Default agent user"),
+                ("codex", "Alternate codex user"),
+            ],
+        );
+    }
+
+    let mut direction: Option<&str> = None;
+    let mut idx = 0usize;
+    while idx < args_before.len() {
+        let token = args_before[idx].as_str();
+        if token.starts_with('-') {
+            idx += 1;
+            continue;
+        }
+        direction = Some(token);
+        idx += 1;
+        break;
+    }
+
+    let mut out: Vec<Candidate> = Vec::new();
+    if direction.is_none() {
+        push_described_values(
+            &mut out,
+            &[
+                ("push", "Sync host files into workspace"),
+                ("pull", "Sync workspace files to host"),
+                ("--help", "Show help for rsync"),
+                ("-h", "Show help for rsync"),
+            ],
+        );
+        push_global_options(&mut out);
+        return out;
+    }
+
+    let mut positional_seen = 0usize;
+    let mut j = idx;
+    while j < args_before.len() {
+        let token = args_before[j].as_str();
+        match token {
+            "--user" | "-u" => j += 2,
+            _ if token.starts_with("--user=") => j += 1,
+            "--root" | "--delete" | "--dry-run" | "-n" | "--help" | "-h" => j += 1,
+            _ if token.starts_with('-') => j += 1,
+            _ => {
+                positional_seen += 1;
+                j += 1;
+            }
+        }
+    }
+
+    push_described_values(
+        &mut out,
+        &[
+            ("--user", "Run rsync inside container as user"),
+            ("--root", "Run rsync inside container as root"),
+            ("--delete", "Delete files not present at source"),
+            ("--dry-run", "Preview changes without writing"),
+            ("-n", "Alias of --dry-run"),
+            ("--help", "Show help for rsync"),
+            ("-h", "Show help for rsync"),
+        ],
+    );
+    push_global_options(&mut out);
+
+    if positional_seen == 0 {
+        out.extend(workspace_ctx.workspace_candidates(None));
+    }
+
     out
 }
 

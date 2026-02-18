@@ -58,6 +58,11 @@ fn dispatch_host(subcommand: &str, args: &[OsString]) -> i32 {
     match subcommand {
         "auth" => auth::run(args),
         "create" => create::run(args),
+        "rsync" => {
+            eprintln!("error: rsync is only available in container runtime");
+            eprintln!("hint: retry with '--runtime container'");
+            EXIT_RUNTIME
+        }
         "ls" => ls::run(args),
         "rm" => rm::run(args),
         "exec" => exec::run(args),

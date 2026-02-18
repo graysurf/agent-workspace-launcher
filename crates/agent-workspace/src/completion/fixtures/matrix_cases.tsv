@@ -1,10 +1,13 @@
 # name|words(; separated)|cword|expected candidates(; separated)
-top-level|agent-workspace-launcher;|1|auth;create;ls;rm;exec;reset;tunnel;--runtime;--help;--version;-h;-V
+top-level|agent-workspace-launcher;|1|auth;create;rsync;ls;rm;exec;reset;tunnel;--runtime;--help;--version;-h;-V
 runtime-value|agent-workspace-launcher;--runtime;|2|container;host
 runtime-inline-value|agent-workspace-launcher;--runtime=|1|--runtime=container;--runtime=host
 create-flags|agent-workspace-launcher;create;|2|--name;--image;--ref;--private-repo;--no-work-repos;--no-extras;--no-pull;--help;-h;--runtime
 create-ref-values|agent-workspace-launcher;create;--ref;|3|origin/main;origin/master
 create-ref-inline-values|agent-workspace-launcher;create;--ref=|2|--ref=origin/main;--ref=origin/master
+rsync-subcommands|agent-workspace-launcher;rsync;|2|push;pull;--help;-h;--runtime
+rsync-flags-and-workspace|agent-workspace-launcher;rsync;push;|3|--user;--root;--delete;--dry-run;-n;--help;-h;--runtime;container-ws
+rsync-user-values|agent-workspace-launcher;rsync;push;--user;|4|0;root;agent;codex
 ls-flags|agent-workspace-launcher;ls;|2|--json;--output;--help;-h;--runtime
 ls-output-values|agent-workspace-launcher;ls;--output;|3|json
 ls-output-inline-values|agent-workspace-launcher;ls;--output=|2|--output=json

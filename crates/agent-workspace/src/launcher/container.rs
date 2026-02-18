@@ -2,6 +2,7 @@ use std::ffi::OsString;
 use std::io::{IsTerminal, Write};
 use std::process::{Command, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::{fs, path::PathBuf};
 
 use crate::EXIT_RUNTIME;
 
@@ -16,6 +17,32 @@ const DEFAULT_CONTAINER_IMAGE: &str = "graysurf/agent-env:latest";
 const WORKSPACE_LABEL: &str = "agent-kit.workspace=1";
 const DEFAULT_REF: &str = "origin/main";
 const CODE_TUNNEL_LOG_PATH: &str = "/home/agent/.agents-env/logs/code-tunnel.log";
+const RSYNC_RSH_WRAPPER_SCRIPT: &str = r#"#!/bin/sh
+set -eu
+
+container="${AGENT_WORKSPACE_RSYNC_CONTAINER:?missing AGENT_WORKSPACE_RSYNC_CONTAINER}"
+user="${AGENT_WORKSPACE_RSYNC_USER:-agent}"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -l)
+      shift 2
+      ;;
+    --*)
+      shift
+      ;;
+    -*)
+      shift
+      ;;
+    *)
+      shift
+      break
+      ;;
+  esac
+done
+
+exec docker exec -u "$user" -i "$container" "$@"
+"#;
 
 const RESET_REPO_SCRIPT: &str = r#"
 set -euo pipefail
@@ -263,9 +290,45 @@ struct ParsedResetSimple {
     refspec: String,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum RsyncDirection {
+    Push,
+    Pull,
+}
+
+#[derive(Debug, Clone)]
+struct ParsedRsync {
+    show_help: bool,
+    direction: Option<RsyncDirection>,
+    workspace: Option<String>,
+    src: Option<String>,
+    dest: Option<String>,
+    user: String,
+    delete: bool,
+    dry_run: bool,
+    rsync_args: Vec<String>,
+}
+
+impl Default for ParsedRsync {
+    fn default() -> Self {
+        Self {
+            show_help: false,
+            direction: None,
+            workspace: None,
+            src: None,
+            dest: None,
+            user: String::from("agent"),
+            delete: false,
+            dry_run: false,
+            rsync_args: Vec::new(),
+        }
+    }
+}
+
 pub(super) fn dispatch(subcommand: &str, args: &[OsString]) -> i32 {
     match subcommand {
         "create" => run_create(args),
+        "rsync" => run_rsync(args),
         "ls" => run_ls(args),
         "exec" => run_exec(args),
         "rm" => run_rm(args),
@@ -473,6 +536,157 @@ fn run_ls(args: &[OsString]) -> i32 {
     }
 
     0
+}
+
+fn run_rsync(args: &[OsString]) -> i32 {
+    if !ensure_docker_available() {
+        return EXIT_RUNTIME;
+    }
+
+    let parsed = match parse_rsync_args(args) {
+        Ok(parsed) => parsed,
+        Err(err) => {
+            eprintln!("error: {err}");
+            print_rsync_usage();
+            return EXIT_RUNTIME;
+        }
+    };
+
+    if parsed.show_help {
+        print_rsync_usage();
+        return 0;
+    }
+
+    let direction = match parsed.direction {
+        Some(direction) => direction,
+        None => {
+            print_rsync_usage();
+            return 0;
+        }
+    };
+
+    if !command_exists("rsync") {
+        eprintln!("error: rsync not found on host");
+        return EXIT_RUNTIME;
+    }
+
+    let container = match resolve_container_for_rsync(parsed.workspace.as_deref()) {
+        Ok(container) => container,
+        Err(err) => {
+            eprintln!("error: {err}");
+            return EXIT_RUNTIME;
+        }
+    };
+
+    if let Err(err) = ensure_container_running(&container) {
+        eprintln!("error: {err}");
+        return EXIT_RUNTIME;
+    }
+
+    let rsync_available = Command::new("docker")
+        .args(["exec", "-u", &parsed.user, &container, "rsync", "--version"])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false);
+    if !rsync_available {
+        eprintln!(
+            "error: rsync not available in container: {container} (user: {})",
+            parsed.user
+        );
+        eprintln!("hint: install rsync in the container image");
+        return EXIT_RUNTIME;
+    }
+
+    let wrapper = match create_rsync_rsh_wrapper() {
+        Ok(path) => path,
+        Err(err) => {
+            eprintln!("error: {err}");
+            return EXIT_RUNTIME;
+        }
+    };
+
+    let src = parsed.src.unwrap_or_default();
+    let dest = parsed.dest.unwrap_or_default();
+
+    let mut command = Command::new("rsync");
+    command
+        .arg("-rlpt")
+        .arg("--partial")
+        .arg("--progress")
+        .arg("-e")
+        .arg(wrapper.as_os_str());
+
+    if parsed.delete {
+        command.arg("--delete");
+    }
+    if parsed.dry_run {
+        command.arg("--dry-run");
+    }
+    for extra in &parsed.rsync_args {
+        command.arg(extra);
+    }
+
+    match direction {
+        RsyncDirection::Push => {
+            command.arg(&src);
+            command.arg(format!("{container}:{dest}"));
+        }
+        RsyncDirection::Pull => {
+            command.arg(format!("{container}:{src}"));
+            command.arg(&dest);
+        }
+    }
+
+    command
+        .env("AGENT_WORKSPACE_RSYNC_CONTAINER", &container)
+        .env("AGENT_WORKSPACE_RSYNC_USER", &parsed.user);
+
+    let mut display: Vec<String> = vec![
+        String::from("rsync"),
+        String::from("-rlpt"),
+        String::from("--partial"),
+        String::from("--progress"),
+        String::from("-e"),
+        wrapper.display().to_string(),
+    ];
+    if parsed.delete {
+        display.push(String::from("--delete"));
+    }
+    if parsed.dry_run {
+        display.push(String::from("--dry-run"));
+    }
+    display.extend(parsed.rsync_args.iter().cloned());
+    match direction {
+        RsyncDirection::Push => {
+            display.push(src);
+            display.push(format!("{container}:{dest}"));
+        }
+        RsyncDirection::Pull => {
+            display.push(format!("{container}:{src}"));
+            display.push(dest);
+        }
+    }
+    println!("+ {}", display.join(" "));
+
+    let status = command.status();
+    let _ = fs::remove_file(&wrapper);
+
+    match status {
+        Ok(result) if result.success() => 0,
+        Ok(result) => {
+            eprintln!(
+                "error: rsync command failed (exit {})",
+                result.code().unwrap_or(EXIT_RUNTIME)
+            );
+            EXIT_RUNTIME
+        }
+        Err(err) => {
+            eprintln!("error: failed to execute rsync: {err}");
+            EXIT_RUNTIME
+        }
+    }
 }
 
 fn run_exec(args: &[OsString]) -> i32 {
@@ -1158,6 +1372,96 @@ fn run_reset_private_repo(args: &[OsString]) -> i32 {
     }
 }
 
+fn parse_rsync_args(args: &[OsString]) -> Result<ParsedRsync, String> {
+    let mut parsed = ParsedRsync::default();
+    if args.is_empty() {
+        parsed.show_help = true;
+        return Ok(parsed);
+    }
+
+    let subcmd = args[0].to_string_lossy();
+    match subcmd.as_ref() {
+        "-h" | "--help" | "help" => {
+            parsed.show_help = true;
+            return Ok(parsed);
+        }
+        "push" => parsed.direction = Some(RsyncDirection::Push),
+        "pull" => parsed.direction = Some(RsyncDirection::Pull),
+        _ => {
+            return Err(format!(
+                "unknown rsync subcommand: {subcmd} (expected: push|pull)"
+            ));
+        }
+    }
+
+    let mut idx = 1usize;
+    while idx < args.len() {
+        let current = args[idx].to_string_lossy();
+        match current.as_ref() {
+            "-h" | "--help" => parsed.show_help = true,
+            "--delete" => parsed.delete = true,
+            "-n" | "--dry-run" => parsed.dry_run = true,
+            "--root" => parsed.user = String::from("root"),
+            "--user" | "-u" => {
+                idx += 1;
+                if idx >= args.len() {
+                    return Err(format!("missing value for {current}"));
+                }
+                let value = args[idx].to_string_lossy().into_owned();
+                let Some(cleaned) = trimmed_nonempty(&value) else {
+                    return Err(format!("missing value for {current}"));
+                };
+                parsed.user = cleaned;
+            }
+            _ if current.starts_with("--user=") => {
+                let value = current["--user=".len()..].to_string();
+                let Some(cleaned) = trimmed_nonempty(&value) else {
+                    return Err(String::from("missing value for --user"));
+                };
+                parsed.user = cleaned;
+            }
+            "--" => {
+                return Err(String::from(
+                    "unexpected -- (pass rsync flags after source/destination paths)",
+                ));
+            }
+            _ if current.starts_with('-') => return Err(format!("unknown option: {current}")),
+            _ => break,
+        }
+        idx += 1;
+    }
+
+    let mut rest: Vec<String> = Vec::new();
+    for arg in &args[idx..] {
+        rest.push(arg.to_string_lossy().into_owned());
+    }
+    if rest.len() < 2 {
+        return Err(String::from("missing args"));
+    }
+
+    if rest.len() == 2 {
+        parsed.src = Some(rest[0].clone());
+        parsed.dest = Some(rest[1].clone());
+        return Ok(parsed);
+    }
+
+    if rest[2].starts_with('-') {
+        parsed.src = Some(rest[0].clone());
+        parsed.dest = Some(rest[1].clone());
+        parsed.rsync_args = rest[2..].to_vec();
+        return Ok(parsed);
+    }
+
+    parsed.workspace = Some(rest[0].clone());
+    parsed.src = Some(rest[1].clone());
+    parsed.dest = Some(rest[2].clone());
+    if rest.len() > 3 {
+        parsed.rsync_args = rest[3..].to_vec();
+    }
+
+    Ok(parsed)
+}
+
 fn parse_create_args(args: &[OsString]) -> Result<ParsedCreate, String> {
     let mut parsed = ParsedCreate::default();
     let mut idx = 0usize;
@@ -1714,6 +2018,60 @@ fn resolve_container_for_auth(name: Option<&str>) -> Result<String, String> {
         )),
     }
 }
+
+fn resolve_container_for_rsync(name: Option<&str>) -> Result<String, String> {
+    if let Some(name) = name.and_then(trimmed_nonempty) {
+        return match resolve_container(&name)? {
+            Some(container) => Ok(container),
+            None => Err(format!("workspace not found: {name}")),
+        };
+    }
+
+    let workspaces = list_workspace_containers()?;
+    match workspaces.as_slice() {
+        [] => Err(String::from("no workspaces found")),
+        [single] => Ok(single.clone()),
+        _ => Err(format!(
+            "multiple workspaces found; specify one: {}",
+            workspaces.join(", ")
+        )),
+    }
+}
+
+fn create_rsync_rsh_wrapper() -> Result<PathBuf, String> {
+    let base = std::env::temp_dir();
+    let pid = std::process::id();
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+
+    for attempt in 0..16u32 {
+        let path = base.join(format!(
+            "agent-workspace-rsync-rsh-{pid}-{now}-{attempt}.sh"
+        ));
+        if path.exists() {
+            continue;
+        }
+
+        fs::write(&path, RSYNC_RSH_WRAPPER_SCRIPT)
+            .map_err(|err| format!("failed to write rsync wrapper {}: {err}", path.display()))?;
+        set_executable_permissions(&path);
+        return Ok(path);
+    }
+
+    Err(String::from("failed to create temporary rsync wrapper"))
+}
+
+#[cfg(unix)]
+fn set_executable_permissions(path: &PathBuf) {
+    use std::os::unix::fs::PermissionsExt;
+
+    let _ = fs::set_permissions(path, fs::Permissions::from_mode(0o700));
+}
+
+#[cfg(not(unix))]
+fn set_executable_permissions(_path: &PathBuf) {}
 
 fn ensure_image(image: &str, pull: bool) -> Result<(), String> {
     let inspect = Command::new("docker")
@@ -2317,6 +2675,16 @@ fn print_create_usage() {
 fn print_ls_usage() {
     eprintln!(
         "usage: {PRIMARY_COMMAND_NAME} ls [--runtime <container|host>] [--json|--output json]"
+    );
+}
+
+fn print_rsync_usage() {
+    eprintln!("usage:");
+    eprintln!(
+        "  {PRIMARY_COMMAND_NAME} rsync push [--runtime container] [--user <user>|--root] [--delete] [--dry-run] [<workspace>] <host_src> <container_dest> [<rsync_args...>]"
+    );
+    eprintln!(
+        "  {PRIMARY_COMMAND_NAME} rsync pull [--runtime container] [--user <user>|--root] [--delete] [--dry-run] [<workspace>] <container_src> <host_dest> [<rsync_args...>]"
     );
 }
 

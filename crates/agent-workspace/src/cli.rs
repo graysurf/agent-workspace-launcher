@@ -36,6 +36,8 @@ pub enum CliCommand {
     #[command(disable_help_flag = true)]
     Create(PassthroughArgs),
     #[command(disable_help_flag = true)]
+    Rsync(PassthroughArgs),
+    #[command(disable_help_flag = true)]
     Ls(PassthroughArgs),
     #[command(disable_help_flag = true)]
     Rm(PassthroughArgs),
@@ -75,6 +77,10 @@ impl CliCommand {
             },
             Self::Create(args) => ForwardRequest {
                 subcommand: "create",
+                args: args.args,
+            },
+            Self::Rsync(args) => ForwardRequest {
+                subcommand: "rsync",
                 args: args.args,
             },
             Self::Ls(args) => ForwardRequest {
@@ -159,7 +165,9 @@ mod tests {
         cmd.write_long_help(&mut out).expect("write help");
 
         let help = String::from_utf8(out).expect("utf8");
-        for subcommand in ["auth", "create", "ls", "rm", "exec", "reset", "tunnel"] {
+        for subcommand in [
+            "auth", "create", "rsync", "ls", "rm", "exec", "reset", "tunnel",
+        ] {
             assert!(
                 help.contains(subcommand),
                 "help should include subcommand {subcommand}"
