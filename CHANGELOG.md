@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## v1.1.4 - 2026-02-18
+
+### Upstream pins
+- agent-kit: 0ae695f18f672bf1f418c068a5e3124a26ecfb1a
+
 ### Changed
 - Add dual runtime support to the Rust CLI (`container` default, explicit `host` fallback) with unified runtime resolution:
   `--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default `container`.
