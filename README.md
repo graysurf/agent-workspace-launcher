@@ -67,12 +67,14 @@ Default root:
 - `auth github`: stores resolved token under workspace auth directory.
 - `auth codex`: syncs Codex auth files while keeping compatibility names.
 - `tunnel`: runs `code tunnel` in the selected runtime workspace.
+- Completion engine: bash/zsh completion adapters call hidden `__complete` in the Rust CLI and receive runtime-aware candidates.
 
 ## Environment variables
 
 | Env | Default | Purpose |
 | --- | --- | --- |
 | `AGENT_WORKSPACE_RUNTIME` | `container` | Runtime backend: `container\|host` |
+| `AGENT_WORKSPACE_COMPLETION_MODE` | `rust` | Completion backend selector: `rust\|legacy` (`legacy` is rollback toggle) |
 | `AGENT_WORKSPACE_HOME` | auto | Workspace root override |
 | `AGENT_WORKSPACE_PREFIX` | `agent-ws` | Prefix normalization for workspace names |
 | `AGENT_WORKSPACE_AUTH` | `auto` | GitHub auth token policy: `auto\|gh\|env\|none` |
@@ -82,6 +84,15 @@ Default root:
 | `AGENT_WORKSPACE_NILS_CLI_FORMULA` | `graysurf/tap/nils-cli` | Homebrew formula used to update `nils-cli` on container `create` |
 | `CODEX_SECRET_DIR` | (empty) | Codex profile directory (compatibility name) |
 | `CODEX_AUTH_FILE` | `~/.codex/auth.json` | Codex auth file path (compatibility name) |
+
+## Completion architecture
+
+- Internal command: `agent-workspace-launcher __complete ...` (hidden from normal `--help`).
+- Runtime-aware behavior: completion resolves runtime with the same precedence as normal execution (`--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > `container`).
+- Descriptive mode: completion supports `--format describe` (`candidate<TAB>description`) so zsh adapters can render inline help text.
+- Workspace-aware subcommands: `auth`, `rm`, `exec`, `reset`, and `tunnel` complete workspace names from the selected runtime backend.
+- Shell adapters: `scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`, and `completions/_agent-workspace-launcher` are adapter layers that delegate candidate generation to Rust.
+- Emergency rollback: set `AGENT_WORKSPACE_COMPLETION_MODE=legacy` to force legacy shell completion behavior.
 
 ## Alias wrappers
 

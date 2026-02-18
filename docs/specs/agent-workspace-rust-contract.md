@@ -13,6 +13,7 @@ Define the Rust `agent-workspace-launcher` contract implemented in this reposito
 - `agent-workspace-launcher exec ...`
 - `agent-workspace-launcher reset ...`
 - `agent-workspace-launcher tunnel ...`
+- Hidden internal: `agent-workspace-launcher __complete ...` (not listed in normal help output)
 
 Alias contract:
 
@@ -27,6 +28,24 @@ Alias contract:
   - default: `container`
 - Runtime resolution precedence: flag > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default.
 - Exit codes reflect backend runtime result directly (`0` success, non-zero failure).
+
+## Hidden completion contract
+
+- `__complete` is an internal Rust entrypoint for shell completion adapters.
+- Command shape:
+  - `agent-workspace-launcher __complete --shell <bash|zsh> --cword <index> --word <arg0> --word <arg1> ...`
+  - Optional output mode: `--format plain|describe` (`plain` default)
+- `__complete` stays hidden from normal `--help` output.
+- Global `--runtime` forwarding used by public subcommands is not auto-injected for `__complete`; the completion request owns its own context.
+- Runtime-aware behavior:
+  - Workspace-name completion for `auth`, `rm`, `exec`, `reset`, and `tunnel` resolves against the selected runtime backend.
+  - Runtime precedence for completion matches command execution: `--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default `container`.
+- Output contract:
+  - `--format plain`: newline-delimited candidates (empty output is valid).
+  - `--format describe`: newline-delimited `candidate<TAB>description` lines when descriptions are available.
+  - Invalid completion requests return non-zero with error text to stderr.
+- Rollback toggle:
+  - `AGENT_WORKSPACE_COMPLETION_MODE=legacy` switches shell adapters to legacy completion behavior.
 
 Container backend contract:
 

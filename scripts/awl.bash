@@ -15,6 +15,30 @@ _awl_workspace_names() {
   command agent-workspace-launcher ls 2>/dev/null | awk '{print $1}'
 }
 
+_awl_completion_mode_is_legacy() {
+  [[ "${AGENT_WORKSPACE_COMPLETION_MODE:-}" == "legacy" ]]
+}
+
+_awl_query_complete() {
+  local cword
+  local -a command_argv
+  local token
+
+  cword="${1:-0}"
+  shift || true
+
+  if ! command -v agent-workspace-launcher >/dev/null 2>&1; then
+    return 0
+  fi
+
+  command_argv=(agent-workspace-launcher __complete --shell bash --cword "${cword}")
+  for token in "$@"; do
+    command_argv+=(--word "${token}")
+  done
+
+  command "${command_argv[@]}" 2>/dev/null
+}
+
 _awl_set_compreply() {
   local words
   local cur
@@ -31,7 +55,7 @@ _awl_set_compreply() {
   COMPREPLY=("${matches[@]}")
 }
 
-_awl_complete() {
+_awl_complete_legacy() {
   local cur
   local subcmd
   local workspaces
@@ -81,6 +105,30 @@ _awl_complete() {
       COMPREPLY=()
       ;;
   esac
+}
+
+_awl_complete_modern() {
+  local line
+  local -a matches
+
+  matches=()
+  COMPREPLY=()
+
+  while IFS= read -r line; do
+    [[ -n "${line}" ]] || continue
+    matches+=("${line}")
+  done < <(_awl_query_complete "${COMP_CWORD}" "${COMP_WORDS[@]}")
+
+  COMPREPLY=("${matches[@]}")
+}
+
+_awl_complete() {
+  if _awl_completion_mode_is_legacy; then
+    _awl_complete_legacy
+    return 0
+  fi
+
+  _awl_complete_modern
 }
 
 # aw* shorthand aliases

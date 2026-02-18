@@ -13,6 +13,8 @@ Run all checks below before submitting changes:
 - Shell syntax
   - bash: `bash -n $(git ls-files 'scripts/*.sh' 'scripts/*.bash')`
   - zsh: `zsh -n $(git ls-files 'scripts/*.zsh')`
+  - completion adapters (bash): `bash -n completions/agent-workspace-launcher.bash scripts/awl.bash scripts/awl_docker.bash`
+  - completion adapters (zsh): `zsh -n completions/_agent-workspace-launcher scripts/awl.zsh scripts/awl_docker.zsh`
 - Shell lint (requires `shellcheck`):
   - `shellcheck $(git ls-files 'scripts/*.sh' 'scripts/*.bash')`
 - Python format/lint/smoke:
@@ -24,6 +26,11 @@ Run all checks below before submitting changes:
   - `cargo check --workspace`
   - `cargo clippy --workspace --all-targets -- -D warnings`
   - `cargo test -p agent-workspace`
+- Completion contract smoke:
+  - `bash -lc 'set -euo pipefail; ! cargo run -p agent-workspace -- --help | rg -q "__complete"'`
+  - `cargo run -p agent-workspace -- __complete --shell bash --cword 2 --word agent-workspace-launcher --word rm --word "" >/dev/null`
+  - `bash -lc 'cargo run -p agent-workspace -- __complete --shell invalid --cword 1 --word agent-workspace-launcher >/dev/null 2>&1; test $? -ne 0'`
+  - `AGENT_WORKSPACE_COMPLETION_MODE=legacy .venv/bin/python -m pytest tests/test_completion_adapters.py -k legacy`
 
 ## Optional test commands
 

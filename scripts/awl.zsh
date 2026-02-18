@@ -11,73 +11,150 @@ _awl_workspace_names() {
   command agent-workspace-launcher ls 2>/dev/null | awk '{print $1}'
 }
 
-_awl_completion() {
-  local state
-  local -a subcommands auth_commands reset_commands workspace_names rm_targets
+_awl_completion_mode_is_legacy() {
+  [[ "${AGENT_WORKSPACE_COMPLETION_MODE:-}" == "legacy" ]]
+}
 
-  subcommands=(
-    "auth"
-    "create"
-    "ls"
-    "rm"
-    "exec"
-    "reset"
-    "tunnel"
-    "--runtime"
-    "--help"
-    "--version"
-    "-h"
-    "-V"
+_awl_query_complete() {
+  local cword
+  local -a command_argv
+  local token
+
+  cword="${1:-0}"
+  shift
+
+  if (( ! ${+commands[agent-workspace-launcher]} )); then
+    return 0
+  fi
+
+  command_argv=(
+    agent-workspace-launcher
+    __complete
+    --shell zsh
+    --format describe
+    --cword "${cword}"
   )
-  auth_commands=("github" "codex" "gpg" "--help" "-h")
-  reset_commands=("repo" "work-repos" "opt-repos" "private-repo" "--help" "-h")
+  for token in "$@"; do
+    command_argv+=(--word "${token}")
+  done
+
+  command "${command_argv[@]}" 2>/dev/null
+}
+
+_awl_completion_legacy() {
+  local cur
+  local subcmd
+  local candidate
+  local -a workspace_names candidates filtered
+
+  cur="${words[CURRENT]:-}"
+  subcmd="${words[2]:-}"
   workspace_names=(${(f)"$(_awl_workspace_names)"})
-  rm_targets=("${workspace_names[@]}" "--all" "--yes")
+  candidates=()
+  filtered=()
 
-  _arguments -C \
-    "1:subcommand:->subcommand" \
-    "*::arg:->args"
+  if (( CURRENT == 2 )); then
+    candidates=(auth create ls rm exec reset tunnel --runtime --help --version -h -V)
+  elif [[ "${subcmd}" == "--runtime" ]]; then
+    if (( CURRENT == 3 )); then
+      candidates=(container host)
+    fi
+  else
+    case "${subcmd}" in
+      auth)
+        if (( CURRENT == 3 )); then
+          candidates=(github codex gpg --help -h)
+        elif (( CURRENT >= 4 )); then
+          candidates=("${workspace_names[@]}")
+        fi
+        ;;
+      reset)
+        if (( CURRENT == 3 )); then
+          candidates=(repo work-repos opt-repos private-repo --help -h)
+        elif (( CURRENT == 4 )); then
+          candidates=("${workspace_names[@]}")
+        fi
+        ;;
+      rm)
+        if (( CURRENT == 3 )); then
+          candidates=("${workspace_names[@]}" --all --yes)
+        fi
+        ;;
+      exec|tunnel)
+        if (( CURRENT == 3 )); then
+          candidates=("${workspace_names[@]}")
+        fi
+        ;;
+    esac
+  fi
 
-  case "${state}" in
-    subcommand)
-      _describe -t awl-subcommands "awl subcommand" subcommands
-      return 0
-      ;;
-    args)
-      case "${words[2]}" in
-        --runtime)
-          if (( CURRENT == 3 )); then
-            _describe -t awl-runtime-values "runtime" "container host"
-          fi
-          ;;
-        auth)
-          if (( CURRENT == 3 )); then
-            _describe -t awl-auth-commands "auth command" auth_commands
-          elif (( CURRENT >= 4 )); then
-            _describe -t awl-workspaces "workspace" workspace_names
-          fi
-          ;;
-        reset)
-          if (( CURRENT == 3 )); then
-            _describe -t awl-reset-commands "reset command" reset_commands
-          elif (( CURRENT == 4 )); then
-            _describe -t awl-workspaces "workspace" workspace_names
-          fi
-          ;;
-        rm)
-          if (( CURRENT == 3 )); then
-            _describe -t awl-rm-targets "rm target" rm_targets
-          fi
-          ;;
-        exec|tunnel)
-          if (( CURRENT == 3 )); then
-            _describe -t awl-workspaces "workspace" workspace_names
-          fi
-          ;;
-      esac
-      return 0
-      ;;
-  esac
+  for candidate in "${candidates[@]}"; do
+    if [[ "${candidate}" == "${cur}"* ]]; then
+      filtered+=("${candidate}")
+    fi
+  done
+
+  if (( ${#filtered[@]} == 0 )); then
+    return 1
+  fi
+
+  compadd -Q -- "${filtered[@]}"
+  return 0
+}
+
+_awl_completion_modern() {
+  local -i cword
+  local line value description
+  local -a completion_words raw described described_values plain
+
+  cword=$(( CURRENT - 1 ))
+  completion_words=("${words[@]}")
+  if (( CURRENT > ${#words[@]} )); then
+    completion_words+=("")
+  fi
+
+  raw=(${(f)"$(_awl_query_complete "${cword}" "${completion_words[@]}")"})
+  if (( ${#raw[@]} == 0 )); then
+    return 1
+  fi
+
+  described=()
+  described_values=()
+  plain=()
+  for line in "${raw[@]}"; do
+    if [[ "${line}" == *$'\t'* ]]; then
+      value="${line%%$'\t'*}"
+      description="${line#*$'\t'}"
+      described+=("${value}:${description}")
+      described_values+=("${value}")
+    else
+      plain+=("${line}")
+    fi
+  done
+
+  if (( ${#described[@]} > 0 )); then
+    if (( ${+functions[_describe]} )); then
+      _describe -t awl-candidates "candidate" described
+    else
+      compadd -Q -- "${described_values[@]}"
+    fi
+    if (( ${#plain[@]} > 0 )); then
+      compadd -Q -- "${plain[@]}"
+    fi
+    return 0
+  fi
+
+  compadd -Q -- "${plain[@]}"
+  return 0
+}
+
+_awl_completion() {
+  if _awl_completion_mode_is_legacy; then
+    _awl_completion_legacy
+    return $?
+  fi
+
+  _awl_completion_modern
 }
 
 # aw* shorthand aliases

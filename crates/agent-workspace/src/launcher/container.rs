@@ -1638,6 +1638,10 @@ fn list_workspace_containers() -> Result<Vec<String>, String> {
     Ok(names)
 }
 
+pub(super) fn completion_workspace_names() -> Result<Vec<String>, String> {
+    list_workspace_containers()
+}
+
 fn container_exists(name: &str) -> bool {
     Command::new("docker")
         .args(["inspect", name])

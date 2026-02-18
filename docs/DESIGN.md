@@ -14,8 +14,8 @@ The command surface remains stable across both runtimes.
 Primary command path:
 
 1. User invokes `agent-workspace-launcher` (or alias `awl`).
-2. Rust CLI parses subcommands and preserves existing command tree.
-3. Runtime resolver selects backend using this precedence:
+2. Rust CLI parses subcommands (including hidden internal `__complete`) and preserves existing public command tree.
+3. For public subcommands, runtime resolver selects backend using this precedence:
    1. `--runtime container|host`
    2. `AGENT_WORKSPACE_RUNTIME`
    3. `AWL_RUNTIME` (compat env alias)
@@ -23,6 +23,13 @@ Primary command path:
 4. Runtime dispatch executes backend-specific handlers:
    - `container`: Docker-backed workspace lifecycle.
    - `host`: host-filesystem workspace lifecycle.
+
+## Completion architecture
+
+- Internal endpoint: `__complete` is a hidden Rust subcommand used by shell completion adapters.
+- Adapter model: bash/zsh completion files and wrapper scripts are thin adapters that send shell context to `__complete` and render returned candidates.
+- Runtime-aware completion: workspace suggestions for `auth`, `rm`, `exec`, `reset`, and `tunnel` are resolved against the selected runtime backend using the same precedence as normal execution.
+- Rollback mode: `AGENT_WORKSPACE_COMPLETION_MODE=legacy` forces adapters to use legacy shell completion logic instead of Rust-backed completion.
 
 ## Command surface
 
@@ -75,6 +82,8 @@ Each workspace is a directory with subpaths such as `work/`, `private/`, `opt/`,
 
 - If the selected/default runtime is `container` and Docker is unavailable, runtime exits non-zero with host-fallback guidance (`--runtime host` or `AGENT_WORKSPACE_RUNTIME=host`).
 - Invalid runtime values fail fast with explicit `container|host` expectation messaging.
+- Completion failures should degrade gracefully (prefer partial/static candidates over shell-breaking errors).
+- Operational rollback is environment-only: set `AGENT_WORKSPACE_COMPLETION_MODE=legacy` and reload the shell.
 
 ## Packaging direction
 

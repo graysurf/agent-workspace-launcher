@@ -13,6 +13,10 @@ This checklist validates released `agent-workspace-launcher` behavior after cutt
 - [ ] Archive payload contains completion files for bash/zsh
 - [ ] Local install smoke passes with direct binary name
 - [ ] Local install smoke passes with `awl` alias
+- [ ] Hidden completion endpoint (`__complete`) is not shown in help output
+- [ ] Hidden completion endpoint accepts valid shell context and rejects invalid shell values
+- [ ] Runtime-aware completion returns workspace names from the selected runtime
+- [ ] Rollback toggle `AGENT_WORKSPACE_COMPLETION_MODE=legacy` works for shell adapters
 - [ ] Default runtime smoke (`container`) passes on Docker-enabled host
 - [ ] Host fallback smoke (`--runtime host`) passes without Docker dependency
 - [ ] Homebrew formula installs commands and completion files
@@ -90,7 +94,6 @@ export AGENT_ENV_IMAGE="graysurf/agent-env:latest"
 "$root_dir/bin/agent-workspace-launcher" ls
 "$root_dir/bin/awl" ls
 "$root_dir/bin/agent-workspace-launcher" exec ws-container-smoke pwd
-"$root_dir/bin/agent-workspace-launcher" rm ws-container-smoke --yes
 ```
 
 ## Host fallback smoke
@@ -103,6 +106,52 @@ export AGENT_WORKSPACE_HOME="$tmp_home/workspaces"
 "$root_dir/bin/agent-workspace-launcher" --runtime host ls
 AGENT_WORKSPACE_RUNTIME=host "$root_dir/bin/agent-workspace-launcher" ls
 AWL_RUNTIME=host "$root_dir/bin/awl" ls
+```
+
+## Completion contract smoke
+
+```sh
+# Hidden command is internal and must stay out of normal help output.
+! "$root_dir/bin/agent-workspace-launcher" --help | rg -q "__complete"
+
+# Valid completion request succeeds.
+"$root_dir/bin/agent-workspace-launcher" __complete \
+  --shell bash \
+  --cword 2 \
+  --word agent-workspace-launcher \
+  --word exec \
+  --word "" >/dev/null
+
+# Invalid shell value must fail non-zero.
+"$root_dir/bin/agent-workspace-launcher" __complete --shell invalid --cword 1 --word agent-workspace-launcher >/dev/null 2>&1 && exit 1 || true
+
+# Runtime-aware completion: container and host must return their own workspace.
+"$root_dir/bin/agent-workspace-launcher" __complete \
+  --shell bash \
+  --cword 2 \
+  --word agent-workspace-launcher \
+  --word exec \
+  --word "" | rg '^ws-container-smoke$'
+
+"$root_dir/bin/agent-workspace-launcher" --runtime host __complete \
+  --shell bash \
+  --cword 2 \
+  --word agent-workspace-launcher \
+  --word exec \
+  --word "" | rg '^ws-host-smoke$'
+
+# Rollback toggle: legacy adapter path still executes.
+AGENT_WORKSPACE_COMPLETION_MODE=legacy bash -c '
+  set -euo pipefail
+  root_dir="$1"
+  source "$root_dir/completions/agent-workspace-launcher.bash"
+  COMP_WORDS=(agent-workspace-launcher exec "")
+  COMP_CWORD=2
+  _agent_workspace_launcher_complete
+' _ "$root_dir"
+
+# Cleanup smokes.
+"$root_dir/bin/agent-workspace-launcher" rm ws-container-smoke --yes
 "$root_dir/bin/agent-workspace-launcher" --runtime host rm ws-host-smoke --yes
 ```
 

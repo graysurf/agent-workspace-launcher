@@ -1,4 +1,5 @@
 mod cli;
+mod completion;
 mod launcher;
 mod runtime;
 
@@ -30,6 +31,9 @@ where
     };
 
     let request = cli.into_forward_request();
+    if request.subcommand == "__complete" {
+        return completion::run(&request.args);
+    }
     launcher::dispatch(request.subcommand, &request.args)
 }
 

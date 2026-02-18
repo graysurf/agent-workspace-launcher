@@ -44,7 +44,7 @@ pub fn resolve_runtime(args: &[OsString]) -> Result<(Runtime, Vec<OsString>), St
     Ok((runtime, cleaned))
 }
 
-fn parse_runtime_value(raw: &str) -> Result<Runtime, String> {
+pub(crate) fn parse_runtime_value(raw: &str) -> Result<Runtime, String> {
     let normalized = raw.trim().to_ascii_lowercase();
     match normalized.as_str() {
         "container" | "docker" => Ok(Runtime::Container),

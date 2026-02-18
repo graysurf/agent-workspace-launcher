@@ -39,6 +39,30 @@ _awl_docker_workspace_names() {
   awl_docker ls 2>/dev/null | awk '{print $1}'
 }
 
+_awl_docker_completion_mode_is_legacy() {
+  [[ "${AGENT_WORKSPACE_COMPLETION_MODE:-}" == "legacy" ]]
+}
+
+_awl_docker_query_complete() {
+  local cword
+  local -a command_argv
+  local token
+
+  cword="${1:-0}"
+  shift || true
+
+  if ! command -v agent-workspace-launcher >/dev/null 2>&1; then
+    return 0
+  fi
+
+  command_argv=(agent-workspace-launcher __complete --shell bash --cword "${cword}")
+  for token in "$@"; do
+    command_argv+=(--word "${token}")
+  done
+
+  AGENT_WORKSPACE_RUNTIME=container command "${command_argv[@]}" 2>/dev/null
+}
+
 _awl_docker_set_compreply() {
   local words
   local cur
@@ -55,7 +79,7 @@ _awl_docker_set_compreply() {
   COMPREPLY=("${matches[@]}")
 }
 
-_awl_docker_complete() {
+_awl_docker_complete_legacy() {
   local cur
   local subcmd
   local workspaces
@@ -98,6 +122,30 @@ _awl_docker_complete() {
       COMPREPLY=()
       ;;
   esac
+}
+
+_awl_docker_complete_modern() {
+  local line
+  local -a matches
+
+  matches=()
+  COMPREPLY=()
+
+  while IFS= read -r line; do
+    [[ -n "${line}" ]] || continue
+    matches+=("${line}")
+  done < <(_awl_docker_query_complete "${COMP_CWORD}" "${COMP_WORDS[@]}")
+
+  COMPREPLY=("${matches[@]}")
+}
+
+_awl_docker_complete() {
+  if _awl_docker_completion_mode_is_legacy; then
+    _awl_docker_complete_legacy
+    return 0
+  fi
+
+  _awl_docker_complete_modern
 }
 
 if type complete >/dev/null 2>&1; then

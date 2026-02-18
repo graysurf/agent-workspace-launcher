@@ -1,0 +1,7 @@
+# name|words(; separated)|cword|expected candidates(; separated)
+top-level|agent-workspace-launcher;|1|auth;create;ls
+runtime-value|agent-workspace-launcher;--runtime;|2|container;host
+rm-host|agent-workspace-launcher;--runtime;host;rm;|4|host-ws
+rm-container|agent-workspace-launcher;--runtime;container;rm;|4|container-ws
+reset-subcommands|agent-workspace-launcher;reset;|2|repo;work-repos;opt-repos;private-repo
+auth-providers|agent-workspace-launcher;auth;|2|github;codex;gpg

@@ -45,6 +45,8 @@ pub enum CliCommand {
     Reset(PassthroughArgs),
     #[command(disable_help_flag = true)]
     Tunnel(PassthroughArgs),
+    #[command(name = "__complete", hide = true, disable_help_flag = true)]
+    Complete(PassthroughArgs),
 }
 
 #[derive(Debug, Args)]
@@ -95,6 +97,10 @@ impl CliCommand {
                 subcommand: "tunnel",
                 args: args.args,
             },
+            Self::Complete(args) => ForwardRequest {
+                subcommand: "__complete",
+                args: args.args,
+            },
         }
     }
 }
@@ -129,7 +135,9 @@ impl Cli {
 
     pub fn into_forward_request(self) -> ForwardRequest {
         let mut request = self.command.into_forward_request();
-        if let Some(runtime) = self.runtime {
+        if request.subcommand != "__complete"
+            && let Some(runtime) = self.runtime
+        {
             request
                 .args
                 .insert(0, OsString::from(format!("--runtime={runtime}")));
@@ -157,6 +165,10 @@ mod tests {
                 "help should include subcommand {subcommand}"
             );
         }
+        assert!(
+            !help.contains("__complete"),
+            "help should not include hidden internal completion command"
+        );
     }
 
     #[test]
@@ -231,5 +243,43 @@ mod tests {
             .map(|item| item.to_string_lossy().into_owned())
             .collect();
         assert_eq!(collected, vec!["--runtime=host", "--output", "json"]);
+    }
+
+    #[test]
+    fn parse_hidden_complete_subcommand() {
+        let cli = Cli::try_parse_from([
+            PRIMARY_BIN_NAME,
+            "__complete",
+            "--shell",
+            "bash",
+            "--cword",
+            "1",
+            "--word",
+            "agent-workspace-launcher",
+            "--word",
+            "",
+        ])
+        .expect("parse hidden complete args");
+
+        let request = cli.into_forward_request();
+        assert_eq!(request.subcommand, "__complete");
+        let args: Vec<String> = request
+            .args
+            .iter()
+            .map(|value| value.to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(
+            args,
+            vec![
+                "--shell",
+                "bash",
+                "--cword",
+                "1",
+                "--word",
+                "agent-workspace-launcher",
+                "--word",
+                ""
+            ]
+        );
     }
 }

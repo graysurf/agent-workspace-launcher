@@ -44,6 +44,16 @@ pub fn dispatch(subcommand: &str, args: &[OsString]) -> i32 {
     status
 }
 
+pub(crate) fn completion_workspace_names(runtime: Runtime) -> Result<Vec<String>, String> {
+    match runtime {
+        Runtime::Host => Ok(list_workspaces_on_disk()?
+            .into_iter()
+            .map(|workspace| workspace.name)
+            .collect()),
+        Runtime::Container => container::completion_workspace_names(),
+    }
+}
+
 fn dispatch_host(subcommand: &str, args: &[OsString]) -> i32 {
     match subcommand {
         "auth" => auth::run(args),

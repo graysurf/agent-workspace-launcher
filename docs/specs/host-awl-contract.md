@@ -44,6 +44,7 @@ Both names must execute the same Rust implementation and behavior.
 
 - `AGENT_WORKSPACE_RUNTIME` (`container|host`, default `container`)
 - `AWL_RUNTIME` (compat alias for runtime selection)
+- `AGENT_WORKSPACE_COMPLETION_MODE` (`rust|legacy`, default `rust`; `legacy` is rollback mode)
 - `AGENT_WORKSPACE_HOME` (workspace root override)
 - `AGENT_WORKSPACE_PREFIX` (workspace name prefix)
 - `AGENT_WORKSPACE_AUTH` (`auto|gh|env|none`)
@@ -81,6 +82,15 @@ Notes:
   3. `CODEX_ENV_IMAGE`
   4. built-in default `graysurf/agent-env:latest`
 - `awl` remains alias-only; docs and release assets treat `agent-workspace-launcher` as canonical.
+
+## Completion adapter contract
+
+- Bash/zsh adapters (`scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`, `completions/_agent-workspace-launcher`) delegate candidate generation to hidden Rust command `agent-workspace-launcher __complete`.
+- Adapters preserve completion wiring for `agent-workspace-launcher`, `awl`, and shorthand alias `aw`.
+- Runtime-aware workspace candidates for `auth`, `rm`, `exec`, `reset`, and `tunnel` must match runtime selector precedence from normal execution.
+- Rollback behavior:
+  - `AGENT_WORKSPACE_COMPLETION_MODE=legacy` forces adapters onto legacy shell completion logic.
+  - Removing/unsetting the variable returns adapters to Rust-backed completion.
 
 ## Hard cutover
 
