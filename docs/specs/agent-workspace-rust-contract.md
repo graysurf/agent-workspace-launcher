@@ -40,7 +40,8 @@ Alias contract:
 - Runtime-aware behavior:
   - Workspace-name completion for `auth`, `rm`, `exec`, `reset`, and `tunnel` resolves against the selected runtime backend.
   - Runtime precedence for completion matches command execution: `--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > default `container`.
-  - Candidate coverage includes subcommands, long/short flags, and common option values (for example `--output json`, `--ref origin/main`, `--depth 3`, `--user root`).
+  - Candidate coverage includes subcommands, long/short flags, and common option values
+    (for example `--output json`, `--ref origin/main`, `--depth 3`, `--user root`).
 - Output contract:
   - `--format plain`: newline-delimited candidates (empty output is valid).
   - `--format describe`: newline-delimited `candidate<TAB>description` lines when descriptions are available.

@@ -6,7 +6,7 @@
 
 Links:
 
-- PR: https://github.com/graysurf/agent-workspace-launcher/pull/2
+- PR: <https://github.com/graysurf/agent-workspace-launcher/pull/2>
 - Planning PR: [#1](https://github.com/graysurf/agent-workspace-launcher/pull/1)
 - Implementation PR: [#2](https://github.com/graysurf/agent-workspace-launcher/pull/2)
 - Integration testing PR: [#3](https://github.com/graysurf/agent-workspace-launcher/pull/3)
@@ -36,7 +36,8 @@ Links:
 ## Acceptance Criteria
 
 - `docker run --rm -it graysurf/agent-workspace-launcher:latest --help` lists `create/ls/rm/exec/reset/tunnel` and exits `0`.
-- With `-v /var/run/docker.sock:/var/run/docker.sock`, `ls`, `create graysurf/agent-kit`, `exec <name>`, and `rm <name> --yes` work end-to-end on a clean macOS host.
+- With `-v /var/run/docker.sock:/var/run/docker.sock`, `ls`, `create graysurf/agent-kit`, `exec <name>`,
+  and `rm <name> --yes` work end-to-end on a clean macOS host.
 - With `-e GH_TOKEN="$GH_TOKEN"`, `create OWNER/PRIVATE_REPO` can clone/pull private repos (no host mounts required by default).
 - `README.md` documents Quickstart, DooD rules, env vars (including deprecated), and security notes.
 - CI publishes multi-arch (`linux/amd64,linux/arm64`) images with `latest` + `sha-<short>` tags (Docker Hub + GHCR).
@@ -81,9 +82,11 @@ Links:
 
 ### Rationale
 
-- Use the existing two-layer launcher stack from `zsh-kit` (public `create/...`) and `agent-kit` (low-level `up/...`) to avoid re-implementing orchestration logic.
+- Use the existing two-layer launcher stack from `zsh-kit` (public `create/...`) and `agent-kit`
+  (low-level `up/...`) to avoid re-implementing orchestration logic.
 - Pin `zsh-kit` and `agent-kit` refs at build time to make the launcher image reproducible and reduce runtime network dependency.
-- Default `AGENT_WORKSPACE_LAUNCHER` to `/opt/agent-kit/docker/agent-env/bin/agent-workspace` and prefer env-based auth (`GH_TOKEN`) inside the launcher container.
+- Default `AGENT_WORKSPACE_LAUNCHER` to `/opt/agent-kit/docker/agent-env/bin/agent-workspace` and
+  prefer env-based auth (`GH_TOKEN`) inside the launcher container.
 
 ### Open Decisions (Step 0)
 
@@ -116,23 +119,28 @@ Decisions (confirmed):
 - Completion packaging:
   - a) **Selected**: completion is defined inside the sourced wrapper file(s) and registers to `cws`.
 - Completion behavior:
-  - a) **Selected**: static completion for subcommands/flags + dynamic workspace-name completion by querying host `docker ps` (fast; no image call).
+  - a) **Selected**: static completion for subcommands/flags + dynamic workspace-name completion by
+    querying host `docker ps` (fast; no image call).
   - b) Static-only completion (simpler, less magic).
 - Defaults carried by the wrapper:
-  - a) **Selected**: always mount `docker.sock` and forward `GH_TOKEN`/`GITHUB_TOKEN` when set; allow extra docker args via `CWS_DOCKER_ARGS` and image override via `CWS_IMAGE`.
+  - a) **Selected**: always mount `docker.sock` and forward `GH_TOKEN`/`GITHUB_TOKEN` when set;
+    allow extra docker args via `CWS_DOCKER_ARGS` and image override via `CWS_IMAGE`.
   - b) Keep wrapper minimal (only docker.sock) and document manual token/env forwarding.
 
 ### Risks / Uncertainties
 
 - Security: mounting `docker.sock` is root-equivalent on the host; mitigation is explicit documentation and safe defaults.
 - DooD host-path resolution: any `-v <src>:<dst>` resolves on the host; mitigation is requiring absolute host paths and same-path binds.
-- Token exposure: if tokens are passed into workspace containers, they may be visible via `docker inspect`; mitigation is clear docs and avoiding persistence by default.
+- Token exposure: if tokens are passed into workspace containers, they may be visible via
+  `docker inspect`; mitigation is clear docs and avoiding persistence by default.
 - Multi-arch publishing: buildx/QEMU differences and runner availability; mitigation is validating on GitHub Actions and documenting known limitations.
 
 ## Steps (Checklist)
 
-Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested `- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
-Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include `Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
+Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested
+`- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
+Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include
+`Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
 
 - [x] Step 0: Alignment / prerequisites
   - Work Items:

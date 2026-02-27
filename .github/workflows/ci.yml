@@ -19,6 +19,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install zsh (for zsh -n)
         run: |
           if ! command -v zsh >/dev/null 2>&1; then
@@ -40,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          mapfile -t bash_files < <(git ls-files 'scripts/*.sh' 'scripts/*.bash')
+          mapfile -t bash_files < <(git ls-files 'scripts/*.sh' 'scripts/*.bash' 'scripts/ci/*.sh' 'scripts/ci/*.bash')
           if (( ${#bash_files[@]} )); then
             bash -n "${bash_files[@]}"
           fi
@@ -55,10 +60,13 @@ jobs:
         run: |
           set -euo pipefail
 
-          mapfile -t bash_files < <(git ls-files 'scripts/*.sh' 'scripts/*.bash')
+          mapfile -t bash_files < <(git ls-files 'scripts/*.sh' 'scripts/*.bash' 'scripts/ci/*.sh' 'scripts/ci/*.bash')
           if (( ${#bash_files[@]} )); then
             shellcheck -f gcc "${bash_files[@]}"
           fi
+
+      - name: Markdown lint
+        run: bash scripts/ci/markdownlint-audit.sh --strict
 
   rust:
     runs-on: ubuntu-latest

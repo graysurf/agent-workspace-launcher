@@ -88,11 +88,14 @@ Default root:
 ## Completion architecture
 
 - Internal command: `agent-workspace-launcher __complete ...` (hidden from normal `--help`).
-- Runtime-aware behavior: completion resolves runtime with the same precedence as normal execution (`--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > `container`).
+- Runtime-aware behavior: completion resolves runtime with the same precedence as normal execution
+  (`--runtime` > `AGENT_WORKSPACE_RUNTIME` > `AWL_RUNTIME` > `container`).
 - Descriptive mode: completion supports `--format describe` (`candidate<TAB>description`) so zsh adapters can render inline help text.
-- Coverage model: completion returns subcommands + long/short flags + common option values (for example `--runtime`, `--output`, `--ref`, `--depth`, `--user`).
+- Coverage model: completion returns subcommands + long/short flags + common option values
+  (for example `--runtime`, `--output`, `--ref`, `--depth`, `--user`).
 - Workspace-aware subcommands: `auth`, `rm`, `exec`, `reset`, and `tunnel` complete workspace names from the selected runtime backend.
-- Shell adapters: `scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`, and `completions/_agent-workspace-launcher` are adapter layers that delegate candidate generation to Rust.
+- Shell adapters: `scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`,
+  and `completions/_agent-workspace-launcher` are adapter layers that delegate candidate generation to Rust.
 - Emergency rollback: set `AGENT_WORKSPACE_COMPLETION_MODE=legacy` to force legacy shell completion behavior.
 
 ## Alias wrappers

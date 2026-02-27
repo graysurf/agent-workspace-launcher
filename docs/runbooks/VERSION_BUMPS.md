@@ -62,13 +62,13 @@ git -c tag.gpgSign=false tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-3. Ensure release exists:
+1. Ensure release exists:
 
 ```sh
 gh release view vX.Y.Z || gh release create vX.Y.Z --title "vX.Y.Z" --notes ""
 ```
 
-4. Verify CLI workflow (`release-brew.yml`) succeeded and published all expected assets.
+1. Verify CLI workflow (`release-brew.yml`) succeeded and published all expected assets.
 
 ## CLI channel verification checkpoints
 
@@ -106,7 +106,8 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew test agent-workspace-launcher
 
 ## Optional compatibility Docker checks
 
-If you also publish compatibility container artifacts, run Docker-specific verification separately. That path is optional and must not gate CLI release readiness.
+If you also publish compatibility container artifacts, run Docker-specific verification separately.
+That path is optional and must not gate CLI release readiness.
 
 ```sh
 .agents/skills/release-docker-image/scripts/release-docker-image-ci.sh --version vX.Y.Z

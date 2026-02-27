@@ -6,11 +6,11 @@
 
 Links:
 
-- PR: https://github.com/graysurf/agent-workspace-launcher/pull/6
-- Planning PR: https://github.com/graysurf/agent-workspace-launcher/pull/5
+- PR: <https://github.com/graysurf/agent-workspace-launcher/pull/6>
+- Planning PR: <https://github.com/graysurf/agent-workspace-launcher/pull/5>
 - Upstream:
-  - agent-kit launcher contract migration: https://github.com/graysurf/agent-kit/pull/64
-  - zsh-kit wrapper call-through migration: https://github.com/graysurf/zsh-kit/pull/58
+  - agent-kit launcher contract migration: <https://github.com/graysurf/agent-kit/pull/64>
+  - zsh-kit wrapper call-through migration: <https://github.com/graysurf/zsh-kit/pull/58>
 - Docs:
   - [docs/DESIGN.md](../../DESIGN.md)
   - [docs/runbooks/INTEGRATION_TEST.md](../../runbooks/INTEGRATION_TEST.md)
@@ -23,15 +23,20 @@ Links:
 
 ## Goal
 
-- Align `agent-workspace-launcher` behavior with the canonical launcher contract (`agent-kit`), without maintaining duplicate semantics in this repo.
+- Align `agent-workspace-launcher` behavior with the canonical launcher contract (`agent-kit`),
+  without maintaining duplicate semantics in this repo.
 - Introduce `VERSIONS.env` as the single source of truth for pinning upstream `zsh-kit` + `agent-kit` refs (and document how to bump safely).
 - Centralize real-Docker E2E verification in this repo; keep upstream repos on fast smoke/stub coverage.
 
 ## Acceptance Criteria
 
 - `bin/agent-workspace` contains no workspace lifecycle semantics (no custom `rm --all` logic); behavior matches upstream `zsh-kit` + `agent-kit`.
-- CI publish workflow uses pinned refs from `VERSIONS.env` (no dynamic `ls-remote` pinning), and built images expose the pinned refs for traceability (label or file).
-- Docs no longer mention deprecated/removed low-level env vars (e.g. `AGENT_SECRET_DIR_HOST`, `AGENT_CONFIG_DIR_HOST`, `AGENT_ZSH_PRIVATE_DIR_HOST`) and instead document the current contract (`--secrets-dir`, `--secrets-mount`, `--keep-volumes`, `capabilities`, `--supports`).
+- CI publish workflow uses pinned refs from `VERSIONS.env` (no dynamic `ls-remote` pinning), and
+  built images expose the pinned refs for traceability (label or file).
+- Docs no longer mention deprecated/removed low-level env vars
+  (e.g. `AGENT_SECRET_DIR_HOST`, `AGENT_CONFIG_DIR_HOST`, `AGENT_ZSH_PRIVATE_DIR_HOST`) and
+  instead document the current contract (`--secrets-dir`, `--secrets-mount`, `--keep-volumes`,
+  `capabilities`, `--supports`).
 - Required pre-submit checks pass (`DEVELOPMENT.md`) and a minimal E2E set passes with real Docker; evidence is recorded under `$AGENT_HOME/out/`.
 
 ## Scope
@@ -68,7 +73,8 @@ Links:
 
 ### Rationale
 
-- The launcher image should be a packaging layer, not a second implementation: user-facing UX lives in `zsh-kit`, and canonical lifecycle semantics live in `agent-kit`.
+- The launcher image should be a packaging layer, not a second implementation: user-facing UX lives
+  in `zsh-kit`, and canonical lifecycle semantics live in `agent-kit`.
 - Pinning upstream refs in a repo-owned file makes bumps reviewable, reproducible, and easy to audit.
 - Centralizing real-Docker E2E here avoids duplicative, flaky, and slow integration suites across multiple repos.
 
@@ -83,8 +89,10 @@ Links:
 
 ## Steps (Checklist)
 
-Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested `- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
-Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include `Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
+Note: Any unchecked checkbox in Step 0–3 must include a Reason (inline `Reason: ...` or a nested
+`- Reason: ...`) before close-progress-pr can complete. Step 4 is excluded (post-merge / wrap-up).
+Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like this~~` and include
+`Reason:`. Unchecked and unstruck items (e.g. `- [ ] foo`) will block close-progress-pr.
 
 - [x] Step 0: Alignment / prerequisites
   - Work Items:
@@ -119,7 +127,8 @@ Note: For intentionally deferred / not-do items in Step 0–3, use `- [ ] ~~like
   - Work Items:
     - [x] Remove any custom lifecycle behavior from `bin/agent-workspace` (delegate fully to upstream).
     - [x] Update `README.md` + `docs/DESIGN.md` to reflect current launcher contract and remove stale env vars.
-    - [ ] ~~Update E2E plan cases/gates to include coverage for `rm` semantics and (optionally) JSON output flows.~~ Reason: existing e2e plan already covers `rm`; JSON-specific coverage deferred.
+    - [ ] ~~Update E2E plan cases/gates to include coverage for `rm` semantics and (optionally)
+      JSON output flows.~~ Reason: existing e2e plan already covers `rm`; JSON-specific coverage deferred.
   - Artifacts:
     - `bin/agent-workspace`
     - `README.md`

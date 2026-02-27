@@ -27,8 +27,10 @@ Primary command path:
 ## Completion architecture
 
 - Internal endpoint: `__complete` is a hidden Rust subcommand used by shell completion adapters.
-- Adapter model: bash/zsh completion files and wrapper scripts are thin adapters that send shell context to `__complete` and render returned candidates.
-- Runtime-aware completion: workspace suggestions for `auth`, `rm`, `exec`, `reset`, and `tunnel` are resolved against the selected runtime backend using the same precedence as normal execution.
+- Adapter model: bash/zsh completion files and wrapper scripts are thin adapters that send shell context
+  to `__complete` and render returned candidates.
+- Runtime-aware completion: workspace suggestions for `auth`, `rm`, `exec`, `reset`, and `tunnel` are
+  resolved against the selected runtime backend using the same precedence as normal execution.
 - Rollback mode: `AGENT_WORKSPACE_COMPLETION_MODE=legacy` forces adapters to use legacy shell completion logic instead of Rust-backed completion.
 
 ## Command surface
@@ -80,7 +82,8 @@ Each workspace is a directory with subpaths such as `work/`, `private/`, `opt/`,
 
 ## Failure behavior
 
-- If the selected/default runtime is `container` and Docker is unavailable, runtime exits non-zero with host-fallback guidance (`--runtime host` or `AGENT_WORKSPACE_RUNTIME=host`).
+- If the selected/default runtime is `container` and Docker is unavailable, runtime exits non-zero with
+  host-fallback guidance (`--runtime host` or `AGENT_WORKSPACE_RUNTIME=host`).
 - Invalid runtime values fail fast with explicit `container|host` expectation messaging.
 - Completion failures should degrade gracefully (prefer partial/static candidates over shell-breaking errors).
 - Operational rollback is environment-only: set `AGENT_WORKSPACE_COMPLETION_MODE=legacy` and reload the shell.

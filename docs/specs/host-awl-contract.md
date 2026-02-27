@@ -85,7 +85,9 @@ Notes:
 
 ## Completion adapter contract
 
-- Bash/zsh adapters (`scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`, `completions/_agent-workspace-launcher`) delegate candidate generation to hidden Rust command `agent-workspace-launcher __complete`.
+- Bash/zsh adapters (`scripts/awl.bash`, `scripts/awl.zsh`, `completions/agent-workspace-launcher.bash`,
+  `completions/_agent-workspace-launcher`) delegate candidate generation to hidden Rust command
+  `agent-workspace-launcher __complete`.
 - Adapters preserve completion wiring for `agent-workspace-launcher`, `awl`, and shorthand alias `aw`.
 - Runtime-aware workspace candidates for `auth`, `rm`, `exec`, `reset`, and `tunnel` must match runtime selector precedence from normal execution.
 - Rollback behavior:

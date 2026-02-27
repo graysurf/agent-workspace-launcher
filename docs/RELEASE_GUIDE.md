@@ -69,25 +69,25 @@ ln -sf "$(pwd)/target/release/agent-workspace-launcher" "$tmp_dir/awl"
 "$tmp_dir/awl" --help
 ```
 
-4. Update `CHANGELOG.md`
+1. Update `CHANGELOG.md`
    - `./scripts/release_prepare_changelog.sh --version vX.Y.Z --date YYYY-MM-DD`
 
-5. Commit release notes
+2. Commit release notes
    - Suggested message: `chore(release): vX.Y.Z`
    - Use semantic commit helper (per `AGENTS.md`).
 
-6. Audit
+3. Audit
    - `./scripts/release_audit.sh --version vX.Y.Z --branch main --strict`
 
-7. Tag + push
+4. Tag + push
    - `git -c tag.gpgSign=false tag vX.Y.Z`
    - `git push origin vX.Y.Z`
 
-8. Verify release workflow + assets
+5. Verify release workflow + assets
    - `gh run list --workflow release-brew.yml --limit 5`
    - `gh release view vX.Y.Z --json assets --jq '.assets[].name'`
 
-9. Download and verify checksums
+6. Download and verify checksums
 
 ```sh
 version="vX.Y.Z"
@@ -107,7 +107,7 @@ gh release download "$version" \
 )
 ```
 
-10. Validate archive payload contract
+1. Validate archive payload contract
 
 ```sh
 version="vX.Y.Z"

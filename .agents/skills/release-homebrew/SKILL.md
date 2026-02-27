@@ -98,10 +98,11 @@ Failure modes:
      - `completions/_agent-workspace-launcher`
 
 10. Verify local Homebrew is upgraded to the same version
-   - Run after `homebrew-tap` formula update/merge:
-   - `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z`
-   - If validating against a local tap checkout:
-   - `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo ~/Project/graysurf/homebrew-tap`
+
+- Run after `homebrew-tap` formula update/merge:
+- `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z`
+- If validating against a local tap checkout:
+- `.agents/skills/release-homebrew/scripts/verify-brew-installed-version.sh --version vX.Y.Z --tap-repo ~/Project/graysurf/homebrew-tap`
 
 ## Project-specific non-negotiables
 
